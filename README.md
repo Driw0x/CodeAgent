@@ -1,2 +1,19 @@
 # CodeAgent
-Projet personnel de création d’un agent IA local capable d’analyser un projet Python
+Projet personnel de création d’un Agent IA local pour l’analyse de code Python et la mémoire de projet.
+
+## Présentation
+
+CodeAgent est un assistant IA local conçu pour analyser des projets Python et répondre à des questions sur leur code.
+
+L’objectif du projet est de créer un agent capable de :
+
+- lire automatiquement les fichiers Python d’un projet,
+- indexer le code avec des embeddings,
+- comprendre la structure générale du projet,
+- répondre à des questions sur le code,
+- conserver une mémoire simple du projet,
+- et plus tard effectuer des analyses statiques et de sécurité.
+
+Le projet fonctionne entièrement en local grâce à un LLM local et une base vectorielle.
+
+---
