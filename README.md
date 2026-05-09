@@ -17,3 +17,27 @@ L’objectif du projet est de créer un agent capable de :
 Le projet fonctionne entièrement en local grâce à un LLM local et une base vectorielle.
 
 ---
+
+## Roadmap
+
+### Milestone 1 — Lecture du projet Python 
+Objectif actuel :
+- [x] Initialisation du projet
+- [ ] Lecture récursive des fichiers `.py`
+- [ ] Ignorer les dossiers inutiles (`.venv`, `__pycache__`, etc.)
+- [ ] Extraction du contenu des fichiers
+- [ ] Affichage des fichiers détectés
+
+But :
+Créer une première base capable de parcourir automatiquement un projet Python et récupérer son code.
+
+---
+
+### Milestone 2 — Embeddings et indexation
+Objectifs :
+- [ ] Découpage du code en chunks
+- [ ] Génération des embeddings
+- [ ] Stockage
+- [ ] Recherche sémantique
+
+---
