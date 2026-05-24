@@ -1,1 +1,0 @@
-# Gestion des fichiers/dossiers ingorés

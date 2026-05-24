@@ -18,15 +18,24 @@ Le projet fonctionne entièrement en local grâce à un LLM local et une base ve
 
 ---
 
+## Exécution du projet
+
+Depuis la racine du projet, lancer le programme principal avec :
+
+```bash
+python -m app.main
+```
+
+---
 ## Roadmap
 
 ### Milestone 1 — Lecture du projet Python 
 Objectif actuel :
 - [x] Initialisation du projet
-- [ ] Lecture récursive des fichiers `.py`
-- [ ] Ignorer les dossiers inutiles (`.venv`, `__pycache__`, etc.)
-- [ ] Extraction du contenu des fichiers
-- [ ] Affichage des fichiers détectés
+- [x] Lecture récursive des fichiers `.py`
+- [x] Ignorer les dossiers inutiles (`.venv`, `__pycache__`, etc.)
+- [x] Extraction du contenu des fichiers
+- [x] Affichage des fichiers détectés
 
 But :
 Créer une première base capable de parcourir automatiquement un projet Python et récupérer son code.
