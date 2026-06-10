@@ -44,7 +44,7 @@ Créer une première base capable de parcourir automatiquement un projet Python 
 
 ### Milestone 2 — Embeddings et indexation
 Objectifs :
-- [ ] Découpage du code en chunks
+- [x] Découpage du code en chunks
 - [ ] Génération des embeddings
 - [ ] Stockage
 - [ ] Recherche sémantique
