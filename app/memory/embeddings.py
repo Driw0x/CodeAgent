@@ -1,13 +1,10 @@
 from sentence_transformers import SentenceTransformer
 
-def embeddings(chunk):
-    # 1. Load a pretrained Sentence Transformer model
-    model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
-
+def embeddings(model, data):
     # The sentences to encode
-    sentences = chunk["content"]
+    sentences = data
 
     # 2. Calculate embeddings by calling model.encode()
-    chunk["vector"] = model.encode(sentences)
+    return model.encode(sentences, show_progress_bar=False)
     # print(embeddings.shape)
     # [3, 384]
