@@ -14,6 +14,6 @@ def read_dir(path):
     p = Path(path)
     lprog = []
     for prog in p.glob('**/*.%s'%EXTENSIONS[LANGAGE.lower()]):
-        if not IGNORED_DIRS.intersection(prog.parts):
+        if not IGNORED_DIRS.intersection(prog.parts) and prog.name not in IGNORED_FILES:
             lprog.append({"path": prog, "content": read(prog)})
     return lprog
