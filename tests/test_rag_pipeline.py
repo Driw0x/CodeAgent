@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.rag.pipeline import RAGPipeline
+from app.rag import RAGPipeline
 
 
 def test_ask_retrieves_chunks_and_calls_llm():

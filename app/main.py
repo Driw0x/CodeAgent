@@ -2,12 +2,11 @@ from pathlib import Path
 
 from sentence_transformers import SentenceTransformer
 
-from app.llm.local_llm import LocalLLM
-from app.memory.vector_store import build_index
-from app.parser.chunker import chunking
-from app.parser.file_loader import read_dir
-from app.rag.pipeline import RAGPipeline
-from app.retrieval.faiss_retriever import FaissRetriever
+from app.llm import LocalLLM
+from app.memory import build_index
+from app.parser import chunking, read_dir
+from app.rag import RAGPipeline
+from app.retrieval import FaissRetriever
 
 
 PROJECT_PATH = Path(__file__).resolve().parents[1]

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from app.llm.local_llm import LocalLLM
+from app.llm import LocalLLM
 
 
 def test_default_model():

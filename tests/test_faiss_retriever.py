@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 import numpy as np
 import pytest
 
-from app.retrieval.faiss_retriever import FaissRetriever
+from app.retrieval import FaissRetriever
 
 
 CHUNKS = [

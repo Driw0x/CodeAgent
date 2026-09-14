@@ -1,4 +1,11 @@
-from app.rag.prompt import PROJECT_ROOT, build_context, build_prompt, format_chunk, format_sources, relative_file_path
+from app.rag import (
+    build_context,
+    build_prompt,
+    format_chunk,
+    format_sources,
+    relative_file_path,
+)
+from app.rag.prompt import PROJECT_ROOT
 
 CHUNK = {
     "file": "app/parser/file_loader.py",

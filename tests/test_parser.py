@@ -1,7 +1,6 @@
 from textwrap import dedent
 
-from app.parser.chunker import chunking
-from app.parser.file_loader import read, read_dir
+from app.parser import chunking, read, read_dir
 
 
 def code(text):

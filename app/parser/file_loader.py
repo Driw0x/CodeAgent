@@ -1,5 +1,6 @@
 from pathlib import Path
-from app.parser.variable import *
+
+from app.parser.variable import EXTENSIONS, IGNORED_DIRS, IGNORED_FILES, LANGAGE
 
 # Lecture d'un fichier
 

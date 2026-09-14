@@ -1,4 +1,4 @@
-from app.memory.embeddings import chunk_embedding_text
+from app.memory import chunk_embedding_text
 
 
 def test_chunk_embedding_text_contains_metadata():
