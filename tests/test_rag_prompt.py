@@ -1,5 +1,4 @@
-from app.rag.prompt import build_context, build_prompt, format_chunk
-
+from app.rag.prompt import PROJECT_ROOT, build_context, build_prompt, format_chunk, format_sources, relative_file_path
 
 CHUNK = {
     "file": "app/parser/file_loader.py",
@@ -40,3 +39,25 @@ def test_build_prompt_contains_context_and_question():
     assert "app/parser/file_loader.py" in result
     assert "QUESTION:" in result
     assert "Où est définie read_file ?" in result
+
+
+def test_relative_file_path():
+    result = relative_file_path(
+        str(PROJECT_ROOT / "app" / "memory" / "vector_store.py")
+    )
+
+    assert result == "app/memory/vector_store.py"
+
+
+def test_format_sources():
+    chunks = [
+        {
+            "file": str(PROJECT_ROOT / "app" / "memory" / "vector_store.py"),
+            "start_line": 6,
+            "end_line": 14,
+        }
+    ]
+
+    result = format_sources(chunks)
+
+    assert result == "- app/memory/vector_store.py:6-14"

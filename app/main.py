@@ -1,46 +1,55 @@
-from app.parser.file_loader import *
-from app.parser.chunker import *
-from app.memory.embeddings import *
-from app.memory.vector_store import *
+from pathlib import Path
 
-p = Path(r"e:\workspace\git_workspace\CodeAgent")
-chunks = []
+from sentence_transformers import SentenceTransformer
 
-# 1. Load a pretrained Sentence Transformer model
-model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+from app.llm.local_llm import LocalLLM
+from app.memory.vector_store import build_index
+from app.parser.chunker import chunking
+from app.parser.file_loader import read_dir
+from app.rag.pipeline import RAGPipeline
+from app.retrieval.faiss_retriever import FaissRetriever
 
-index = faiss.IndexFlatL2(384)   # build the index
-# print(index.is_trained)
 
-for i in read_dir(p):
-    # print(i["path"].relative_to(p.parent))
-    for elt in chunking(i):
-        v = embeddings(model, elt["content"])
-        store_vector(index, v.reshape(1, -1))
-        chunks.append(elt)
-        # print(elt)
-    # print()
+PROJECT_PATH = Path(__file__).resolve().parents[1]
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_DIMENSION = 384
+TOP_K = 5
 
-k = 3
-req = "function that reads file content"
-v = embeddings(model, req).reshape(1, -1)
-D, neighbors = k_neighbors(index, chunks, v, k)
-print(D, neighbors)
-print(req)
-for i in range(k):
-    print(i+1, ":", end=" ")
-    print(neighbors[i]["file"])
-    print(neighbors[i]["name"])
-    print(f"score : {D[i]}")
+
+def main():
+    model = SentenceTransformer(EMBEDDING_MODEL)
+
+    files = read_dir(PROJECT_PATH)
+
+    chunks = []
+
+    for file in files:
+        chunks.extend(chunking(file))
+
+    index = build_index(
+        model=model,
+        chunks=chunks,
+        dimension=EMBEDDING_DIMENSION,
+    )
+
+    retriever = FaissRetriever(
+        model=model,
+        index=index,
+        chunks=chunks,
+    )
+
+    pipeline = RAGPipeline(
+        retriever=retriever.retrieve,
+        llm=LocalLLM(),
+        top_k=TOP_K,
+    )
+
+    question = input("Question : ").strip()
+    answer = pipeline.ask(question)
+
     print()
+    print(answer)
 
-req = "function that reads directory"
-v = embeddings(model, req).reshape(1, -1)
-D, neighbors = k_neighbors(index, chunks, v, k)
-print(req)
-for i in range(k):
-    print(i+1, ":", end=" ")
-    print(neighbors[i]["file"])
-    print(neighbors[i]["name"])
-    print(f"score : {D[i]}")
-    print()
+
+if __name__ == "__main__":
+    main()

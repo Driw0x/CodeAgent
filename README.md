@@ -56,7 +56,9 @@ Chaque élément est converti en chunk contenant :
 * Stockage des vecteurs dans un index FAISS.
 * Génération d'embeddings pour les requêtes utilisateur.
 * Recherche des k chunks les plus pertinents.
-* Retour des résultats triés par similarité.
+* Recherche sémantique des candidats avec FAISS.
+* Reranking lexical des chunks candidats.
+* Sélection des chunks les plus pertinents pour le contexte RAG.
 
 Exemples de requêtes :
 
@@ -68,28 +70,13 @@ Exemples de requêtes :
 ## Architecture
 
 ```text
-CodeAgent
-│
-├── app
-│   ├── parser
-│   │   ├── file_loader.py
-│   │   ├── chunker.py
-│   │   └── variable.py
-│   │
-│   ├── memory
-│   │   ├── embeddings.py
-│   │   └── vector_store.py
-│   │
-│   ├── utils
-│   │   └── paths.py
-│   │
-│   └── main.py
-│
-├── tests
-│
-├── data
-│
-└── README.md
+app
+├── llm
+├── memory
+├── parser
+├── rag
+├── retrieval
+└── main.py
 ```
 
 ---
@@ -108,6 +95,17 @@ CodeAgent
 ### Base vectorielle
 
 * FAISS
+
+### LLM local
+
+* Ollama
+* Qwen2.5-Coder 14B
+
+### RAG
+
+* FAISS
+* Reranking lexical
+* Injection de contexte avec provenance fichier/lignes
 
 ### Tests
 
@@ -183,13 +181,13 @@ CodeAgent est capable de retrouver automatiquement les portions de code les plus
 
 ### Pipeline RAG
 
-* [ ] Construire le pipeline RAG
-* [ ] Injecter les chunks retrouvés dans le contexte
-* [ ] Répondre à des questions sur le projet
-* [ ] Générer des explications de code
-* [ ] Référencer les fichiers et lignes concernées
+* [x] Construire le pipeline RAG
+* [x] Injecter les chunks retrouvés dans le contexte
+* [x] Répondre à des questions sur le projet
+* [x] Générer des explications de code
+* [x] Référencer les fichiers et lignes concernées
 
-### Exemple attendu
+### Exemple
 
 Question :
 
@@ -197,8 +195,10 @@ Question :
 
 Réponse :
 
-> La fonction `read_file()` est définie dans `app/parser/file_loader.py`.
-> Elle est utilisée pour charger le contenu des fichiers Python avant leur découpage en chunks.
+> La fonction `read()` est définie dans `app/parser/file_loader.py`, lignes 6-9.
+
+Sources:
+- `app/parser/file_loader.py:6-9`
 
 ---
 

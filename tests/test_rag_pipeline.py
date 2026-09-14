@@ -41,6 +41,8 @@ def test_ask_retrieves_chunks_and_calls_llm():
     llm.generate.assert_called_once()
 
     assert "read_file" in result
+    assert "Sources:" in result
+    assert "app/parser/file_loader.py:10-11" in result
 
 
 def test_ask_rejects_empty_question():

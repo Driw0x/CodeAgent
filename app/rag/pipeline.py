@@ -1,7 +1,7 @@
 from collections.abc import Callable
 
 from app.llm.local_llm import LocalLLM
-from app.rag.prompt import SYSTEM_PROMPT, build_prompt
+from app.rag.prompt import SYSTEM_PROMPT, build_prompt, format_sources
 
 
 class RAGPipeline:
@@ -9,7 +9,7 @@ class RAGPipeline:
         self,
         retriever: Callable[[str, int], list[dict]],
         llm: LocalLLM,
-        top_k: int = 3,
+        top_k: int = 5,
     ):
         self.retriever = retriever
         self.llm = llm
@@ -26,7 +26,11 @@ class RAGPipeline:
 
         prompt = build_prompt(question, chunks)
 
-        return self.llm.generate(
+        answer = self.llm.generate(
             prompt=prompt,
             system_prompt=SYSTEM_PROMPT,
         )
+
+        sources = format_sources(chunks[:3])
+
+        return f"{answer}\n\nSources:\n{sources}"

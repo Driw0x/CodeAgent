@@ -1,9 +1,14 @@
-import faiss                   # make faiss available
+import faiss
 
-def store_vector(index, v):
-    index.add(v)                  # add vectors to the index
-    # print(index.ntotal)
+from app.memory.embeddings import chunk_embedding_text, embeddings
 
-def k_neighbors(index, chunks, v, k):
-    D, I = index.search(v, k)
-    return D[0], [chunks[i] for i in I[0]]
+
+def build_index(model, chunks: list[dict], dimension: int = 384):
+    index = faiss.IndexFlatL2(dimension)
+
+    for chunk in chunks:
+        text = chunk_embedding_text(chunk)
+        vector = embeddings(model, [text])
+        index.add(vector)
+
+    return index
