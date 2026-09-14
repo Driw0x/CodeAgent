@@ -175,9 +175,14 @@ CodeAgent est capable de retrouver automatiquement les portions de code les plus
 
 ## Milestone 3 — RAG sur le code
 
-### Objectifs
+### Benchmark LLM
 
-* [ ] Ajouter un LLM local
+* [x] Définir un benchmark commun pour comparer les LLM locaux
+* [x] Comparer plusieurs LLM locaux
+* [x] Sélectionner et intégrer un LLM local
+
+### Pipeline RAG
+
 * [ ] Construire le pipeline RAG
 * [ ] Injecter les chunks retrouvés dans le contexte
 * [ ] Répondre à des questions sur le projet

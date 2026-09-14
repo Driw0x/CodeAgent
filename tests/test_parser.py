@@ -269,7 +269,7 @@ def test_read_dir_lit_les_fichiers_python(tmp_path):
 
 
 def test_read_dir_ignore_les_fichiers_non_python(tmp_path):
-    fichier_python = tmp_path / "main.py"
+    fichier_python = tmp_path / "module.py"
     fichier_txt = tmp_path / "notes.txt"
 
     fichier_python.write_text("x = 1", encoding="utf-8")
@@ -278,7 +278,7 @@ def test_read_dir_ignore_les_fichiers_non_python(tmp_path):
     resultats = read_dir(tmp_path)
 
     assert len(resultats) == 1
-    assert resultats[0]["path"].name == "main.py"
+    assert resultats[0]["path"].name == "module.py"
     assert resultats[0]["content"] == "x = 1"
 
 
@@ -287,7 +287,7 @@ def test_read_dir_ignore_les_dossiers_ignores(tmp_path):
     dossier_cache.mkdir()
 
     fichier_ignore = dossier_cache / "cache.py"
-    fichier_valide = tmp_path / "main.py"
+    fichier_valide = tmp_path / "module.py"
 
     fichier_ignore.write_text("x = 1", encoding="utf-8")
     fichier_valide.write_text("y = 2", encoding="utf-8")
@@ -295,7 +295,7 @@ def test_read_dir_ignore_les_dossiers_ignores(tmp_path):
     resultats = read_dir(tmp_path)
 
     assert len(resultats) == 1
-    assert resultats[0]["path"].name == "main.py"
+    assert resultats[0]["path"].name == "module.py"
     assert resultats[0]["content"] == "y = 2"
 
 
