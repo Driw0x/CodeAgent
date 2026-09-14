@@ -134,6 +134,12 @@ python -m app.main
 
 ---
 
+---
+
+## Documentation
+
+- [Project memory](docs/codeagent_memory.md)
+
 # Roadmap
 
 ## Milestone 1 — Lecture et extraction du code
