@@ -274,7 +274,6 @@ def main() -> None:
         "base_url": args.base_url,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "generation": generation,
-        "quality_weights": benchmark["quality_weights"],
         "summary": summary,
         "results": results,
     }
