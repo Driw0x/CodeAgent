@@ -7,14 +7,6 @@
     "seed": 42,
     "num_predict": 256
   },
-  "quality_weights": {
-    "accuracy": 30,
-    "context_adherence": 20,
-    "reasoning": 15,
-    "explanation_quality": 15,
-    "instruction_following": 10,
-    "hallucination_resistance": 10
-  },
   "tests": [
     {
       "id": "understanding_01",

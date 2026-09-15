@@ -115,30 +115,66 @@ app
 
 ## Installation
 
+### 1. Cloner le projet
+
 ```bash
 git clone <repo>
 cd CodeAgent
+```
 
+### 2. Installer les dépendances Python
+
+```bash
 pip install -r requirements.txt
+```
+
+### 3. Installer Ollama
+
+Installer Ollama sur la machine, puis vérifier que l'installation fonctionne :
+
+```bash
+ollama --version
+```
+
+### 4. Télécharger le LLM local
+
+CodeAgent utilise par défaut `qwen2.5-coder:14b`.
+
+Télécharger le modèle avec :
+
+```bash
+ollama pull qwen2.5-coder:14b
+```
+
+Vérifier que le modèle est disponible :
+
+```bash
+ollama list
 ```
 
 ---
 
 ## Exécution du projet
 
-Depuis la racine du projet, lancer le programme principal avec :
+Depuis la racine du projet, lancer CodeAgent avec :
 
 ```bash
 python -m app.main
 ```
 
----
+Le programme demande ensuite une question sur le projet :
+
+```text
+Question : Comment les embeddings sont-ils ajoutés dans FAISS ?
+```
+
+CodeAgent recherche les portions de code pertinentes, les injecte dans le contexte du LLM local et génère une réponse accompagnée des fichiers et lignes concernés.
 
 ---
 
 ## Documentation
 
-- [Project memory](docs/codeagent_memory.md)
+- [Project memory](docs/memory.md)
 
 # Roadmap
 
