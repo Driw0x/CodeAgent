@@ -22,6 +22,7 @@ class LocalLLM:
         self.temperature = temperature
         self.seed = seed
         self.num_predict = num_predict
+        self.last_stats = None
 
     def generate(self, prompt: str, system_prompt: str | None = None) -> str:
         if not prompt.strip():
@@ -63,5 +64,14 @@ class LocalLLM:
 
         if not isinstance(generated_text, str) or not generated_text.strip():
             raise RuntimeError("Ollama returned an empty response.")
+        
+        prompt_tokens = data.get("prompt_eval_count", 0)
+        completion_tokens = data.get("eval_count", 0)
 
+        self.last_stats = {
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "total_tokens": prompt_tokens + completion_tokens,
+        }
+        
         return generated_text.strip()

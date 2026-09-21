@@ -248,10 +248,10 @@ Sources:
 
 ### Objectifs
 
-* [ ] Sauvegarde persistante des index
-* [ ] Historique des analyses
-* [ ] Mise à jour incrémentale des embeddings
-* [ ] Suivi des modifications du projet
+* [x] Sauvegarde persistante des index
+* [x] Historique des analyses
+* [x] Mise à jour incrémentale des embeddings
+* [x] Suivi des modifications du projet
 
 ---
 

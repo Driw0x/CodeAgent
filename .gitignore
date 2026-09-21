@@ -1,3 +1,6 @@
+# CodeAgent project memory
+data/memory/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
