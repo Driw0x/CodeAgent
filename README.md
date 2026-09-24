@@ -15,6 +15,14 @@ L’objectif du projet est de créer un agent capable de :
 
 Le projet fonctionne entièrement en local grâce à un LLM local et une base vectorielle.
 
+### Statut du projet
+
+**Core project completed — M4**
+
+Le périmètre principal de CodeAgent est terminé et fonctionnel : analyse de code, recherche sémantique, pipeline RAG, réponses sourcées, persistance de l'index et mise à jour incrémentale.
+
+Le Milestone 5 correspond à des améliorations futures visant à mesurer et renforcer la qualité du retrieval, du grounding et de la cohérence entre les sources et les réponses.
+
 ---
 
 ## Fonctionnalités actuelles
@@ -255,6 +263,28 @@ Sources:
 
 ---
 
-## Objectif final
+## Milestone 5 — RAG Quality & Grounding *(amélioration future)*
 
-Construire un véritable assistant IA local capable de comprendre un projet logiciel, de conserver sa mémoire et d'assister efficacement le développeur dans ses tâches quotidiennes.
+> Ce milestone est optionnel et n'est pas nécessaire pour considérer le périmètre principal de CodeAgent comme terminé.
+
+### Objectifs
+
+- [x] Construire un benchmark RAG
+- [x] Ajouter Recall@K, Precision@K et MRR
+- [x] Évaluer le retrieval actuel comme baseline
+- [ ] Ajouter une recherche hybride dense + lexicale
+- [ ] Évaluer et améliorer le reranking
+- [ ] Améliorer le contexte envoyé au LLM
+- [ ] Renforcer le prompt contre les hallucinations
+- [ ] Ajouter les citations fichier + lignes
+- [ ] Vérifier automatiquement les citations
+- [ ] Ajouter une vérification source <=> réponse
+- [ ] Comparer le pipeline final à la baseline M4
+
+---
+
+## État final du projet
+
+CodeAgent dispose désormais d'un pipeline complet permettant d'analyser un projet Python, d'indexer son code, de retrouver les portions pertinentes, de générer des réponses contextualisées avec un LLM local et de maintenir l'index à jour lorsque le projet évolue.
+
+Le développement principal est considéré comme **terminé à M4**. Le M5 reste une piste d'amélioration facultative consacrée à l'évaluation et au renforcement de la qualité du RAG et du grounding.

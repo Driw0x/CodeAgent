@@ -1,0 +1,307 @@
+[
+  {
+    "id": "rag_001",
+    "question": "Comment CodeAgent lit-il le contenu d'un fichier source ?",
+    "expected_sources": [
+      {
+        "file": "app/parser/file_loader.py",
+        "type": "function",
+        "name": "read"
+      }
+    ]
+  },
+  {
+    "id": "rag_002",
+    "question": "Comment CodeAgent parcourt-il récursivement un projet pour charger les fichiers Python ?",
+    "expected_sources": [
+      {
+        "file": "app/parser/file_loader.py",
+        "type": "function",
+        "name": "read_dir"
+      }
+    ]
+  },
+  {
+    "id": "rag_003",
+    "question": "Quels dossiers et fichiers sont ignorés pendant le chargement du projet ?",
+    "expected_sources": [
+      {
+        "file": "app/parser/variable.py",
+        "type": "variable",
+        "name": "IGNORED_DIRS"
+      },
+      {
+        "file": "app/parser/variable.py",
+        "type": "variable",
+        "name": "IGNORED_FILES"
+      }
+    ]
+  },
+  {
+    "id": "rag_004",
+    "question": "Comment les noms de variables sont-ils extraits des cibles AST, y compris les tuples et attributs ?",
+    "expected_sources": [
+      {
+        "file": "app/parser/chunker.py",
+        "type": "function",
+        "name": "extract_names"
+      }
+    ]
+  },
+  {
+    "id": "rag_005",
+    "question": "Comment le code Python est-il découpé en chunks à partir de l'AST ?",
+    "expected_sources": [
+      {
+        "file": "app/parser/chunker.py",
+        "type": "function",
+        "name": "chunking"
+      }
+    ]
+  },
+  {
+    "id": "rag_006",
+    "question": "Comment les embeddings sont-ils calculés à partir d'une liste de textes ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/embeddings.py",
+        "type": "function",
+        "name": "embeddings"
+      }
+    ]
+  },
+  {
+    "id": "rag_007",
+    "question": "Quel texte est construit pour représenter un chunk avant de calculer son embedding ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/embeddings.py",
+        "type": "function",
+        "name": "chunk_embedding_text"
+      }
+    ]
+  },
+  {
+    "id": "rag_008",
+    "question": "Comment l'index FAISS initial est-il construit à partir des chunks du projet ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/vector_store.py",
+        "type": "function",
+        "name": "build_index"
+      }
+    ]
+  },
+  {
+    "id": "rag_009",
+    "question": "Comment l'index FAISS est-il mis à jour lorsque certains fichiers ont changé ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/vector_store.py",
+        "type": "function",
+        "name": "update_index"
+      }
+    ]
+  },
+  {
+    "id": "rag_010",
+    "question": "Comment CodeAgent vérifie-t-il qu'un index persistant existe déjà sur disque ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/vector_store.py",
+        "type": "function",
+        "name": "index_exists"
+      }
+    ]
+  },
+  {
+    "id": "rag_011",
+    "question": "Comment l'index FAISS et les chunks associés sont-ils sauvegardés sur disque ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/vector_store.py",
+        "type": "function",
+        "name": "save_index"
+      }
+    ]
+  },
+  {
+    "id": "rag_012",
+    "question": "Comment un index FAISS sauvegardé est-il rechargé et comment la cohérence avec les chunks est-elle vérifiée ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/vector_store.py",
+        "type": "function",
+        "name": "load_index"
+      }
+    ]
+  },
+  {
+    "id": "rag_013",
+    "question": "Comment CodeAgent convertit-il un chemin de fichier en chemin relatif au projet ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/project_state.py",
+        "type": "function",
+        "name": "project_relative_path"
+      }
+    ]
+  },
+  {
+    "id": "rag_014",
+    "question": "Comment le manifeste du projet associe-t-il chaque fichier à une empreinte de son contenu ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/project_state.py",
+        "type": "function",
+        "name": "build_manifest"
+      }
+    ]
+  },
+  {
+    "id": "rag_015",
+    "question": "Comment CodeAgent détermine-t-il quels fichiers ont été ajoutés, modifiés, supprimés ou laissés inchangés ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/project_state.py",
+        "type": "function",
+        "name": "compare_manifests"
+      }
+    ]
+  },
+  {
+    "id": "rag_016",
+    "question": "Comment les questions et réponses précédentes sont-elles enregistrées dans l'historique d'analyse ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/history.py",
+        "type": "function",
+        "name": "save_analysis"
+      }
+    ]
+  },
+  {
+    "id": "rag_017",
+    "question": "Comment CodeAgent génère-t-il un dossier mémoire unique pour un projet donné ?",
+    "expected_sources": [
+      {
+        "file": "app/utils/paths.py",
+        "type": "function",
+        "name": "project_memory_dir"
+      }
+    ]
+  },
+  {
+    "id": "rag_018",
+    "question": "Comment une question est-elle normalisée et transformée en tokens pour le reranking lexical ?",
+    "expected_sources": [
+      {
+        "file": "app/retrieval/faiss_retriever.py",
+        "type": "function",
+        "name": "tokenize"
+      }
+    ]
+  },
+  {
+    "id": "rag_019",
+    "question": "Comment le score de reranking lexical d'un chunk est-il calculé ?",
+    "expected_sources": [
+      {
+        "file": "app/retrieval/faiss_retriever.py",
+        "type": "function",
+        "name": "rerank_score"
+      }
+    ]
+  },
+  {
+    "id": "rag_020",
+    "question": "Comment la recherche combine-t-elle les candidats FAISS avec le reranking lexical avant de retourner les meilleurs chunks ?",
+    "expected_sources": [
+      {
+        "file": "app/retrieval/faiss_retriever.py",
+        "type": "class",
+        "name": "FaissRetriever"
+      },
+      {
+        "file": "app/retrieval/faiss_retriever.py",
+        "type": "function",
+        "name": "rerank_score"
+      }
+    ]
+  },
+  {
+    "id": "rag_021",
+    "question": "Comment les références fichier et lignes sont-elles formatées dans la liste des sources d'une réponse ?",
+    "expected_sources": [
+      {
+        "file": "app/rag/prompt.py",
+        "type": "function",
+        "name": "format_sources"
+      }
+    ]
+  },
+  {
+    "id": "rag_022",
+    "question": "Comment plusieurs chunks sont-ils assemblés pour former le contexte envoyé au RAG ?",
+    "expected_sources": [
+      {
+        "file": "app/rag/prompt.py",
+        "type": "function",
+        "name": "build_context"
+      },
+      {
+        "file": "app/rag/prompt.py",
+        "type": "function",
+        "name": "format_chunk"
+      }
+    ]
+  },
+  {
+    "id": "rag_023",
+    "question": "Comment le prompt final combine-t-il le contexte récupéré et la question utilisateur ?",
+    "expected_sources": [
+      {
+        "file": "app/rag/prompt.py",
+        "type": "function",
+        "name": "build_prompt"
+      },
+      {
+        "file": "app/rag/prompt.py",
+        "type": "function",
+        "name": "build_context"
+      }
+    ]
+  },
+  {
+    "id": "rag_024",
+    "question": "Comment le pipeline RAG récupère-t-il les chunks, appelle-t-il le LLM et ajoute-t-il les sources à la réponse ?",
+    "expected_sources": [
+      {
+        "file": "app/rag/pipeline.py",
+        "type": "class",
+        "name": "RAGPipeline"
+      },
+      {
+        "file": "app/rag/prompt.py",
+        "type": "function",
+        "name": "build_prompt"
+      },
+      {
+        "file": "app/rag/prompt.py",
+        "type": "function",
+        "name": "format_sources"
+      }
+    ]
+  },
+  {
+    "id": "rag_025",
+    "question": "Comment le LLM local envoie-t-il une requête à Ollama et récupère-t-il les statistiques de tokens ?",
+    "expected_sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "class",
+        "name": "LocalLLM"
+      }
+    ]
+  }
+]
