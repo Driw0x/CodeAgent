@@ -1,5 +1,8 @@
-# CodeAgent project memory
+# CodeAgent memory
 data/memory/
+
+# Test fixture
+benchmarks/rag/fixture
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

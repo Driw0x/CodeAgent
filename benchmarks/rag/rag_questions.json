@@ -242,7 +242,7 @@
   },
   {
     "id": "rag_022",
-    "question": "Comment plusieurs chunks sont-ils assemblés pour former le contexte envoyé au RAG ?",
+    "question": "Comment chaque chunk est-il formaté puis comment plusieurs chunks sont-ils assemblés pour former le contexte envoyé au RAG ?",
     "expected_sources": [
       {
         "file": "app/rag/prompt.py",
@@ -264,11 +264,6 @@
         "file": "app/rag/prompt.py",
         "type": "function",
         "name": "build_prompt"
-      },
-      {
-        "file": "app/rag/prompt.py",
-        "type": "function",
-        "name": "build_context"
       }
     ]
   },
@@ -280,16 +275,6 @@
         "file": "app/rag/pipeline.py",
         "type": "class",
         "name": "RAGPipeline"
-      },
-      {
-        "file": "app/rag/prompt.py",
-        "type": "function",
-        "name": "build_prompt"
-      },
-      {
-        "file": "app/rag/prompt.py",
-        "type": "function",
-        "name": "format_sources"
       }
     ]
   },

@@ -1,0 +1,177 @@
+{
+  "summary": {
+    "questions": 12,
+    "success": 10,
+    "success_rate": 0.8333333333333334,
+    "missing_citations": 0,
+    "invalid_citations": 0,
+    "average_response_time": 3.915625291672768,
+    "total_time": 47.16074600000866
+  },
+  "results": [
+    {
+      "id": "ground_001",
+      "category": "answerable",
+      "question": "Comment CodeAgent vérifie-t-il la cohérence entre l'index FAISS chargé et les chunks sauvegardés ?",
+      "answer": "CodeAgent vérifie la cohérence entre l'index FAISS chargé et les chunks sauvegardés en comparant le nombre total de vecteurs dans l'index (`index.ntotal`) avec le nombre de chunks (`len(chunks)`). Si ces deux nombres ne correspondent pas, une exception `ValueError` est levée, indiquant un désaccord entre l'index et les chunks [S1].",
+      "citations": [
+        1
+      ],
+      "has_citations": true,
+      "valid_citations": true,
+      "abstention": false,
+      "success": true,
+      "response_time": 4.477981900039595
+    },
+    {
+      "id": "ground_002",
+      "category": "answerable",
+      "question": "Comment CodeAgent distingue-t-il les fichiers ajoutés, modifiés, supprimés et inchangés ?",
+      "answer": "CodeAgent distingue les fichiers ajoutés, modifiés, supprimés et inchangés en utilisant des opérations sur des ensembles de fichiers. Il compare deux dictionnaires représentant les états précédents et actuels des fichiers. Les fichiers ajoutés sont ceux présents dans l'état actuel mais pas dans l'état précédent [S1]. Les fichiers modifiés sont identifiés en comparant les contenus des fichiers communs aux deux états [S1]. Les fichiers supprimés sont ceux présents dans l'état précédent mais pas dans l'état actuel [S1]. Enfin, les fichiers inchangés sont ceux qui sont présents dans les deux états et dont le contenu n'a pas changé [S1].",
+      "citations": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "has_citations": true,
+      "valid_citations": true,
+      "abstention": false,
+      "success": true,
+      "response_time": 5.595832800026983
+    },
+    {
+      "id": "ground_003",
+      "category": "answerable",
+      "question": "Comment un dossier mémoire unique est-il construit pour chaque projet ?",
+      "answer": "Un dossier mémoire unique est construit pour chaque projet en utilisant une combinaison du nom du projet et d'un identifiant généré à partir du chemin du projet. L'identifiant est créé en prenant les 8 premiers caractères du hash SHA-256 du chemin du projet encodé en UTF-8 [S1]. Ce processus garantit que chaque dossier mémoire est unique, même si plusieurs projets partagent le même nom.",
+      "citations": [
+        1
+      ],
+      "has_citations": true,
+      "valid_citations": true,
+      "abstention": false,
+      "success": true,
+      "response_time": 4.11257920000935
+    },
+    {
+      "id": "ground_004",
+      "category": "answerable",
+      "question": "Comment le LLM local envoie-t-il une requête à Ollama et récupère-t-il les statistiques de tokens ?",
+      "answer": "Le LLM local envoie une requête à Ollama en utilisant la méthode `generate` de la classe `LocalLLM`. Cette méthode construit un payload contenant les informations nécessaires telles que le modèle, le prompt, la température, la graine et le nombre de prédictions. Elle utilise ensuite la bibliothèque `request` pour envoyer une requête POST à l'URL de base de Ollama avec le payload encodé en JSON [S1].\n\nAprès avoir reçu une réponse de Ollama, la méthode extrait les statistiques de tokens à partir de la réponse JSON. Elle récupère le nombre de tokens du prompt (`prompt_eval_count`) et le nombre de tokens de la complétion (`eval_count`). Ces statistiques sont ensuite stockées dans l'attribut `last_stats` de l'instance de `LocalLLM` [S1].",
+      "citations": [
+        1,
+        1
+      ],
+      "has_citations": true,
+      "valid_citations": true,
+      "abstention": false,
+      "success": true,
+      "response_time": 6.307772300031502
+    },
+    {
+      "id": "ground_005",
+      "category": "partial",
+      "question": "Comment les analyses sont-elles enregistrées dans l'historique et pendant combien de temps sont-elles conservées ?",
+      "answer": "Les analyses sont enregistrées dans un fichier texte dans le répertoire spécifié par le paramètre `directory`. Chaque entrée d'analyse est stockée sous forme de ligne JSON contenant un horodatage, une question et une réponse [S1]. Concernant la durée de conservation, le code ne fournit aucune information sur la gestion des anciennes entrées ou sur une éventuelle expiration des analyses. Je ne peux pas déterminer le reste à partir des sources disponibles.",
+      "citations": [
+        1
+      ],
+      "has_citations": true,
+      "valid_citations": true,
+      "abstention": true,
+      "success": true,
+      "response_time": 4.353885099990293
+    },
+    {
+      "id": "ground_006",
+      "category": "partial",
+      "question": "Quel texte représente un chunk pour son embedding et pourquoi ce format améliore-t-il les performances du retrieval ?",
+      "answer": "Un chunk pour son embedding est représenté par le texte généré par la fonction `chunk_embedding_text` dans le fichier `app/memory/embeddings.py` [S1]. Ce format améliore les performances du retrieval en incluant des métadonnées telles que le nom du fichier, le type et le nom du chunk, ainsi que le contenu du chunk lui-même. Ces informations supplémentaires permettent une meilleure contextualisation et une plus grande précision lors de la recherche de correspondances, ce qui peut conduire à des résultats de retrieval plus pertinents.",
+      "citations": [
+        1
+      ],
+      "has_citations": true,
+      "valid_citations": true,
+      "abstention": false,
+      "success": false,
+      "response_time": 4.534817599982489
+    },
+    {
+      "id": "ground_007",
+      "category": "partial",
+      "question": "Comment le prompt combine-t-il le contexte et la question utilisateur, et quelle température de génération est utilisée ?",
+      "answer": "Le prompt combine le contexte et la question utilisateur en les plaçant dans une structure spécifique où le contexte est présenté en premier, suivi de la question [S1]. Cependant, la température de génération n'est pas mentionnée ou utilisée dans le code fourni. Je ne peux pas déterminer le reste à partir des sources disponibles.",
+      "citations": [
+        1
+      ],
+      "has_citations": true,
+      "valid_citations": true,
+      "abstention": true,
+      "success": true,
+      "response_time": 3.695388099993579
+    },
+    {
+      "id": "ground_008",
+      "category": "partial",
+      "question": "Comment l'index est-il mis à jour lorsque les fichiers changent et cette opération est-elle parallélisée sur le GPU ?",
+      "answer": "Lorsque les fichiers changent, l'index est mis à jour en reconstruisant l'index avec les vecteurs des chunks non modifiés et en ajoutant les vecteurs des nouveaux chunks. Cette opération n'est pas parallélisée sur le GPU [S1].",
+      "citations": [
+        1
+      ],
+      "has_citations": true,
+      "valid_citations": true,
+      "abstention": false,
+      "success": false,
+      "response_time": 3.526599599979818
+    },
+    {
+      "id": "ground_009",
+      "category": "unanswerable",
+      "question": "Quel fournisseur cloud est utilisé pour analyser les dépôts distants ?",
+      "answer": "Je ne peux pas déterminer le fournisseur cloud utilisé pour analyser les dépôts distants à partir des sources disponibles.",
+      "citations": [],
+      "has_citations": false,
+      "valid_citations": true,
+      "abstention": true,
+      "success": true,
+      "response_time": 2.745396999991499
+    },
+    {
+      "id": "ground_010",
+      "category": "unanswerable",
+      "question": "Sur quel service distant les manifestes de projets sont-ils sauvegardés ?",
+      "answer": "Je ne peux pas déterminer le reste à partir des sources disponibles.",
+      "citations": [],
+      "has_citations": false,
+      "valid_citations": true,
+      "abstention": true,
+      "success": true,
+      "response_time": 2.50444210000569
+    },
+    {
+      "id": "ground_011",
+      "category": "unanswerable",
+      "question": "Quel pourcentage d'hallucinations est éliminé grâce au formatage des citations ?",
+      "answer": "Je ne peux pas déterminer le reste à partir des sources disponibles.",
+      "citations": [],
+      "has_citations": false,
+      "valid_citations": true,
+      "abstention": true,
+      "success": true,
+      "response_time": 2.5284639000310563
+    },
+    {
+      "id": "ground_012",
+      "category": "unanswerable",
+      "question": "Quel score de satisfaction utilisateur a été mesuré en production pour le pipeline RAG ?",
+      "answer": "Je ne peux pas déterminer le reste à partir des sources disponibles.",
+      "citations": [],
+      "has_citations": false,
+      "valid_citations": true,
+      "abstention": true,
+      "success": true,
+      "response_time": 2.6043438999913633
+    }
+  ]
+}

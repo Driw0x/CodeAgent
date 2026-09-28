@@ -1,0 +1,170 @@
+[
+  {
+    "id": "final_001",
+    "category": "answerable",
+    "question": "Avec quel encodage le contenu d'un fichier source est-il lu ?",
+    "expected_sources": [
+      {
+        "file": "app/parser/file_loader.py",
+        "type": "function",
+        "name": "read"
+      }
+    ]
+  },
+  {
+    "id": "final_002",
+    "category": "answerable",
+    "question": "Comment le parcours d'un projet évite-t-il de charger des fichiers qui ne correspondent pas au langage attendu ?",
+    "expected_sources": [
+      {
+        "file": "app/parser/file_loader.py",
+        "type": "function",
+        "name": "read_dir"
+      }
+    ]
+  },
+  {
+    "id": "final_003",
+    "category": "answerable",
+    "question": "Quelles informations de position dans le fichier source sont conservées lors de la création d'un chunk AST ?",
+    "expected_sources": [
+      {
+        "file": "app/parser/chunker.py",
+        "type": "function",
+        "name": "chunking"
+      }
+    ]
+  },
+  {
+    "id": "final_004",
+    "category": "answerable",
+    "question": "Quels fichiers doivent être présents pour que CodeAgent considère qu'un index persistant existe ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/vector_store.py",
+        "type": "function",
+        "name": "index_exists"
+      }
+    ]
+  },
+  {
+    "id": "final_005",
+    "category": "answerable",
+    "question": "Que se passe-t-il au chargement si le nombre de vecteurs FAISS ne correspond pas au nombre de chunks ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/vector_store.py",
+        "type": "function",
+        "name": "load_index"
+      }
+    ]
+  },
+  {
+    "id": "final_006",
+    "category": "answerable",
+    "question": "Comment un chemin de fichier absolu est-il transformé en chemin relatif utilisé dans l'état du projet ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/project_state.py",
+        "type": "function",
+        "name": "project_relative_path"
+      }
+    ]
+  },
+  {
+    "id": "final_007",
+    "category": "answerable",
+    "question": "Quelle partie du hash du chemin du projet est utilisée pour construire l'identifiant de son dossier mémoire ?",
+    "expected_sources": [
+      {
+        "file": "app/utils/paths.py",
+        "type": "function",
+        "name": "project_memory_dir"
+      }
+    ]
+  },
+  {
+    "id": "final_008",
+    "category": "answerable",
+    "question": "Quelles statistiques de tokens sont mémorisées après une génération du LLM local ?",
+    "expected_sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "class",
+        "name": "LocalLLM"
+      }
+    ]
+  },
+  {
+    "id": "final_009",
+    "category": "partial",
+    "question": "Comment l'index FAISS est-il construit et cette construction utilise-t-elle une accélération GPU ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/vector_store.py",
+        "type": "function",
+        "name": "build_index"
+      }
+    ]
+  },
+  {
+    "id": "final_010",
+    "category": "partial",
+    "question": "Quelles informations sont enregistrées dans une entrée d'historique et existe-t-il une durée maximale de conservation ?",
+    "expected_sources": [
+      {
+        "file": "app/memory/history.py",
+        "type": "function",
+        "name": "save_analysis"
+      }
+    ]
+  },
+  {
+    "id": "final_011",
+    "category": "partial",
+    "question": "Comment les chunks sont-ils sélectionnés lorsque la taille maximale du contexte est atteinte et pourquoi cette limite précise a-t-elle été choisie ?",
+    "expected_sources": [
+      {
+        "file": "app/rag/prompt.py",
+        "type": "function",
+        "name": "select_context_chunks"
+      }
+    ]
+  },
+  {
+    "id": "final_012",
+    "category": "partial",
+    "question": "Comment LocalLLM communique-t-il avec Ollama et combien de nouvelles tentatives automatiques sont effectuées si la requête échoue ?",
+    "expected_sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "class",
+        "name": "LocalLLM"
+      }
+    ]
+  },
+  {
+    "id": "final_013",
+    "category": "unanswerable",
+    "question": "Quelle base de données vectorielle distante est utilisée en production par CodeAgent ?",
+    "expected_sources": []
+  },
+  {
+    "id": "final_014",
+    "category": "unanswerable",
+    "question": "Quel service de télémétrie collecte les requêtes des utilisateurs de CodeAgent ?",
+    "expected_sources": []
+  },
+  {
+    "id": "final_015",
+    "category": "unanswerable",
+    "question": "Quel SLA de latence est garanti pour les réponses de CodeAgent en production ?",
+    "expected_sources": []
+  },
+  {
+    "id": "final_016",
+    "category": "unanswerable",
+    "question": "Combien d'utilisateurs actifs utilisent actuellement CodeAgent en production ?",
+    "expected_sources": []
+  }
+]

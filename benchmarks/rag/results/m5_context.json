@@ -1,0 +1,4512 @@
+{
+  "created_at": "2026-09-27T20:49:00.983854+00:00",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "question_count": 25,
+  "chunk_count": 133,
+  "fixture": "benchmarks/rag/fixture",
+  "pipeline": "M5 retrieval + context selection",
+  "aggregate": {
+    "final": {
+      "hit@1": 0.36,
+      "recall@1": 0.34,
+      "precision@1": 0.36,
+      "hit@3": 0.64,
+      "recall@3": 0.62,
+      "precision@3": 0.22666666666666666,
+      "hit@5": 0.84,
+      "recall@5": 0.82,
+      "precision@5": 0.18400000000000002,
+      "mrr@5": 0.544
+    },
+    "context": {
+      "hit@1": 0.36,
+      "recall@1": 0.34,
+      "precision@1": 0.36,
+      "hit@3": 0.64,
+      "recall@3": 0.62,
+      "precision@3": 0.22666666666666666,
+      "hit@5": 0.84,
+      "recall@5": 0.82,
+      "precision@5": 0.18400000000000002,
+      "mrr@5": 0.544,
+      "chunk_count": 5.0,
+      "context_chars": 2389.36,
+      "dropped_chunks": 0.0,
+      "dropped_relevant": 0.0
+    },
+    "total_dropped_relevant": 0,
+    "diagnosis": {
+      "ok": 21,
+      "candidate_retrieval": 3,
+      "reranking": 1,
+      "context_selection": 0
+    }
+  },
+  "results": [
+    {
+      "id": "rag_001",
+      "question": "Comment CodeAgent lit-il le contenu d'un fichier source ?",
+      "expected_sources": [
+        {
+          "file": "app/parser/file_loader.py",
+          "type": "function",
+          "name": "read"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.3800928592681885,
+            "lexical_score": 7.0,
+            "dense_rank": 3,
+            "lexical_rank": 4,
+            "hybrid_score": 0.03149801587301587,
+            "rerank_score": 9.0,
+            "final_score": 0.03225806451612903
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 0.9802781939506531,
+            "lexical_score": 7.0,
+            "dense_rank": 1,
+            "lexical_rank": 5,
+            "hybrid_score": 0.03177805800756621,
+            "rerank_score": 6.0,
+            "final_score": 0.03177805800756621
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_sources",
+            "distance": null,
+            "lexical_score": 7.75,
+            "dense_rank": null,
+            "lexical_rank": 3,
+            "hybrid_score": 0.015873015873015872,
+            "rerank_score": 9.75,
+            "final_score": 0.031099324975891997
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/__init__.py",
+            "type": "import_from",
+            "name": "format_sources",
+            "distance": 1.6171081066131592,
+            "lexical_score": 7.75,
+            "dense_rank": 25,
+            "lexical_rank": 1,
+            "hybrid_score": 0.02815814850530376,
+            "rerank_score": 4.75,
+            "final_score": 0.031024531024531024
+          },
+          {
+            "rank": 5,
+            "file": "app/llm/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.5792522430419922,
+            "lexical_score": 4.5,
+            "dense_rank": 13,
+            "lexical_rank": 18,
+            "hybrid_score": 0.02651914295749912,
+            "rerank_score": 3.5,
+            "final_score": 0.030117753623188408
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.3800928592681885,
+            "lexical_score": 7.0,
+            "dense_rank": 3,
+            "lexical_rank": 4,
+            "hybrid_score": 0.03149801587301587,
+            "rerank_score": 9.0,
+            "final_score": 0.03225806451612903
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 0.9802781939506531,
+            "lexical_score": 7.0,
+            "dense_rank": 1,
+            "lexical_rank": 5,
+            "hybrid_score": 0.03177805800756621,
+            "rerank_score": 6.0,
+            "final_score": 0.03177805800756621
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_sources",
+            "distance": null,
+            "lexical_score": 7.75,
+            "dense_rank": null,
+            "lexical_rank": 3,
+            "hybrid_score": 0.015873015873015872,
+            "rerank_score": 9.75,
+            "final_score": 0.031099324975891997
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/__init__.py",
+            "type": "import_from",
+            "name": "format_sources",
+            "distance": 1.6171081066131592,
+            "lexical_score": 7.75,
+            "dense_rank": 25,
+            "lexical_rank": 1,
+            "hybrid_score": 0.02815814850530376,
+            "rerank_score": 4.75,
+            "final_score": 0.031024531024531024
+          },
+          {
+            "rank": 5,
+            "file": "app/llm/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.5792522430419922,
+            "lexical_score": 4.5,
+            "dense_rank": 13,
+            "lexical_rank": 18,
+            "hybrid_score": 0.02651914295749912,
+            "rerank_score": 3.5,
+            "final_score": 0.030117753623188408
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0,
+          "chunk_count": 5,
+          "context_chars": 1413,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_002",
+      "question": "Comment CodeAgent parcourt-il récursivement un projet pour charger les fichiers Python ?",
+      "expected_sources": [
+        {
+          "file": "app/parser/file_loader.py",
+          "type": "function",
+          "name": "read_dir"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.2567139863967896,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 2,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.03278688524590164
+          },
+          {
+            "rank": 2,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read_dir",
+            "distance": 1.281870722770691,
+            "lexical_score": 4.222222222222222,
+            "dense_rank": 4,
+            "lexical_rank": null,
+            "hybrid_score": 0.015625,
+            "rerank_score": 6.222222222222222,
+            "final_score": 0.031054405392392875
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.0429229736328125,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 1,
+            "lexical_rank": 4,
+            "hybrid_score": 0.032018442622950824,
+            "rerank_score": 4.333333333333333,
+            "final_score": 0.031054405392392875
+          },
+          {
+            "rank": 4,
+            "file": "app/parser/variable.py",
+            "type": "variable",
+            "name": "EXTENSIONS",
+            "distance": 1.2845277786254883,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 5,
+            "lexical_rank": 2,
+            "hybrid_score": 0.0315136476426799,
+            "rerank_score": 4.333333333333333,
+            "final_score": 0.03057889822595705
+          },
+          {
+            "rank": 5,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "parse_args",
+            "distance": 1.3045763969421387,
+            "lexical_score": 4.222222222222222,
+            "dense_rank": 7,
+            "lexical_rank": null,
+            "hybrid_score": 0.014925373134328358,
+            "rerank_score": 6.222222222222222,
+            "final_score": 0.03036576949620428
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.2567139863967896,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 2,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.03278688524590164
+          },
+          {
+            "rank": 2,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read_dir",
+            "distance": 1.281870722770691,
+            "lexical_score": 4.222222222222222,
+            "dense_rank": 4,
+            "lexical_rank": null,
+            "hybrid_score": 0.015625,
+            "rerank_score": 6.222222222222222,
+            "final_score": 0.031054405392392875
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.0429229736328125,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 1,
+            "lexical_rank": 4,
+            "hybrid_score": 0.032018442622950824,
+            "rerank_score": 4.333333333333333,
+            "final_score": 0.031054405392392875
+          },
+          {
+            "rank": 4,
+            "file": "app/parser/variable.py",
+            "type": "variable",
+            "name": "EXTENSIONS",
+            "distance": 1.2845277786254883,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 5,
+            "lexical_rank": 2,
+            "hybrid_score": 0.0315136476426799,
+            "rerank_score": 4.333333333333333,
+            "final_score": 0.03057889822595705
+          },
+          {
+            "rank": 5,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "parse_args",
+            "distance": 1.3045763969421387,
+            "lexical_score": 4.222222222222222,
+            "dense_rank": 7,
+            "lexical_rank": null,
+            "hybrid_score": 0.014925373134328358,
+            "rerank_score": 6.222222222222222,
+            "final_score": 0.03036576949620428
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5,
+          "chunk_count": 5,
+          "context_chars": 2147,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_003",
+      "question": "Quels dossiers et fichiers sont ignorés pendant le chargement du projet ?",
+      "expected_sources": [
+        {
+          "file": "app/parser/variable.py",
+          "type": "variable",
+          "name": "IGNORED_DIRS"
+        },
+        {
+          "file": "app/parser/variable.py",
+          "type": "variable",
+          "name": "IGNORED_FILES"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.7346335649490356,
+            "lexical_score": 1.4285714285714284,
+            "dense_rank": 11,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03047794966520434,
+            "rerank_score": 3.4285714285714284,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read_dir",
+            "distance": 1.5547224283218384,
+            "lexical_score": 0.0,
+            "dense_rank": 2,
+            "lexical_rank": null,
+            "hybrid_score": 0.016129032258064516,
+            "rerank_score": 2.0,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.2599818706512451,
+            "lexical_score": 1.4285714285714284,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 0.4285714285714284,
+            "final_score": 0.030679156908665108
+          },
+          {
+            "rank": 4,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "rerank_score",
+            "distance": 1.7725683450698853,
+            "lexical_score": 0.0,
+            "dense_rank": 14,
+            "lexical_rank": null,
+            "hybrid_score": 0.013513513513513514,
+            "rerank_score": 2.0,
+            "final_score": 0.029386529386529386
+          },
+          {
+            "rank": 5,
+            "file": "app/parser/variable.py",
+            "type": "variable",
+            "name": "IGNORED_FILES",
+            "distance": 1.5841724872589111,
+            "lexical_score": 0.0,
+            "dense_rank": 5,
+            "lexical_rank": null,
+            "hybrid_score": 0.015384615384615385,
+            "rerank_score": -1.0,
+            "final_score": 0.029236022193768675
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 1.0,
+          "recall@5": 0.5,
+          "precision@5": 0.2,
+          "mrr@5": 0.2
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.7346335649490356,
+            "lexical_score": 1.4285714285714284,
+            "dense_rank": 11,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03047794966520434,
+            "rerank_score": 3.4285714285714284,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read_dir",
+            "distance": 1.5547224283218384,
+            "lexical_score": 0.0,
+            "dense_rank": 2,
+            "lexical_rank": null,
+            "hybrid_score": 0.016129032258064516,
+            "rerank_score": 2.0,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.2599818706512451,
+            "lexical_score": 1.4285714285714284,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 0.4285714285714284,
+            "final_score": 0.030679156908665108
+          },
+          {
+            "rank": 4,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "rerank_score",
+            "distance": 1.7725683450698853,
+            "lexical_score": 0.0,
+            "dense_rank": 14,
+            "lexical_rank": null,
+            "hybrid_score": 0.013513513513513514,
+            "rerank_score": 2.0,
+            "final_score": 0.029386529386529386
+          },
+          {
+            "rank": 5,
+            "file": "app/parser/variable.py",
+            "type": "variable",
+            "name": "IGNORED_FILES",
+            "distance": 1.5841724872589111,
+            "lexical_score": 0.0,
+            "dense_rank": 5,
+            "lexical_rank": null,
+            "hybrid_score": 0.015384615384615385,
+            "rerank_score": -1.0,
+            "final_score": 0.029236022193768675
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 1.0,
+          "recall@5": 0.5,
+          "precision@5": 0.2,
+          "mrr@5": 0.2,
+          "chunk_count": 5,
+          "context_chars": 1957,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_004",
+      "question": "Comment les noms de variables sont-ils extraits des cibles AST, y compris les tuples et attributs ?",
+      "expected_sources": [
+        {
+          "file": "app/parser/chunker.py",
+          "type": "function",
+          "name": "extract_names"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/variable.py",
+            "type": "variable",
+            "name": "EXTENSIONS",
+            "distance": 1.4377410411834717,
+            "lexical_score": 2.111111111111111,
+            "dense_rank": 2,
+            "lexical_rank": 4,
+            "hybrid_score": 0.031754032258064516,
+            "rerank_score": 1.1111111111111112,
+            "final_score": 0.031099324975891997
+          },
+          {
+            "rank": 2,
+            "file": "app/parser/chunker.py",
+            "type": "function",
+            "name": "chunking",
+            "distance": null,
+            "lexical_score": 2.2222222222222223,
+            "dense_rank": null,
+            "lexical_rank": 2,
+            "hybrid_score": 0.016129032258064516,
+            "rerank_score": 4.222222222222222,
+            "final_score": 0.030886196246139225
+          },
+          {
+            "rank": 3,
+            "file": "app/parser/variable.py",
+            "type": "variable",
+            "name": "IGNORED_FILES",
+            "distance": 1.5451254844665527,
+            "lexical_score": 2.111111111111111,
+            "dense_rank": 6,
+            "lexical_rank": 6,
+            "hybrid_score": 0.030303030303030304,
+            "rerank_score": 1.1111111111111112,
+            "final_score": 0.030621785881252923
+          },
+          {
+            "rank": 4,
+            "file": "app/parser/chunker.py",
+            "type": "function",
+            "name": "extract_names",
+            "distance": null,
+            "lexical_score": 2.2222222222222223,
+            "dense_rank": null,
+            "lexical_rank": 3,
+            "hybrid_score": 0.015873015873015872,
+            "rerank_score": 4.222222222222222,
+            "final_score": 0.0304147465437788
+          },
+          {
+            "rank": 5,
+            "file": "app/parser/variable.py",
+            "type": "variable",
+            "name": "IGNORED_DIRS",
+            "distance": 1.6085023880004883,
+            "lexical_score": 2.111111111111111,
+            "dense_rank": 9,
+            "lexical_rank": 5,
+            "hybrid_score": 0.029877369007803793,
+            "rerank_score": 1.1111111111111112,
+            "final_score": 0.030158730158730156
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.25
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/variable.py",
+            "type": "variable",
+            "name": "EXTENSIONS",
+            "distance": 1.4377410411834717,
+            "lexical_score": 2.111111111111111,
+            "dense_rank": 2,
+            "lexical_rank": 4,
+            "hybrid_score": 0.031754032258064516,
+            "rerank_score": 1.1111111111111112,
+            "final_score": 0.031099324975891997
+          },
+          {
+            "rank": 2,
+            "file": "app/parser/chunker.py",
+            "type": "function",
+            "name": "chunking",
+            "distance": null,
+            "lexical_score": 2.2222222222222223,
+            "dense_rank": null,
+            "lexical_rank": 2,
+            "hybrid_score": 0.016129032258064516,
+            "rerank_score": 4.222222222222222,
+            "final_score": 0.030886196246139225
+          },
+          {
+            "rank": 3,
+            "file": "app/parser/variable.py",
+            "type": "variable",
+            "name": "IGNORED_FILES",
+            "distance": 1.5451254844665527,
+            "lexical_score": 2.111111111111111,
+            "dense_rank": 6,
+            "lexical_rank": 6,
+            "hybrid_score": 0.030303030303030304,
+            "rerank_score": 1.1111111111111112,
+            "final_score": 0.030621785881252923
+          },
+          {
+            "rank": 4,
+            "file": "app/parser/chunker.py",
+            "type": "function",
+            "name": "extract_names",
+            "distance": null,
+            "lexical_score": 2.2222222222222223,
+            "dense_rank": null,
+            "lexical_rank": 3,
+            "hybrid_score": 0.015873015873015872,
+            "rerank_score": 4.222222222222222,
+            "final_score": 0.0304147465437788
+          },
+          {
+            "rank": 5,
+            "file": "app/parser/variable.py",
+            "type": "variable",
+            "name": "IGNORED_DIRS",
+            "distance": 1.6085023880004883,
+            "lexical_score": 2.111111111111111,
+            "dense_rank": 9,
+            "lexical_rank": 5,
+            "hybrid_score": 0.029877369007803793,
+            "rerank_score": 1.1111111111111112,
+            "final_score": 0.030158730158730156
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.25,
+          "chunk_count": 5,
+          "context_chars": 3029,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_005",
+      "question": "Comment le code Python est-il découpé en chunks à partir de l'AST ?",
+      "expected_sources": [
+        {
+          "file": "app/parser/chunker.py",
+          "type": "function",
+          "name": "chunking"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.0861563682556152,
+            "lexical_score": 5.5,
+            "dense_rank": 10,
+            "lexical_rank": 2,
+            "hybrid_score": 0.0304147465437788,
+            "rerank_score": 7.5,
+            "final_score": 0.032018442622950824
+          },
+          {
+            "rank": 2,
+            "file": "app/parser/chunker.py",
+            "type": "function",
+            "name": "chunking",
+            "distance": 0.9680203199386597,
+            "lexical_score": 4.75,
+            "dense_rank": 3,
+            "lexical_rank": 8,
+            "hybrid_score": 0.03057889822595705,
+            "rerank_score": 6.75,
+            "final_score": 0.031746031746031744
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_chunk",
+            "distance": 1.1060996055603027,
+            "lexical_score": 5.5,
+            "dense_rank": 12,
+            "lexical_rank": 7,
+            "hybrid_score": 0.028814262023217248,
+            "rerank_score": 7.5,
+            "final_score": 0.031054405392392875
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.2037609815597534,
+            "lexical_score": 3.5,
+            "dense_rank": 18,
+            "lexical_rank": 12,
+            "hybrid_score": 0.026709401709401708,
+            "rerank_score": 5.5,
+            "final_score": 0.029709507042253523
+          },
+          {
+            "rank": 5,
+            "file": "app/parser/chunker.py",
+            "type": "import",
+            "name": "ast",
+            "distance": 0.9581205248832703,
+            "lexical_score": 5.5,
+            "dense_rank": 2,
+            "lexical_rank": 5,
+            "hybrid_score": 0.0315136476426799,
+            "rerank_score": 2.5,
+            "final_score": 0.02938045560996381
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.0861563682556152,
+            "lexical_score": 5.5,
+            "dense_rank": 10,
+            "lexical_rank": 2,
+            "hybrid_score": 0.0304147465437788,
+            "rerank_score": 7.5,
+            "final_score": 0.032018442622950824
+          },
+          {
+            "rank": 2,
+            "file": "app/parser/chunker.py",
+            "type": "function",
+            "name": "chunking",
+            "distance": 0.9680203199386597,
+            "lexical_score": 4.75,
+            "dense_rank": 3,
+            "lexical_rank": 8,
+            "hybrid_score": 0.03057889822595705,
+            "rerank_score": 6.75,
+            "final_score": 0.031746031746031744
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_chunk",
+            "distance": 1.1060996055603027,
+            "lexical_score": 5.5,
+            "dense_rank": 12,
+            "lexical_rank": 7,
+            "hybrid_score": 0.028814262023217248,
+            "rerank_score": 7.5,
+            "final_score": 0.031054405392392875
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.2037609815597534,
+            "lexical_score": 3.5,
+            "dense_rank": 18,
+            "lexical_rank": 12,
+            "hybrid_score": 0.026709401709401708,
+            "rerank_score": 5.5,
+            "final_score": 0.029709507042253523
+          },
+          {
+            "rank": 5,
+            "file": "app/parser/chunker.py",
+            "type": "import",
+            "name": "ast",
+            "distance": 0.9581205248832703,
+            "lexical_score": 5.5,
+            "dense_rank": 2,
+            "lexical_rank": 5,
+            "hybrid_score": 0.0315136476426799,
+            "rerank_score": 2.5,
+            "final_score": 0.02938045560996381
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5,
+          "chunk_count": 5,
+          "context_chars": 2969,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_006",
+      "question": "Comment les embeddings sont-ils calculés à partir d'une liste de textes ?",
+      "expected_sources": [
+        {
+          "file": "app/memory/embeddings.py",
+          "type": "function",
+          "name": "embeddings"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.4096980094909668,
+            "lexical_score": 4.666666666666666,
+            "dense_rank": 2,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 6.666666666666666,
+            "final_score": 0.03278688524590164
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "embeddings",
+            "distance": 1.4330556392669678,
+            "lexical_score": 4.666666666666666,
+            "dense_rank": 4,
+            "lexical_rank": 2,
+            "hybrid_score": 0.031754032258064516,
+            "rerank_score": 6.666666666666666,
+            "final_score": 0.03225806451612903
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": 1.625829815864563,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 13,
+            "lexical_rank": 7,
+            "hybrid_score": 0.02862400327131466,
+            "rerank_score": 5.333333333333333,
+            "final_score": 0.03036576949620428
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.4725720882415771,
+            "lexical_score": 1.6666666666666665,
+            "dense_rank": 7,
+            "lexical_rank": 9,
+            "hybrid_score": 0.029418126757516764,
+            "rerank_score": 3.6666666666666665,
+            "final_score": 0.030330882352941176
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "import_from",
+            "name": "embeddings",
+            "distance": 1.4299660921096802,
+            "lexical_score": 3.6666666666666665,
+            "dense_rank": 3,
+            "lexical_rank": 6,
+            "hybrid_score": 0.031024531024531024,
+            "rerank_score": 0.6666666666666665,
+            "final_score": 0.029571646010002173
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.4096980094909668,
+            "lexical_score": 4.666666666666666,
+            "dense_rank": 2,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 6.666666666666666,
+            "final_score": 0.03278688524590164
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "embeddings",
+            "distance": 1.4330556392669678,
+            "lexical_score": 4.666666666666666,
+            "dense_rank": 4,
+            "lexical_rank": 2,
+            "hybrid_score": 0.031754032258064516,
+            "rerank_score": 6.666666666666666,
+            "final_score": 0.03225806451612903
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": 1.625829815864563,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 13,
+            "lexical_rank": 7,
+            "hybrid_score": 0.02862400327131466,
+            "rerank_score": 5.333333333333333,
+            "final_score": 0.03036576949620428
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.4725720882415771,
+            "lexical_score": 1.6666666666666665,
+            "dense_rank": 7,
+            "lexical_rank": 9,
+            "hybrid_score": 0.029418126757516764,
+            "rerank_score": 3.6666666666666665,
+            "final_score": 0.030330882352941176
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "import_from",
+            "name": "embeddings",
+            "distance": 1.4299660921096802,
+            "lexical_score": 3.6666666666666665,
+            "dense_rank": 3,
+            "lexical_rank": 6,
+            "hybrid_score": 0.031024531024531024,
+            "rerank_score": 0.6666666666666665,
+            "final_score": 0.029571646010002173
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5,
+          "chunk_count": 5,
+          "context_chars": 1830,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_007",
+      "question": "Quel texte est construit pour représenter un chunk avant de calculer son embedding ?",
+      "expected_sources": [
+        {
+          "file": "app/memory/embeddings.py",
+          "type": "function",
+          "name": "chunk_embedding_text"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.2253656387329102,
+            "lexical_score": 7.222222222222222,
+            "dense_rank": 1,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03278688524590164,
+            "rerank_score": 9.222222222222221,
+            "final_score": 0.03278688524590164
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "embeddings",
+            "distance": 1.418875813484192,
+            "lexical_score": 4.111111111111111,
+            "dense_rank": 8,
+            "lexical_rank": 6,
+            "hybrid_score": 0.029857397504456328,
+            "rerank_score": 6.111111111111111,
+            "final_score": 0.03128054740957967
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/__init__.py",
+            "type": "import_from",
+            "name": "chunk_embedding_text",
+            "distance": 1.3398940563201904,
+            "lexical_score": 6.222222222222222,
+            "dense_rank": 2,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03225806451612903,
+            "rerank_score": 3.2222222222222223,
+            "final_score": 0.03128054740957967
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "import_from",
+            "name": "chunk_embedding_text",
+            "distance": 1.3647664785385132,
+            "lexical_score": 6.222222222222222,
+            "dense_rank": 4,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03149801587301587,
+            "rerank_score": 3.2222222222222223,
+            "final_score": 0.030798389007344232
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_chunk",
+            "distance": 1.5371614694595337,
+            "lexical_score": 3.111111111111111,
+            "dense_rank": 9,
+            "lexical_rank": 9,
+            "hybrid_score": 0.028985507246376812,
+            "rerank_score": 5.111111111111111,
+            "final_score": 0.03057889822595705
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.2253656387329102,
+            "lexical_score": 7.222222222222222,
+            "dense_rank": 1,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03278688524590164,
+            "rerank_score": 9.222222222222221,
+            "final_score": 0.03278688524590164
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "embeddings",
+            "distance": 1.418875813484192,
+            "lexical_score": 4.111111111111111,
+            "dense_rank": 8,
+            "lexical_rank": 6,
+            "hybrid_score": 0.029857397504456328,
+            "rerank_score": 6.111111111111111,
+            "final_score": 0.03128054740957967
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/__init__.py",
+            "type": "import_from",
+            "name": "chunk_embedding_text",
+            "distance": 1.3398940563201904,
+            "lexical_score": 6.222222222222222,
+            "dense_rank": 2,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03225806451612903,
+            "rerank_score": 3.2222222222222223,
+            "final_score": 0.03128054740957967
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "import_from",
+            "name": "chunk_embedding_text",
+            "distance": 1.3647664785385132,
+            "lexical_score": 6.222222222222222,
+            "dense_rank": 4,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03149801587301587,
+            "rerank_score": 3.2222222222222223,
+            "final_score": 0.030798389007344232
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_chunk",
+            "distance": 1.5371614694595337,
+            "lexical_score": 3.111111111111111,
+            "dense_rank": 9,
+            "lexical_rank": 9,
+            "hybrid_score": 0.028985507246376812,
+            "rerank_score": 5.111111111111111,
+            "final_score": 0.03057889822595705
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0,
+          "chunk_count": 5,
+          "context_chars": 1059,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_008",
+      "question": "Comment l'index FAISS initial est-il construit à partir des chunks du projet ?",
+      "expected_sources": [
+        {
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "build_index"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.3705079555511475,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "load_index",
+            "distance": 1.3804221153259277,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 2,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03200204813108039,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "save_index",
+            "distance": 1.4295923709869385,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 4,
+            "lexical_rank": 4,
+            "hybrid_score": 0.03125,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": 1.4539868831634521,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 6,
+            "lexical_rank": 5,
+            "hybrid_score": 0.030536130536130537,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.031009615384615385
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "index_exists",
+            "distance": 1.5280377864837646,
+            "lexical_score": 4.222222222222222,
+            "dense_rank": 10,
+            "lexical_rank": 7,
+            "hybrid_score": 0.029211087420042643,
+            "rerank_score": 6.222222222222222,
+            "final_score": 0.030536130536130537
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.3705079555511475,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "load_index",
+            "distance": 1.3804221153259277,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 2,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03200204813108039,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "save_index",
+            "distance": 1.4295923709869385,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 4,
+            "lexical_rank": 4,
+            "hybrid_score": 0.03125,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": 1.4539868831634521,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 6,
+            "lexical_rank": 5,
+            "hybrid_score": 0.030536130536130537,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.031009615384615385
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "index_exists",
+            "distance": 1.5280377864837646,
+            "lexical_score": 4.222222222222222,
+            "dense_rank": 10,
+            "lexical_rank": 7,
+            "hybrid_score": 0.029211087420042643,
+            "rerank_score": 6.222222222222222,
+            "final_score": 0.030536130536130537
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0,
+          "chunk_count": 5,
+          "context_chars": 2356,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_009",
+      "question": "Comment l'index FAISS est-il mis à jour lorsque certains fichiers ont changé ?",
+      "expected_sources": [
+        {
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "update_index"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "save_index",
+            "distance": 1.6731555461883545,
+            "lexical_score": 3.8181818181818183,
+            "dense_rank": 6,
+            "lexical_rank": 5,
+            "hybrid_score": 0.030536130536130537,
+            "rerank_score": 5.818181818181818,
+            "final_score": 0.03225806451612903
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "load_index",
+            "distance": 1.7317276000976562,
+            "lexical_score": 3.8181818181818183,
+            "dense_rank": 14,
+            "lexical_rank": 4,
+            "hybrid_score": 0.029138513513513514,
+            "rerank_score": 5.818181818181818,
+            "final_score": 0.030798389007344232
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "variable",
+            "name": "INDEX_FILE",
+            "distance": 1.540206789970398,
+            "lexical_score": 3.8181818181818183,
+            "dense_rank": 2,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03225806451612903,
+            "rerank_score": 2.8181818181818183,
+            "final_score": 0.030679156908665108
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.2620372772216797,
+            "lexical_score": 2.727272727272727,
+            "dense_rank": 1,
+            "lexical_rank": 15,
+            "hybrid_score": 0.029726775956284153,
+            "rerank_score": 1.727272727272727,
+            "final_score": 0.029957522915269395
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": 1.7485051155090332,
+            "lexical_score": 3.8181818181818183,
+            "dense_rank": 16,
+            "lexical_rank": 6,
+            "hybrid_score": 0.028309409888357256,
+            "rerank_score": 5.818181818181818,
+            "final_score": 0.029709507042253523
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.2
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "save_index",
+            "distance": 1.6731555461883545,
+            "lexical_score": 3.8181818181818183,
+            "dense_rank": 6,
+            "lexical_rank": 5,
+            "hybrid_score": 0.030536130536130537,
+            "rerank_score": 5.818181818181818,
+            "final_score": 0.03225806451612903
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "load_index",
+            "distance": 1.7317276000976562,
+            "lexical_score": 3.8181818181818183,
+            "dense_rank": 14,
+            "lexical_rank": 4,
+            "hybrid_score": 0.029138513513513514,
+            "rerank_score": 5.818181818181818,
+            "final_score": 0.030798389007344232
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "variable",
+            "name": "INDEX_FILE",
+            "distance": 1.540206789970398,
+            "lexical_score": 3.8181818181818183,
+            "dense_rank": 2,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03225806451612903,
+            "rerank_score": 2.8181818181818183,
+            "final_score": 0.030679156908665108
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.2620372772216797,
+            "lexical_score": 2.727272727272727,
+            "dense_rank": 1,
+            "lexical_rank": 15,
+            "hybrid_score": 0.029726775956284153,
+            "rerank_score": 1.727272727272727,
+            "final_score": 0.029957522915269395
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": 1.7485051155090332,
+            "lexical_score": 3.8181818181818183,
+            "dense_rank": 16,
+            "lexical_rank": 6,
+            "hybrid_score": 0.028309409888357256,
+            "rerank_score": 5.818181818181818,
+            "final_score": 0.029709507042253523
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.2,
+          "chunk_count": 5,
+          "context_chars": 2348,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_010",
+      "question": "Comment CodeAgent vérifie-t-il qu'un index persistant existe déjà sur disque ?",
+      "expected_sources": [
+        {
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "index_exists"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "index_exists",
+            "distance": 1.340813159942627,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 4,
+            "lexical_rank": 8,
+            "hybrid_score": 0.030330882352941176,
+            "rerank_score": 8.727272727272727,
+            "final_score": 0.031544957774465976
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/__init__.py",
+            "type": "import_from",
+            "name": "index_exists",
+            "distance": 1.3296034336090088,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 3,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03200204813108039,
+            "rerank_score": 3.7272727272727266,
+            "final_score": 0.030886196246139225
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "save_index",
+            "distance": 1.434004306793213,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 10,
+            "lexical_rank": 10,
+            "hybrid_score": 0.02857142857142857,
+            "rerank_score": 8.727272727272727,
+            "final_score": 0.030834914611005692
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "variable",
+            "name": "INDEX_FILE",
+            "distance": 1.290466547012329,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 2,
+            "lexical_rank": 6,
+            "hybrid_score": 0.03128054740957967,
+            "rerank_score": 5.727272727272727,
+            "final_score": 0.030834914611005692
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.5424067974090576,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 17,
+            "lexical_rank": 7,
+            "hybrid_score": 0.027912386121341344,
+            "rerank_score": 8.727272727272727,
+            "final_score": 0.030158730158730156
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "index_exists",
+            "distance": 1.340813159942627,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 4,
+            "lexical_rank": 8,
+            "hybrid_score": 0.030330882352941176,
+            "rerank_score": 8.727272727272727,
+            "final_score": 0.031544957774465976
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/__init__.py",
+            "type": "import_from",
+            "name": "index_exists",
+            "distance": 1.3296034336090088,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 3,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03200204813108039,
+            "rerank_score": 3.7272727272727266,
+            "final_score": 0.030886196246139225
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "save_index",
+            "distance": 1.434004306793213,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 10,
+            "lexical_rank": 10,
+            "hybrid_score": 0.02857142857142857,
+            "rerank_score": 8.727272727272727,
+            "final_score": 0.030834914611005692
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "variable",
+            "name": "INDEX_FILE",
+            "distance": 1.290466547012329,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 2,
+            "lexical_rank": 6,
+            "hybrid_score": 0.03128054740957967,
+            "rerank_score": 5.727272727272727,
+            "final_score": 0.030834914611005692
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.5424067974090576,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 17,
+            "lexical_rank": 7,
+            "hybrid_score": 0.027912386121341344,
+            "rerank_score": 8.727272727272727,
+            "final_score": 0.030158730158730156
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0,
+          "chunk_count": 5,
+          "context_chars": 1311,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_011",
+      "question": "Comment l'index FAISS et les chunks associés sont-ils sauvegardés sur disque ?",
+      "expected_sources": [
+        {
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "save_index"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "load_index",
+            "distance": 1.4382864236831665,
+            "lexical_score": 6.285714285714286,
+            "dense_rank": 1,
+            "lexical_rank": 3,
+            "hybrid_score": 0.032266458495966696,
+            "rerank_score": 8.285714285714285,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.4537618160247803,
+            "lexical_score": 6.285714285714286,
+            "dense_rank": 2,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03225806451612903,
+            "rerank_score": 8.285714285714285,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "class",
+            "name": "FaissRetriever",
+            "distance": 1.7297093868255615,
+            "lexical_score": 7.285714285714286,
+            "dense_rank": 17,
+            "lexical_rank": 1,
+            "hybrid_score": 0.02938045560996381,
+            "rerank_score": 9.285714285714285,
+            "final_score": 0.031544957774465976
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "save_index",
+            "distance": 1.5037744045257568,
+            "lexical_score": 6.285714285714286,
+            "dense_rank": 4,
+            "lexical_rank": 4,
+            "hybrid_score": 0.03125,
+            "rerank_score": 8.285714285714285,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": 1.5630003213882446,
+            "lexical_score": 6.285714285714286,
+            "dense_rank": 5,
+            "lexical_rank": 5,
+            "hybrid_score": 0.03076923076923077,
+            "rerank_score": 8.285714285714285,
+            "final_score": 0.031009615384615385
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.25
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "load_index",
+            "distance": 1.4382864236831665,
+            "lexical_score": 6.285714285714286,
+            "dense_rank": 1,
+            "lexical_rank": 3,
+            "hybrid_score": 0.032266458495966696,
+            "rerank_score": 8.285714285714285,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.4537618160247803,
+            "lexical_score": 6.285714285714286,
+            "dense_rank": 2,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03225806451612903,
+            "rerank_score": 8.285714285714285,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "class",
+            "name": "FaissRetriever",
+            "distance": 1.7297093868255615,
+            "lexical_score": 7.285714285714286,
+            "dense_rank": 17,
+            "lexical_rank": 1,
+            "hybrid_score": 0.02938045560996381,
+            "rerank_score": 9.285714285714285,
+            "final_score": 0.031544957774465976
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "save_index",
+            "distance": 1.5037744045257568,
+            "lexical_score": 6.285714285714286,
+            "dense_rank": 4,
+            "lexical_rank": 4,
+            "hybrid_score": 0.03125,
+            "rerank_score": 8.285714285714285,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": 1.5630003213882446,
+            "lexical_score": 6.285714285714286,
+            "dense_rank": 5,
+            "lexical_rank": 5,
+            "hybrid_score": 0.03076923076923077,
+            "rerank_score": 8.285714285714285,
+            "final_score": 0.031009615384615385
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.25,
+          "chunk_count": 5,
+          "context_chars": 3399,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_012",
+      "question": "Comment un index FAISS sauvegardé est-il rechargé et comment la cohérence avec les chunks est-elle vérifiée ?",
+      "expected_sources": [
+        {
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "load_index"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.479943871498108,
+            "lexical_score": 5.75,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 7.75,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "load_index",
+            "distance": 1.4854536056518555,
+            "lexical_score": 5.75,
+            "dense_rank": 2,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03200204813108039,
+            "rerank_score": 7.75,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "save_index",
+            "distance": 1.4932100772857666,
+            "lexical_score": 5.75,
+            "dense_rank": 3,
+            "lexical_rank": 4,
+            "hybrid_score": 0.03149801587301587,
+            "rerank_score": 7.75,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": 1.5338904857635498,
+            "lexical_score": 5.75,
+            "dense_rank": 6,
+            "lexical_rank": 5,
+            "hybrid_score": 0.030536130536130537,
+            "rerank_score": 7.75,
+            "final_score": 0.031009615384615385
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "index_exists",
+            "distance": 1.5696957111358643,
+            "lexical_score": 4.5,
+            "dense_rank": 8,
+            "lexical_rank": 7,
+            "hybrid_score": 0.029631255487269532,
+            "rerank_score": 6.5,
+            "final_score": 0.030303030303030304
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.479943871498108,
+            "lexical_score": 5.75,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 7.75,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "load_index",
+            "distance": 1.4854536056518555,
+            "lexical_score": 5.75,
+            "dense_rank": 2,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03200204813108039,
+            "rerank_score": 7.75,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "save_index",
+            "distance": 1.4932100772857666,
+            "lexical_score": 5.75,
+            "dense_rank": 3,
+            "lexical_rank": 4,
+            "hybrid_score": 0.03149801587301587,
+            "rerank_score": 7.75,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": 1.5338904857635498,
+            "lexical_score": 5.75,
+            "dense_rank": 6,
+            "lexical_rank": 5,
+            "hybrid_score": 0.030536130536130537,
+            "rerank_score": 7.75,
+            "final_score": 0.031009615384615385
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "index_exists",
+            "distance": 1.5696957111358643,
+            "lexical_score": 4.5,
+            "dense_rank": 8,
+            "lexical_rank": 7,
+            "hybrid_score": 0.029631255487269532,
+            "rerank_score": 6.5,
+            "final_score": 0.030303030303030304
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5,
+          "chunk_count": 5,
+          "context_chars": 2356,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_013",
+      "question": "Comment CodeAgent convertit-il un chemin de fichier en chemin relatif au projet ?",
+      "expected_sources": [
+        {
+          "file": "app/memory/project_state.py",
+          "type": "function",
+          "name": "project_relative_path"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.5090279579162598,
+            "lexical_score": 5.75,
+            "dense_rank": 5,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03177805800756621,
+            "rerank_score": 7.75,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "parse_args",
+            "distance": 1.5694785118103027,
+            "lexical_score": 5.75,
+            "dense_rank": 10,
+            "lexical_rank": 3,
+            "hybrid_score": 0.030158730158730156,
+            "rerank_score": 7.75,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.0913960933685303,
+            "lexical_score": 5.75,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 4.75,
+            "final_score": 0.031544957774465976
+          },
+          {
+            "rank": 4,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "tokenize",
+            "distance": 1.4994761943817139,
+            "lexical_score": 4.5,
+            "dense_rank": 3,
+            "lexical_rank": null,
+            "hybrid_score": 0.015873015873015872,
+            "rerank_score": 6.5,
+            "final_score": 0.030798389007344232
+          },
+          {
+            "rank": 5,
+            "file": "app/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.668671727180481,
+            "lexical_score": 4.5,
+            "dense_rank": 23,
+            "lexical_rank": 4,
+            "hybrid_score": 0.027673192771084338,
+            "rerank_score": 3.5,
+            "final_score": 0.03055037313432836
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "precision@5": 0.0,
+          "mrr@5": 0.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.5090279579162598,
+            "lexical_score": 5.75,
+            "dense_rank": 5,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03177805800756621,
+            "rerank_score": 7.75,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "parse_args",
+            "distance": 1.5694785118103027,
+            "lexical_score": 5.75,
+            "dense_rank": 10,
+            "lexical_rank": 3,
+            "hybrid_score": 0.030158730158730156,
+            "rerank_score": 7.75,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.0913960933685303,
+            "lexical_score": 5.75,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 4.75,
+            "final_score": 0.031544957774465976
+          },
+          {
+            "rank": 4,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "tokenize",
+            "distance": 1.4994761943817139,
+            "lexical_score": 4.5,
+            "dense_rank": 3,
+            "lexical_rank": null,
+            "hybrid_score": 0.015873015873015872,
+            "rerank_score": 6.5,
+            "final_score": 0.030798389007344232
+          },
+          {
+            "rank": 5,
+            "file": "app/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.668671727180481,
+            "lexical_score": 4.5,
+            "dense_rank": 23,
+            "lexical_rank": 4,
+            "hybrid_score": 0.027673192771084338,
+            "rerank_score": 3.5,
+            "final_score": 0.03055037313432836
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "precision@5": 0.0,
+          "mrr@5": 0.0,
+          "chunk_count": 5,
+          "context_chars": 2214,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "candidate_retrieval"
+      }
+    },
+    {
+      "id": "rag_014",
+      "question": "Comment le manifeste du projet associe-t-il chaque fichier à une empreinte de son contenu ?",
+      "expected_sources": [
+        {
+          "file": "app/memory/project_state.py",
+          "type": "function",
+          "name": "build_manifest"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.6575546264648438,
+            "lexical_score": 2.0,
+            "dense_rank": 3,
+            "lexical_rank": 1,
+            "hybrid_score": 0.032266458495966696,
+            "rerank_score": 4.0,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "parse_args",
+            "distance": 1.6914016008377075,
+            "lexical_score": 0.0,
+            "dense_rank": 4,
+            "lexical_rank": null,
+            "hybrid_score": 0.015625,
+            "rerank_score": 2.0,
+            "final_score": 0.031754032258064516
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.2116010189056396,
+            "lexical_score": 2.0,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 1.0,
+            "final_score": 0.030886196246139225
+          },
+          {
+            "rank": 4,
+            "file": "app/retrieval/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.6488683223724365,
+            "lexical_score": 0.0,
+            "dense_rank": 2,
+            "lexical_rank": null,
+            "hybrid_score": 0.016129032258064516,
+            "rerank_score": -1.0,
+            "final_score": 0.030158730158730156
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/project_state.py",
+            "type": "function",
+            "name": "manifest_exists",
+            "distance": 1.7335309982299805,
+            "lexical_score": 0.0,
+            "dense_rank": 11,
+            "lexical_rank": null,
+            "hybrid_score": 0.014084507042253521,
+            "rerank_score": 2.0,
+            "final_score": 0.029957522915269395
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "precision@5": 0.0,
+          "mrr@5": 0.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.6575546264648438,
+            "lexical_score": 2.0,
+            "dense_rank": 3,
+            "lexical_rank": 1,
+            "hybrid_score": 0.032266458495966696,
+            "rerank_score": 4.0,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "parse_args",
+            "distance": 1.6914016008377075,
+            "lexical_score": 0.0,
+            "dense_rank": 4,
+            "lexical_rank": null,
+            "hybrid_score": 0.015625,
+            "rerank_score": 2.0,
+            "final_score": 0.031754032258064516
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.2116010189056396,
+            "lexical_score": 2.0,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 1.0,
+            "final_score": 0.030886196246139225
+          },
+          {
+            "rank": 4,
+            "file": "app/retrieval/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.6488683223724365,
+            "lexical_score": 0.0,
+            "dense_rank": 2,
+            "lexical_rank": null,
+            "hybrid_score": 0.016129032258064516,
+            "rerank_score": -1.0,
+            "final_score": 0.030158730158730156
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/project_state.py",
+            "type": "function",
+            "name": "manifest_exists",
+            "distance": 1.7335309982299805,
+            "lexical_score": 0.0,
+            "dense_rank": 11,
+            "lexical_rank": null,
+            "hybrid_score": 0.014084507042253521,
+            "rerank_score": 2.0,
+            "final_score": 0.029957522915269395
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "precision@5": 0.0,
+          "mrr@5": 0.0,
+          "chunk_count": 5,
+          "context_chars": 1789,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "reranking"
+      }
+    },
+    {
+      "id": "rag_015",
+      "question": "Comment CodeAgent détermine-t-il quels fichiers ont été ajoutés, modifiés, supprimés ou laissés inchangés ?",
+      "expected_sources": [
+        {
+          "file": "app/memory/project_state.py",
+          "type": "function",
+          "name": "compare_manifests"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.5773794651031494,
+            "lexical_score": 4.0,
+            "dense_rank": 5,
+            "lexical_rank": 2,
+            "hybrid_score": 0.0315136476426799,
+            "rerank_score": 6.0,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.0240517854690552,
+            "lexical_score": 4.666666666666666,
+            "dense_rank": 1,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03278688524590164,
+            "rerank_score": 3.666666666666666,
+            "final_score": 0.03177805800756621
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": null,
+            "lexical_score": 4.0,
+            "dense_rank": null,
+            "lexical_rank": 3,
+            "hybrid_score": 0.015873015873015872,
+            "rerank_score": 6.0,
+            "final_score": 0.03128054740957967
+          },
+          {
+            "rank": 4,
+            "file": "app/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.6216360330581665,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 8,
+            "lexical_rank": 4,
+            "hybrid_score": 0.030330882352941176,
+            "rerank_score": 2.333333333333333,
+            "final_score": 0.031024531024531024
+          },
+          {
+            "rank": 5,
+            "file": "app/llm/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.690610408782959,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 16,
+            "lexical_rank": 6,
+            "hybrid_score": 0.028309409888357256,
+            "rerank_score": 2.333333333333333,
+            "final_score": 0.03055037313432836
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "precision@5": 0.0,
+          "mrr@5": 0.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.5773794651031494,
+            "lexical_score": 4.0,
+            "dense_rank": 5,
+            "lexical_rank": 2,
+            "hybrid_score": 0.0315136476426799,
+            "rerank_score": 6.0,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.0240517854690552,
+            "lexical_score": 4.666666666666666,
+            "dense_rank": 1,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03278688524590164,
+            "rerank_score": 3.666666666666666,
+            "final_score": 0.03177805800756621
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": null,
+            "lexical_score": 4.0,
+            "dense_rank": null,
+            "lexical_rank": 3,
+            "hybrid_score": 0.015873015873015872,
+            "rerank_score": 6.0,
+            "final_score": 0.03128054740957967
+          },
+          {
+            "rank": 4,
+            "file": "app/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.6216360330581665,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 8,
+            "lexical_rank": 4,
+            "hybrid_score": 0.030330882352941176,
+            "rerank_score": 2.333333333333333,
+            "final_score": 0.031024531024531024
+          },
+          {
+            "rank": 5,
+            "file": "app/llm/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.690610408782959,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 16,
+            "lexical_rank": 6,
+            "hybrid_score": 0.028309409888357256,
+            "rerank_score": 2.333333333333333,
+            "final_score": 0.03055037313432836
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "precision@5": 0.0,
+          "mrr@5": 0.0,
+          "chunk_count": 5,
+          "context_chars": 1689,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "candidate_retrieval"
+      }
+    },
+    {
+      "id": "rag_016",
+      "question": "Comment les questions et réponses précédentes sont-elles enregistrées dans l'historique d'analyse ?",
+      "expected_sources": [
+        {
+          "file": "app/memory/history.py",
+          "type": "function",
+          "name": "save_analysis"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/history.py",
+            "type": "function",
+            "name": "save_analysis",
+            "distance": 1.5233979225158691,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 2,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03225806451612903,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": 1.7290022373199463,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 5,
+            "lexical_rank": 4,
+            "hybrid_score": 0.031009615384615385,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "build_prompt",
+            "distance": 1.7931430339813232,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 8,
+            "lexical_rank": 8,
+            "hybrid_score": 0.029411764705882353,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "build_prompt",
+            "distance": 1.8228657245635986,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 13,
+            "lexical_rank": 5,
+            "hybrid_score": 0.029083245521601686,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.031009615384615385
+          },
+          {
+            "rank": 5,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "rerank_score",
+            "distance": 1.8437144756317139,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 21,
+            "lexical_rank": 7,
+            "hybrid_score": 0.027271052146674038,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.030536130536130537
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/history.py",
+            "type": "function",
+            "name": "save_analysis",
+            "distance": 1.5233979225158691,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 2,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03225806451612903,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": 1.7290022373199463,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 5,
+            "lexical_rank": 4,
+            "hybrid_score": 0.031009615384615385,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "build_prompt",
+            "distance": 1.7931430339813232,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 8,
+            "lexical_rank": 8,
+            "hybrid_score": 0.029411764705882353,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "build_prompt",
+            "distance": 1.8228657245635986,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 13,
+            "lexical_rank": 5,
+            "hybrid_score": 0.029083245521601686,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.031009615384615385
+          },
+          {
+            "rank": 5,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "rerank_score",
+            "distance": 1.8437144756317139,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 21,
+            "lexical_rank": 7,
+            "hybrid_score": 0.027271052146674038,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.030536130536130537
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0,
+          "chunk_count": 5,
+          "context_chars": 2508,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_017",
+      "question": "Comment CodeAgent génère-t-il un dossier mémoire unique pour un projet donné ?",
+      "expected_sources": [
+        {
+          "file": "app/utils/paths.py",
+          "type": "function",
+          "name": "project_memory_dir"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/llm/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.605943202972412,
+            "lexical_score": 4.0,
+            "dense_rank": 12,
+            "lexical_rank": 4,
+            "hybrid_score": 0.029513888888888888,
+            "rerank_score": 3.0,
+            "final_score": 0.032266458495966696
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.6011123657226562,
+            "lexical_score": 4.0,
+            "dense_rank": 10,
+            "lexical_rank": 11,
+            "hybrid_score": 0.028370221327967807,
+            "rerank_score": 3.0,
+            "final_score": 0.031754032258064516
+          },
+          {
+            "rank": 3,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "main",
+            "distance": null,
+            "lexical_score": 5.0,
+            "dense_rank": null,
+            "lexical_rank": 1,
+            "hybrid_score": 0.01639344262295082,
+            "rerank_score": 7.0,
+            "final_score": 0.030886196246139225
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/__init__.py",
+            "type": "import_from",
+            "name": "chunk_embedding_text",
+            "distance": 1.6308848857879639,
+            "lexical_score": 4.0,
+            "dense_rank": 18,
+            "lexical_rank": 14,
+            "hybrid_score": 0.026334026334026334,
+            "rerank_score": 1.0,
+            "final_score": 0.029957522915269395
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.0965054035186768,
+            "lexical_score": 4.0,
+            "dense_rank": 1,
+            "lexical_rank": null,
+            "hybrid_score": 0.01639344262295082,
+            "rerank_score": 3.0,
+            "final_score": 0.02967032967032967
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "precision@5": 0.0,
+          "mrr@5": 0.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/llm/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.605943202972412,
+            "lexical_score": 4.0,
+            "dense_rank": 12,
+            "lexical_rank": 4,
+            "hybrid_score": 0.029513888888888888,
+            "rerank_score": 3.0,
+            "final_score": 0.032266458495966696
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.6011123657226562,
+            "lexical_score": 4.0,
+            "dense_rank": 10,
+            "lexical_rank": 11,
+            "hybrid_score": 0.028370221327967807,
+            "rerank_score": 3.0,
+            "final_score": 0.031754032258064516
+          },
+          {
+            "rank": 3,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "main",
+            "distance": null,
+            "lexical_score": 5.0,
+            "dense_rank": null,
+            "lexical_rank": 1,
+            "hybrid_score": 0.01639344262295082,
+            "rerank_score": 7.0,
+            "final_score": 0.030886196246139225
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/__init__.py",
+            "type": "import_from",
+            "name": "chunk_embedding_text",
+            "distance": 1.6308848857879639,
+            "lexical_score": 4.0,
+            "dense_rank": 18,
+            "lexical_rank": 14,
+            "hybrid_score": 0.026334026334026334,
+            "rerank_score": 1.0,
+            "final_score": 0.029957522915269395
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.0965054035186768,
+            "lexical_score": 4.0,
+            "dense_rank": 1,
+            "lexical_rank": null,
+            "hybrid_score": 0.01639344262295082,
+            "rerank_score": 3.0,
+            "final_score": 0.02967032967032967
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 0.0,
+          "recall@5": 0.0,
+          "precision@5": 0.0,
+          "mrr@5": 0.0,
+          "chunk_count": 5,
+          "context_chars": 3227,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "candidate_retrieval"
+      }
+    },
+    {
+      "id": "rag_018",
+      "question": "Comment une question est-elle normalisée et transformée en tokens pour le reranking lexical ?",
+      "expected_sources": [
+        {
+          "file": "app/retrieval/faiss_retriever.py",
+          "type": "function",
+          "name": "tokenize"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "rerank_score",
+            "distance": 1.2862627506256104,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 5.333333333333333,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "tokenize",
+            "distance": 1.4162614345550537,
+            "lexical_score": 1.6666666666666665,
+            "dense_rank": 2,
+            "lexical_rank": 9,
+            "hybrid_score": 0.030621785881252923,
+            "rerank_score": 3.6666666666666665,
+            "final_score": 0.031754032258064516
+          },
+          {
+            "rank": 3,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "compute_tokens_per_second",
+            "distance": 1.8413926362991333,
+            "lexical_score": 3.6666666666666665,
+            "dense_rank": 25,
+            "lexical_rank": 1,
+            "hybrid_score": 0.02815814850530376,
+            "rerank_score": 5.666666666666666,
+            "final_score": 0.031544957774465976
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": 1.6682374477386475,
+            "lexical_score": 1.6666666666666665,
+            "dense_rank": 5,
+            "lexical_rank": 6,
+            "hybrid_score": 0.030536130536130537,
+            "rerank_score": 3.6666666666666665,
+            "final_score": 0.03125763125763126
+          },
+          {
+            "rank": 5,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "run_test",
+            "distance": 1.8352241516113281,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 23,
+            "lexical_rank": 3,
+            "hybrid_score": 0.02792120864410021,
+            "rerank_score": 5.333333333333333,
+            "final_score": 0.030798389007344232
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "rerank_score",
+            "distance": 1.2862627506256104,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 1,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 5.333333333333333,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "tokenize",
+            "distance": 1.4162614345550537,
+            "lexical_score": 1.6666666666666665,
+            "dense_rank": 2,
+            "lexical_rank": 9,
+            "hybrid_score": 0.030621785881252923,
+            "rerank_score": 3.6666666666666665,
+            "final_score": 0.031754032258064516
+          },
+          {
+            "rank": 3,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "compute_tokens_per_second",
+            "distance": 1.8413926362991333,
+            "lexical_score": 3.6666666666666665,
+            "dense_rank": 25,
+            "lexical_rank": 1,
+            "hybrid_score": 0.02815814850530376,
+            "rerank_score": 5.666666666666666,
+            "final_score": 0.031544957774465976
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": 1.6682374477386475,
+            "lexical_score": 1.6666666666666665,
+            "dense_rank": 5,
+            "lexical_rank": 6,
+            "hybrid_score": 0.030536130536130537,
+            "rerank_score": 3.6666666666666665,
+            "final_score": 0.03125763125763126
+          },
+          {
+            "rank": 5,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "run_test",
+            "distance": 1.8352241516113281,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 23,
+            "lexical_rank": 3,
+            "hybrid_score": 0.02792120864410021,
+            "rerank_score": 5.333333333333333,
+            "final_score": 0.030798389007344232
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5,
+          "chunk_count": 5,
+          "context_chars": 3843,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_019",
+      "question": "Comment le score de reranking lexical d'un chunk est-il calculé ?",
+      "expected_sources": [
+        {
+          "file": "app/retrieval/faiss_retriever.py",
+          "type": "function",
+          "name": "rerank_score"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "rerank_score",
+            "distance": 1.2899610996246338,
+            "lexical_score": 4.857142857142857,
+            "dense_rank": 1,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03278688524590164,
+            "rerank_score": 6.857142857142857,
+            "final_score": 0.03278688524590164
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.62821364402771,
+            "lexical_score": 3.4285714285714284,
+            "dense_rank": 8,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03057889822595705,
+            "rerank_score": 5.428571428571429,
+            "final_score": 0.03225806451612903
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.556643009185791,
+            "lexical_score": 1.4285714285714284,
+            "dense_rank": 3,
+            "lexical_rank": 12,
+            "hybrid_score": 0.02976190476190476,
+            "rerank_score": 3.4285714285714284,
+            "final_score": 0.031024531024531024
+          },
+          {
+            "rank": 4,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "class",
+            "name": "FaissRetriever",
+            "distance": 1.657257080078125,
+            "lexical_score": 2.8571428571428568,
+            "dense_rank": 11,
+            "lexical_rank": 9,
+            "hybrid_score": 0.028577260665441927,
+            "rerank_score": 4.857142857142857,
+            "final_score": 0.030776515151515152
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "load_index",
+            "distance": 1.5973495244979858,
+            "lexical_score": 1.4285714285714284,
+            "dense_rank": 5,
+            "lexical_rank": 15,
+            "hybrid_score": 0.02871794871794872,
+            "rerank_score": 3.4285714285714284,
+            "final_score": 0.030309988518943745
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "rerank_score",
+            "distance": 1.2899610996246338,
+            "lexical_score": 4.857142857142857,
+            "dense_rank": 1,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03278688524590164,
+            "rerank_score": 6.857142857142857,
+            "final_score": 0.03278688524590164
+          },
+          {
+            "rank": 2,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.62821364402771,
+            "lexical_score": 3.4285714285714284,
+            "dense_rank": 8,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03057889822595705,
+            "rerank_score": 5.428571428571429,
+            "final_score": 0.03225806451612903
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.556643009185791,
+            "lexical_score": 1.4285714285714284,
+            "dense_rank": 3,
+            "lexical_rank": 12,
+            "hybrid_score": 0.02976190476190476,
+            "rerank_score": 3.4285714285714284,
+            "final_score": 0.031024531024531024
+          },
+          {
+            "rank": 4,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "class",
+            "name": "FaissRetriever",
+            "distance": 1.657257080078125,
+            "lexical_score": 2.8571428571428568,
+            "dense_rank": 11,
+            "lexical_rank": 9,
+            "hybrid_score": 0.028577260665441927,
+            "rerank_score": 4.857142857142857,
+            "final_score": 0.030776515151515152
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "load_index",
+            "distance": 1.5973495244979858,
+            "lexical_score": 1.4285714285714284,
+            "dense_rank": 5,
+            "lexical_rank": 15,
+            "hybrid_score": 0.02871794871794872,
+            "rerank_score": 3.4285714285714284,
+            "final_score": 0.030309988518943745
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0,
+          "chunk_count": 5,
+          "context_chars": 3126,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_020",
+      "question": "Comment la recherche combine-t-elle les candidats FAISS avec le reranking lexical avant de retourner les meilleurs chunks ?",
+      "expected_sources": [
+        {
+          "file": "app/retrieval/faiss_retriever.py",
+          "type": "class",
+          "name": "FaissRetriever"
+        },
+        {
+          "file": "app/retrieval/faiss_retriever.py",
+          "type": "function",
+          "name": "rerank_score"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.5301902294158936,
+            "lexical_score": 2.909090909090909,
+            "dense_rank": 4,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03149801587301587,
+            "rerank_score": 4.909090909090909,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "class",
+            "name": "FaissRetriever",
+            "distance": 1.6900043487548828,
+            "lexical_score": 4.818181818181818,
+            "dense_rank": 20,
+            "lexical_rank": 1,
+            "hybrid_score": 0.02889344262295082,
+            "rerank_score": 6.818181818181818,
+            "final_score": 0.03177805800756621
+          },
+          {
+            "rank": 3,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "rerank_score",
+            "distance": 1.424986720085144,
+            "lexical_score": 2.8181818181818183,
+            "dense_rank": 1,
+            "lexical_rank": 10,
+            "hybrid_score": 0.030679156908665108,
+            "rerank_score": 4.818181818181818,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.508257508277893,
+            "lexical_score": 1.8181818181818183,
+            "dense_rank": 3,
+            "lexical_rank": 17,
+            "hybrid_score": 0.02886002886002886,
+            "rerank_score": 3.8181818181818183,
+            "final_score": 0.030303030303030304
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_chunk",
+            "distance": 1.70395028591156,
+            "lexical_score": 2.909090909090909,
+            "dense_rank": 23,
+            "lexical_rank": 8,
+            "hybrid_score": 0.026754075124025514,
+            "rerank_score": 4.909090909090909,
+            "final_score": 0.029957522915269395
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.6666666666666666,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.4,
+          "mrr@5": 0.5
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.5301902294158936,
+            "lexical_score": 2.909090909090909,
+            "dense_rank": 4,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03149801587301587,
+            "rerank_score": 4.909090909090909,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "class",
+            "name": "FaissRetriever",
+            "distance": 1.6900043487548828,
+            "lexical_score": 4.818181818181818,
+            "dense_rank": 20,
+            "lexical_rank": 1,
+            "hybrid_score": 0.02889344262295082,
+            "rerank_score": 6.818181818181818,
+            "final_score": 0.03177805800756621
+          },
+          {
+            "rank": 3,
+            "file": "app/retrieval/faiss_retriever.py",
+            "type": "function",
+            "name": "rerank_score",
+            "distance": 1.424986720085144,
+            "lexical_score": 2.8181818181818183,
+            "dense_rank": 1,
+            "lexical_rank": 10,
+            "hybrid_score": 0.030679156908665108,
+            "rerank_score": 4.818181818181818,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 4,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "distance": 1.508257508277893,
+            "lexical_score": 1.8181818181818183,
+            "dense_rank": 3,
+            "lexical_rank": 17,
+            "hybrid_score": 0.02886002886002886,
+            "rerank_score": 3.8181818181818183,
+            "final_score": 0.030303030303030304
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_chunk",
+            "distance": 1.70395028591156,
+            "lexical_score": 2.909090909090909,
+            "dense_rank": 23,
+            "lexical_rank": 8,
+            "hybrid_score": 0.026754075124025514,
+            "rerank_score": 4.909090909090909,
+            "final_score": 0.029957522915269395
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.6666666666666666,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.4,
+          "mrr@5": 0.5,
+          "chunk_count": 5,
+          "context_chars": 2960,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_021",
+      "question": "Comment les références fichier et lignes sont-elles formatées dans la liste des sources d'une réponse ?",
+      "expected_sources": [
+        {
+          "file": "app/rag/prompt.py",
+          "type": "function",
+          "name": "format_sources"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.351823329925537,
+            "lexical_score": 4.444444444444445,
+            "dense_rank": 1,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03278688524590164,
+            "rerank_score": 3.4444444444444446,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_sources",
+            "distance": 1.6973110437393188,
+            "lexical_score": 3.111111111111111,
+            "dense_rank": 11,
+            "lexical_rank": 4,
+            "hybrid_score": 0.029709507042253523,
+            "rerank_score": 5.111111111111111,
+            "final_score": 0.032266458495966696
+          },
+          {
+            "rank": 3,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.4676518440246582,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 2,
+            "lexical_rank": 6,
+            "hybrid_score": 0.03128054740957967,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/__init__.py",
+            "type": "import_from",
+            "name": "format_sources",
+            "distance": 1.7248146533966064,
+            "lexical_score": 3.111111111111111,
+            "dense_rank": 16,
+            "lexical_rank": 2,
+            "hybrid_score": 0.02928692699490662,
+            "rerank_score": 0.11111111111111116,
+            "final_score": 0.03055037313432836
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": null,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": null,
+            "lexical_rank": 5,
+            "hybrid_score": 0.015384615384615385,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.030330882352941176
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 1.351823329925537,
+            "lexical_score": 4.444444444444445,
+            "dense_rank": 1,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03278688524590164,
+            "rerank_score": 3.4444444444444446,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_sources",
+            "distance": 1.6973110437393188,
+            "lexical_score": 3.111111111111111,
+            "dense_rank": 11,
+            "lexical_rank": 4,
+            "hybrid_score": 0.029709507042253523,
+            "rerank_score": 5.111111111111111,
+            "final_score": 0.032266458495966696
+          },
+          {
+            "rank": 3,
+            "file": "app/parser/file_loader.py",
+            "type": "function",
+            "name": "read",
+            "distance": 1.4676518440246582,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": 2,
+            "lexical_rank": 6,
+            "hybrid_score": 0.03128054740957967,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/__init__.py",
+            "type": "import_from",
+            "name": "format_sources",
+            "distance": 1.7248146533966064,
+            "lexical_score": 3.111111111111111,
+            "dense_rank": 16,
+            "lexical_rank": 2,
+            "hybrid_score": 0.02928692699490662,
+            "rerank_score": 0.11111111111111116,
+            "final_score": 0.03055037313432836
+          },
+          {
+            "rank": 5,
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "update_index",
+            "distance": null,
+            "lexical_score": 1.1111111111111112,
+            "dense_rank": null,
+            "lexical_rank": 5,
+            "hybrid_score": 0.015384615384615385,
+            "rerank_score": 3.111111111111111,
+            "final_score": 0.030330882352941176
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.5,
+          "chunk_count": 5,
+          "context_chars": 2192,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_022",
+      "question": "Comment chaque chunk est-il formaté puis comment plusieurs chunks sont-ils assemblés pour former le contexte envoyé au RAG ?",
+      "expected_sources": [
+        {
+          "file": "app/rag/prompt.py",
+          "type": "function",
+          "name": "build_context"
+        },
+        {
+          "file": "app/rag/prompt.py",
+          "type": "function",
+          "name": "format_chunk"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_chunk",
+            "distance": 1.3526582717895508,
+            "lexical_score": 4.818181818181818,
+            "dense_rank": 3,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03200204813108039,
+            "rerank_score": 6.818181818181818,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": 1.4927829504013062,
+            "lexical_score": 3.727272727272727,
+            "dense_rank": 13,
+            "lexical_rank": 3,
+            "hybrid_score": 0.029571646010002173,
+            "rerank_score": 5.727272727272727,
+            "final_score": 0.031754032258064516
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.4745259284973145,
+            "lexical_score": 2.909090909090909,
+            "dense_rank": 10,
+            "lexical_rank": 6,
+            "hybrid_score": 0.029437229437229435,
+            "rerank_score": 4.909090909090909,
+            "final_score": 0.030776515151515152
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "build_context",
+            "distance": 1.3160395622253418,
+            "lexical_score": 2.8181818181818183,
+            "dense_rank": 2,
+            "lexical_rank": 15,
+            "hybrid_score": 0.02946236559139785,
+            "rerank_score": 4.818181818181818,
+            "final_score": 0.03076923076923077
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "build_prompt",
+            "distance": 1.542963981628418,
+            "lexical_score": 3.727272727272727,
+            "dense_rank": 18,
+            "lexical_rank": 4,
+            "hybrid_score": 0.02844551282051282,
+            "rerank_score": 5.727272727272727,
+            "final_score": 0.03057889822595705
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 0.5,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 0.5,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.4,
+          "mrr@5": 1.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_chunk",
+            "distance": 1.3526582717895508,
+            "lexical_score": 4.818181818181818,
+            "dense_rank": 3,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03200204813108039,
+            "rerank_score": 6.818181818181818,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": 1.4927829504013062,
+            "lexical_score": 3.727272727272727,
+            "dense_rank": 13,
+            "lexical_rank": 3,
+            "hybrid_score": 0.029571646010002173,
+            "rerank_score": 5.727272727272727,
+            "final_score": 0.031754032258064516
+          },
+          {
+            "rank": 3,
+            "file": "app/memory/embeddings.py",
+            "type": "function",
+            "name": "chunk_embedding_text",
+            "distance": 1.4745259284973145,
+            "lexical_score": 2.909090909090909,
+            "dense_rank": 10,
+            "lexical_rank": 6,
+            "hybrid_score": 0.029437229437229435,
+            "rerank_score": 4.909090909090909,
+            "final_score": 0.030776515151515152
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "build_context",
+            "distance": 1.3160395622253418,
+            "lexical_score": 2.8181818181818183,
+            "dense_rank": 2,
+            "lexical_rank": 15,
+            "hybrid_score": 0.02946236559139785,
+            "rerank_score": 4.818181818181818,
+            "final_score": 0.03076923076923077
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "build_prompt",
+            "distance": 1.542963981628418,
+            "lexical_score": 3.727272727272727,
+            "dense_rank": 18,
+            "lexical_rank": 4,
+            "hybrid_score": 0.02844551282051282,
+            "rerank_score": 5.727272727272727,
+            "final_score": 0.03057889822595705
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 0.5,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 0.5,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.4,
+          "mrr@5": 1.0,
+          "chunk_count": 5,
+          "context_chars": 1797,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_023",
+      "question": "Comment le prompt final combine-t-il le contexte récupéré et la question utilisateur ?",
+      "expected_sources": [
+        {
+          "file": "app/rag/prompt.py",
+          "type": "function",
+          "name": "build_prompt"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "build_prompt",
+            "distance": 1.1557579040527344,
+            "lexical_score": 6.333333333333333,
+            "dense_rank": 2,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 8.333333333333332,
+            "final_score": 0.03278688524590164
+          },
+          {
+            "rank": 2,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "build_prompt",
+            "distance": 1.2728198766708374,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 3,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03200204813108039,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 0.9846444725990295,
+            "lexical_score": 5.222222222222222,
+            "dense_rank": 1,
+            "lexical_rank": 3,
+            "hybrid_score": 0.032266458495966696,
+            "rerank_score": 4.222222222222222,
+            "final_score": 0.031754032258064516
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": 1.294123649597168,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 4,
+            "lexical_rank": 4,
+            "hybrid_score": 0.03125,
+            "rerank_score": 5.333333333333333,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "build_context",
+            "distance": 1.5452470779418945,
+            "lexical_score": 2.111111111111111,
+            "dense_rank": 6,
+            "lexical_rank": 11,
+            "hybrid_score": 0.029236022193768675,
+            "rerank_score": 4.111111111111111,
+            "final_score": 0.029857397504456328
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "build_prompt",
+            "distance": 1.1557579040527344,
+            "lexical_score": 6.333333333333333,
+            "dense_rank": 2,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 8.333333333333332,
+            "final_score": 0.03278688524590164
+          },
+          {
+            "rank": 2,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "build_prompt",
+            "distance": 1.2728198766708374,
+            "lexical_score": 5.333333333333333,
+            "dense_rank": 3,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03200204813108039,
+            "rerank_score": 7.333333333333333,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "variable",
+            "name": "SYSTEM_PROMPT",
+            "distance": 0.9846444725990295,
+            "lexical_score": 5.222222222222222,
+            "dense_rank": 1,
+            "lexical_rank": 3,
+            "hybrid_score": 0.032266458495966696,
+            "rerank_score": 4.222222222222222,
+            "final_score": 0.031754032258064516
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": 1.294123649597168,
+            "lexical_score": 3.333333333333333,
+            "dense_rank": 4,
+            "lexical_rank": 4,
+            "hybrid_score": 0.03125,
+            "rerank_score": 5.333333333333333,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "build_context",
+            "distance": 1.5452470779418945,
+            "lexical_score": 2.111111111111111,
+            "dense_rank": 6,
+            "lexical_rank": 11,
+            "hybrid_score": 0.029236022193768675,
+            "rerank_score": 4.111111111111111,
+            "final_score": 0.029857397504456328
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0,
+          "chunk_count": 5,
+          "context_chars": 1936,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_024",
+      "question": "Comment le pipeline RAG récupère-t-il les chunks, appelle-t-il le LLM et ajoute-t-il les sources à la réponse ?",
+      "expected_sources": [
+        {
+          "file": "app/rag/pipeline.py",
+          "type": "class",
+          "name": "RAGPipeline"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": 1.4893890619277954,
+            "lexical_score": 6.545454545454545,
+            "dense_rank": 4,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03149801587301587,
+            "rerank_score": 8.545454545454545,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/pipeline.py",
+            "type": "import_from",
+            "name": "LocalLLM",
+            "distance": 1.3728017807006836,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 2,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 3.7272727272727266,
+            "final_score": 0.031544957774465976
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_sources",
+            "distance": 1.5683740377426147,
+            "lexical_score": 5.727272727272727,
+            "dense_rank": 11,
+            "lexical_rank": 6,
+            "hybrid_score": 0.029236022193768675,
+            "rerank_score": 7.727272727272727,
+            "final_score": 0.0315136476426799
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/pipeline.py",
+            "type": "import_from",
+            "name": "format_sources",
+            "distance": 1.5281579494476318,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 6,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03128054740957967,
+            "rerank_score": 3.7272727272727266,
+            "final_score": 0.030798389007344232
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.535649061203003,
+            "lexical_score": 3.727272727272727,
+            "dense_rank": 7,
+            "lexical_rank": 13,
+            "hybrid_score": 0.02862400327131466,
+            "rerank_score": 2.727272727272727,
+            "final_score": 0.02919863597612958
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "app/rag/pipeline.py",
+            "type": "class",
+            "name": "RAGPipeline",
+            "distance": 1.4893890619277954,
+            "lexical_score": 6.545454545454545,
+            "dense_rank": 4,
+            "lexical_rank": 3,
+            "hybrid_score": 0.03149801587301587,
+            "rerank_score": 8.545454545454545,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "app/rag/pipeline.py",
+            "type": "import_from",
+            "name": "LocalLLM",
+            "distance": 1.3728017807006836,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 2,
+            "lexical_rank": 1,
+            "hybrid_score": 0.03252247488101534,
+            "rerank_score": 3.7272727272727266,
+            "final_score": 0.031544957774465976
+          },
+          {
+            "rank": 3,
+            "file": "app/rag/prompt.py",
+            "type": "function",
+            "name": "format_sources",
+            "distance": 1.5683740377426147,
+            "lexical_score": 5.727272727272727,
+            "dense_rank": 11,
+            "lexical_rank": 6,
+            "hybrid_score": 0.029236022193768675,
+            "rerank_score": 7.727272727272727,
+            "final_score": 0.0315136476426799
+          },
+          {
+            "rank": 4,
+            "file": "app/rag/pipeline.py",
+            "type": "import_from",
+            "name": "format_sources",
+            "distance": 1.5281579494476318,
+            "lexical_score": 6.727272727272727,
+            "dense_rank": 6,
+            "lexical_rank": 2,
+            "hybrid_score": 0.03128054740957967,
+            "rerank_score": 3.7272727272727266,
+            "final_score": 0.030798389007344232
+          },
+          {
+            "rank": 5,
+            "file": "app/rag/__init__.py",
+            "type": "variable",
+            "name": "__all__",
+            "distance": 1.535649061203003,
+            "lexical_score": 3.727272727272727,
+            "dense_rank": 7,
+            "lexical_rank": 13,
+            "hybrid_score": 0.02862400327131466,
+            "rerank_score": 2.727272727272727,
+            "final_score": 0.02919863597612958
+          }
+        ],
+        "metrics": {
+          "hit@1": 1.0,
+          "recall@1": 1.0,
+          "precision@1": 1.0,
+          "hit@3": 1.0,
+          "recall@3": 1.0,
+          "precision@3": 0.3333333333333333,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 1.0,
+          "chunk_count": 5,
+          "context_chars": 1720,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    },
+    {
+      "id": "rag_025",
+      "question": "Comment le LLM local envoie-t-il une requête à Ollama et récupère-t-il les statistiques de tokens ?",
+      "expected_sources": [
+        {
+          "file": "app/llm/local_llm.py",
+          "type": "class",
+          "name": "LocalLLM"
+        }
+      ],
+      "final": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "call_ollama",
+            "distance": 1.5651079416275024,
+            "lexical_score": 6.0,
+            "dense_rank": 2,
+            "lexical_rank": 4,
+            "hybrid_score": 0.031754032258064516,
+            "rerank_score": 8.0,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "compute_tokens_per_second",
+            "distance": 1.6451325416564941,
+            "lexical_score": 5.0,
+            "dense_rank": 4,
+            "lexical_rank": 5,
+            "hybrid_score": 0.031009615384615385,
+            "rerank_score": 7.0,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "parse_args",
+            "distance": 1.6669230461120605,
+            "lexical_score": 5.0,
+            "dense_rank": 6,
+            "lexical_rank": 6,
+            "hybrid_score": 0.030303030303030304,
+            "rerank_score": 7.0,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 4,
+            "file": "app/llm/__init__.py",
+            "type": "import_from",
+            "name": "LocalLLM",
+            "distance": 1.698824167251587,
+            "lexical_score": 7.0,
+            "dense_rank": 14,
+            "lexical_rank": 2,
+            "hybrid_score": 0.02964254577157803,
+            "rerank_score": 4.0,
+            "final_score": 0.030117753623188408
+          },
+          {
+            "rank": 5,
+            "file": "app/llm/local_llm.py",
+            "type": "class",
+            "name": "LocalLLM",
+            "distance": null,
+            "lexical_score": 10.0,
+            "dense_rank": null,
+            "lexical_rank": 1,
+            "hybrid_score": 0.01639344262295082,
+            "rerank_score": 12.0,
+            "final_score": 0.029726775956284153
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.2
+        }
+      },
+      "context": {
+        "retrieved_sources": [
+          {
+            "rank": 1,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "call_ollama",
+            "distance": 1.5651079416275024,
+            "lexical_score": 6.0,
+            "dense_rank": 2,
+            "lexical_rank": 4,
+            "hybrid_score": 0.031754032258064516,
+            "rerank_score": 8.0,
+            "final_score": 0.03252247488101534
+          },
+          {
+            "rank": 2,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "compute_tokens_per_second",
+            "distance": 1.6451325416564941,
+            "lexical_score": 5.0,
+            "dense_rank": 4,
+            "lexical_rank": 5,
+            "hybrid_score": 0.031009615384615385,
+            "rerank_score": 7.0,
+            "final_score": 0.03200204813108039
+          },
+          {
+            "rank": 3,
+            "file": "scripts/benchmark_llm.py",
+            "type": "function",
+            "name": "parse_args",
+            "distance": 1.6669230461120605,
+            "lexical_score": 5.0,
+            "dense_rank": 6,
+            "lexical_rank": 6,
+            "hybrid_score": 0.030303030303030304,
+            "rerank_score": 7.0,
+            "final_score": 0.03149801587301587
+          },
+          {
+            "rank": 4,
+            "file": "app/llm/__init__.py",
+            "type": "import_from",
+            "name": "LocalLLM",
+            "distance": 1.698824167251587,
+            "lexical_score": 7.0,
+            "dense_rank": 14,
+            "lexical_rank": 2,
+            "hybrid_score": 0.02964254577157803,
+            "rerank_score": 4.0,
+            "final_score": 0.030117753623188408
+          },
+          {
+            "rank": 5,
+            "file": "app/llm/local_llm.py",
+            "type": "class",
+            "name": "LocalLLM",
+            "distance": null,
+            "lexical_score": 10.0,
+            "dense_rank": null,
+            "lexical_rank": 1,
+            "hybrid_score": 0.01639344262295082,
+            "rerank_score": 12.0,
+            "final_score": 0.029726775956284153
+          }
+        ],
+        "metrics": {
+          "hit@1": 0.0,
+          "recall@1": 0.0,
+          "precision@1": 0.0,
+          "hit@3": 0.0,
+          "recall@3": 0.0,
+          "precision@3": 0.0,
+          "hit@5": 1.0,
+          "recall@5": 1.0,
+          "precision@5": 0.2,
+          "mrr@5": 0.2,
+          "chunk_count": 5,
+          "context_chars": 4559,
+          "dropped_chunks": 0,
+          "dropped_relevant": 0
+        },
+        "diagnosis": "ok"
+      }
+    }
+  ]
+}

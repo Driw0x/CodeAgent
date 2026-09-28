@@ -1,0 +1,146 @@
+[
+  {
+    "id": "ground_001",
+    "category": "answerable",
+    "question": "Comment CodeAgent vérifie-t-il la cohérence entre l'index FAISS chargé et les chunks sauvegardés ?",
+    "sources": [
+      {
+        "file": "app/memory/vector_store.py",
+        "type": "function",
+        "name": "load_index"
+      }
+    ]
+  },
+  {
+    "id": "ground_002",
+    "category": "answerable",
+    "question": "Comment CodeAgent distingue-t-il les fichiers ajoutés, modifiés, supprimés et inchangés ?",
+    "sources": [
+      {
+        "file": "app/memory/project_state.py",
+        "type": "function",
+        "name": "compare_manifests"
+      }
+    ]
+  },
+  {
+    "id": "ground_003",
+    "category": "answerable",
+    "question": "Comment un dossier mémoire unique est-il construit pour chaque projet ?",
+    "sources": [
+      {
+        "file": "app/utils/paths.py",
+        "type": "function",
+        "name": "project_memory_dir"
+      }
+    ]
+  },
+  {
+    "id": "ground_004",
+    "category": "answerable",
+    "question": "Comment le LLM local envoie-t-il une requête à Ollama et récupère-t-il les statistiques de tokens ?",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "class",
+        "name": "LocalLLM"
+      }
+    ]
+  },
+  {
+    "id": "ground_005",
+    "category": "partial",
+    "question": "Comment les analyses sont-elles enregistrées dans l'historique et pendant combien de temps sont-elles conservées ?",
+    "sources": [
+      {
+        "file": "app/memory/history.py",
+        "type": "function",
+        "name": "save_analysis"
+      }
+    ]
+  },
+  {
+    "id": "ground_006",
+    "category": "partial",
+    "question": "Quel texte représente un chunk pour son embedding et pourquoi ce format améliore-t-il les performances du retrieval ?",
+    "sources": [
+      {
+        "file": "app/memory/embeddings.py",
+        "type": "function",
+        "name": "chunk_embedding_text"
+      }
+    ]
+  },
+  {
+    "id": "ground_007",
+    "category": "partial",
+    "question": "Comment le prompt combine-t-il le contexte et la question utilisateur, et quelle température de génération est utilisée ?",
+    "sources": [
+      {
+        "file": "app/rag/prompt.py",
+        "type": "function",
+        "name": "build_prompt"
+      }
+    ]
+  },
+  {
+    "id": "ground_008",
+    "category": "partial",
+    "question": "Comment l'index est-il mis à jour lorsque les fichiers changent et cette opération est-elle parallélisée sur le GPU ?",
+    "sources": [
+      {
+        "file": "app/memory/vector_store.py",
+        "type": "function",
+        "name": "update_index"
+      }
+    ]
+  },
+  {
+    "id": "ground_009",
+    "category": "unanswerable",
+    "question": "Quel fournisseur cloud est utilisé pour analyser les dépôts distants ?",
+    "sources": [
+      {
+        "file": "app/parser/file_loader.py",
+        "type": "function",
+        "name": "read_dir"
+      }
+    ]
+  },
+  {
+    "id": "ground_010",
+    "category": "unanswerable",
+    "question": "Sur quel service distant les manifestes de projets sont-ils sauvegardés ?",
+    "sources": [
+      {
+        "file": "app/memory/project_state.py",
+        "type": "function",
+        "name": "build_manifest"
+      }
+    ]
+  },
+  {
+    "id": "ground_011",
+    "category": "unanswerable",
+    "question": "Quel pourcentage d'hallucinations est éliminé grâce au formatage des citations ?",
+    "sources": [
+      {
+        "file": "app/rag/prompt.py",
+        "type": "function",
+        "name": "format_sources"
+      }
+    ]
+  },
+  {
+    "id": "ground_012",
+    "category": "unanswerable",
+    "question": "Quel score de satisfaction utilisateur a été mesuré en production pour le pipeline RAG ?",
+    "sources": [
+      {
+        "file": "app/rag/pipeline.py",
+        "type": "class",
+        "name": "RAGPipeline"
+      }
+    ]
+  }
+]

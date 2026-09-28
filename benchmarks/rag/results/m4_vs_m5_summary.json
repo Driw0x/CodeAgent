@@ -1,0 +1,67 @@
+{
+  "m4": {
+    "questions": 16,
+    "retrieval_questions": 12,
+    "retrieval": {
+      "hit@1": 0.4166666666666667,
+      "recall@1": 0.4166666666666667,
+      "precision@1": 0.4166666666666667,
+      "hit@3": 0.5833333333333334,
+      "recall@3": 0.5833333333333334,
+      "precision@3": 0.19444444444444442,
+      "hit@5": 0.6666666666666666,
+      "recall@5": 0.6666666666666666,
+      "precision@5": 0.13333333333333333,
+      "mrr@5": 0.5069444444444444
+    },
+    "response_behavior_matches": 10,
+    "response_behavior_match_rate": 0.625,
+    "average_generation_time": 4.35963777500001
+  },
+  "m5": {
+    "questions": 16,
+    "retrieval_questions": 12,
+    "retrieval": {
+      "hit@1": 0.16666666666666666,
+      "recall@1": 0.16666666666666666,
+      "precision@1": 0.16666666666666666,
+      "hit@3": 0.5833333333333334,
+      "recall@3": 0.5833333333333334,
+      "precision@3": 0.19444444444444442,
+      "hit@5": 0.8333333333333334,
+      "recall@5": 0.8333333333333334,
+      "precision@5": 0.16666666666666666,
+      "mrr@5": 0.39166666666666666
+    },
+    "response_behavior_matches": 12,
+    "response_behavior_match_rate": 0.75,
+    "final_acceptance_matches": 9,
+    "final_acceptance_match_rate": 0.5625,
+    "citation_presence_rate": 0.6666666666666666,
+    "invalid_citation_count": 0,
+    "citation_validation_pass_rate": 1.0,
+    "pipeline_accept_rate": 0.8125,
+    "grounding_checked": 8,
+    "grounding_supported": 6,
+    "grounding_rejected": 2,
+    "average_generation_time": 4.19214254999315,
+    "average_grounding_time": 5.411411674998817,
+    "average_total_time": 6.897848387492559
+  },
+  "delta": {
+    "retrieval": {
+      "hit@1": -0.25,
+      "recall@1": -0.25,
+      "precision@1": -0.25,
+      "hit@3": 0.0,
+      "recall@3": 0.0,
+      "precision@3": 0.0,
+      "hit@5": 0.16666666666666674,
+      "recall@5": 0.16666666666666674,
+      "precision@5": 0.033333333333333326,
+      "mrr@5": -0.11527777777777776
+    },
+    "response_behavior_match_rate": 0.125,
+    "average_total_time": 2.5382106124925485
+  }
+}

@@ -1,25 +1,33 @@
 import argparse
 import json
+import re
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
-import numpy as np
 from sentence_transformers import SentenceTransformer
 
-from app.memory import build_index
-from app.parser import chunking, read_dir
+from app.memory.vector_store import load_index
+from app.rag.prompt import build_context, select_context_chunks
 from app.retrieval import FaissRetriever
+from app.retrieval.faiss_retriever import STOPWORDS, TYPE_BONUS
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+FIXTURE_DIR = PROJECT_ROOT / "benchmarks" / "rag" / "fixture"
 DEFAULT_QUESTIONS = PROJECT_ROOT / "benchmarks" / "rag" / "rag_questions.json"
-DEFAULT_RESULTS_DIR = PROJECT_ROOT / "benchmarks" / "rag" / "results"
+RESULTS_DIR = PROJECT_ROOT / "benchmarks" / "rag" / "results"
 
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-EMBEDDING_DIMENSION = 384
+CANDIDATE_K_VALUES = (1, 3, 5, 10, 25)
+FINAL_K_VALUES = (1, 3, 5)
 
-RAW_K_VALUES = (1, 3, 5, 10, 25)
-RERANKED_K_VALUES = (1, 3, 5)
+RERANK_STRATEGIES = {
+    "rerank_only": (0.0, 1.0),
+    "rrf_equal": (1.0, 1.0),
+    "rrf_rerank_2x": (1.0, 2.0),
+    "rrf_hybrid_2x": (2.0, 1.0),
+}
 
 
 def relative_path(path: str | Path) -> str:
@@ -35,35 +43,24 @@ def source_matches(chunk: dict, expected: dict) -> bool:
     if relative_path(chunk["file"]) != expected["file"]:
         return False
 
-    expected_type = expected.get("type")
-    if expected_type is not None and chunk.get("type") != expected_type:
+    if expected.get("type") is not None and chunk.get("type") != expected["type"]:
         return False
 
-    expected_name = expected.get("name")
-    if expected_name is not None and chunk.get("name") != expected_name:
+    if expected.get("name") is not None and chunk.get("name") != expected["name"]:
         return False
 
     return True
 
 
-def matched_expected_sources(
-    retrieved_chunks: list[dict],
-    expected_sources: list[dict],
-) -> set[int]:
-    matched = set()
-
-    for expected_index, expected in enumerate(expected_sources):
-        if any(source_matches(chunk, expected) for chunk in retrieved_chunks):
-            matched.add(expected_index)
-
-    return matched
+def matched_expected_sources(retrieved_chunks: list[dict], expected_sources: list[dict]) -> set[int]:
+    return {
+        expected_index
+        for expected_index, expected in enumerate(expected_sources)
+        if any(source_matches(chunk, expected) for chunk in retrieved_chunks)
+    }
 
 
-def reciprocal_rank(
-    retrieved_chunks: list[dict],
-    expected_sources: list[dict],
-    k: int,
-) -> float:
+def reciprocal_rank(retrieved_chunks: list[dict], expected_sources: list[dict], k: int) -> float:
     for rank, chunk in enumerate(retrieved_chunks[:k], start=1):
         if any(source_matches(chunk, expected) for expected in expected_sources):
             return 1.0 / rank
@@ -94,33 +91,6 @@ def calculate_metrics(
     return metrics
 
 
-def raw_faiss_retrieve(
-    retriever: FaissRetriever,
-    question: str,
-    k: int,
-) -> list[dict]:
-    query_vector = retriever.model.encode(
-        [question],
-        show_progress_bar=False,
-    )
-
-    query_vector = np.asarray(query_vector, dtype="float32")
-    k = min(k, len(retriever.chunks))
-
-    distances, indices = retriever.index.search(query_vector, k)
-    results = []
-
-    for distance, index in zip(distances[0], indices[0]):
-        if index < 0 or index >= len(retriever.chunks):
-            continue
-
-        chunk = dict(retriever.chunks[index])
-        chunk["distance"] = float(distance)
-        results.append(chunk)
-
-    return results
-
-
 def serialize_chunks(chunks: list[dict]) -> list[dict]:
     return [
         {
@@ -129,80 +99,186 @@ def serialize_chunks(chunks: list[dict]) -> list[dict]:
             "type": chunk.get("type"),
             "name": chunk.get("name"),
             "distance": chunk.get("distance"),
+            "lexical_score": chunk.get("lexical_score"),
+            "dense_rank": chunk.get("dense_rank"),
+            "lexical_rank": chunk.get("lexical_rank"),
+            "hybrid_score": chunk.get("hybrid_score"),
             "rerank_score": chunk.get("rerank_score"),
+            "final_score": chunk.get("final_score"),
         }
         for rank, chunk in enumerate(chunks, start=1)
     ]
 
 
-def evaluate_question(
-    retriever: FaissRetriever,
-    item: dict,
-) -> dict:
+def m4_tokenize(text: str) -> set[str]:
+    normalized = unicodedata.normalize("NFKD", text.casefold())
+    normalized = "".join(
+        char
+        for char in normalized
+        if not unicodedata.combining(char)
+    )
+
+    normalized = normalized.replace("_", " ")
+    raw_tokens = re.findall(r"[a-z0-9]+", normalized)
+    tokens = set()
+
+    for token in raw_tokens:
+        if token in STOPWORDS:
+            continue
+
+        if len(token) > 4 and token.endswith("s") and not token.endswith("ss"):
+            token = token[:-1]
+
+        tokens.add(token)
+
+    return tokens
+
+
+def m4_rerank_score(question: str, chunk: dict) -> float:
+    query_tokens = m4_tokenize(question)
+
+    if not query_tokens:
+        return 0.0
+
+    name_tokens = m4_tokenize(str(chunk.get("name", "")))
+    file_tokens = m4_tokenize(str(chunk.get("file", "")))
+    content_tokens = m4_tokenize(str(chunk.get("content", "")))
+
+    all_tokens = name_tokens | file_tokens | content_tokens
+    coverage = len(query_tokens & all_tokens) / len(query_tokens)
+    name_overlap = len(query_tokens & name_tokens)
+    file_overlap = len(query_tokens & file_tokens)
+    type_bonus = TYPE_BONUS.get(str(chunk.get("type", "")), 0)
+
+    return 10 * coverage + 2 * name_overlap + file_overlap + type_bonus
+
+
+def m4_rerank(question: str, candidates: list[dict], k: int = 5) -> list[dict]:
+    ranked = [dict(chunk) for chunk in candidates]
+
+    for chunk in ranked:
+        chunk["rerank_score"] = m4_rerank_score(question, chunk)
+
+    ranked.sort(
+        key=lambda chunk: (
+            -chunk["rerank_score"],
+            chunk.get("distance", float("inf")),
+        )
+    )
+
+    return ranked[:k]
+
+
+def evaluate_question(retriever: FaissRetriever, item: dict) -> dict:
     question = item["question"]
     expected_sources = item["expected_sources"]
 
-    raw_chunks = raw_faiss_retrieve(
-        retriever,
-        question,
-        max(RAW_K_VALUES),
-    )
+    dense_chunks = retriever.dense_retrieve(question, k=25)
+    lexical_chunks = retriever.lexical_retrieve(question, k=25)
+    hybrid_chunks = retriever.hybrid_retrieve(question, k=25)
 
-    reranked_chunks = retriever.retrieve(
-        question,
-        k=max(RERANKED_K_VALUES),
-    )
+    dense_metrics = calculate_metrics(dense_chunks, expected_sources, CANDIDATE_K_VALUES)
+    lexical_metrics = calculate_metrics(lexical_chunks, expected_sources, CANDIDATE_K_VALUES)
+    hybrid_metrics = calculate_metrics(hybrid_chunks, expected_sources, CANDIDATE_K_VALUES)
 
-    raw_metrics = calculate_metrics(
-        raw_chunks,
-        expected_sources,
-        RAW_K_VALUES,
-    )
+    dense_metrics["mrr@5"] = reciprocal_rank(dense_chunks, expected_sources, 5)
+    dense_metrics["mrr@25"] = reciprocal_rank(dense_chunks, expected_sources, 25)
+    lexical_metrics["mrr@25"] = reciprocal_rank(lexical_chunks, expected_sources, 25)
+    hybrid_metrics["mrr@25"] = reciprocal_rank(hybrid_chunks, expected_sources, 25)
 
-    reranked_metrics = calculate_metrics(
-        reranked_chunks,
-        expected_sources,
-        RERANKED_K_VALUES,
-    )
+    m4_chunks = m4_rerank(question, dense_chunks, k=5)
+    m4_metrics = calculate_metrics(m4_chunks, expected_sources, FINAL_K_VALUES)
+    m4_metrics["mrr@5"] = reciprocal_rank(m4_chunks, expected_sources, 5)
 
-    raw_metrics["mrr@5"] = reciprocal_rank(
-        raw_chunks,
-        expected_sources,
-        5,
-    )
-
-    raw_metrics["mrr@25"] = reciprocal_rank(
-        raw_chunks,
-        expected_sources,
-        25,
-    )
-
-    reranked_metrics["mrr@5"] = reciprocal_rank(
-        reranked_chunks,
-        expected_sources,
-        5,
-    )
-
-    if not raw_metrics["hit@25"]:
-        diagnosis = "candidate_retrieval"
-    elif not reranked_metrics["hit@5"]:
-        diagnosis = "reranking"
+    if not dense_metrics["hit@25"]:
+        m4_diagnosis = "candidate_retrieval"
+    elif not m4_metrics["hit@5"]:
+        m4_diagnosis = "reranking"
     else:
-        diagnosis = "ok"
+        m4_diagnosis = "ok"
+
+    reranking_results = {}
+    reranking_chunks = {}
+
+    for name, (hybrid_weight, rerank_weight) in RERANK_STRATEGIES.items():
+        chunks = retriever.rerank_candidates(
+            question,
+            hybrid_chunks,
+            k=5,
+            hybrid_weight=hybrid_weight,
+            rerank_weight=rerank_weight,
+        )
+
+        metrics = calculate_metrics(chunks, expected_sources, FINAL_K_VALUES)
+        metrics["mrr@5"] = reciprocal_rank(chunks, expected_sources, 5)
+
+        reranking_chunks[name] = chunks
+        reranking_results[name] = {
+            "retrieved_sources": serialize_chunks(chunks),
+            "metrics": metrics,
+        }
+
+    final_chunks = reranking_chunks["rrf_equal"]
+    final_metrics = reranking_results["rrf_equal"]["metrics"]
+
+    if not hybrid_metrics["hit@25"]:
+        m5_reranking_diagnosis = "candidate_retrieval"
+    elif not final_metrics["hit@5"]:
+        m5_reranking_diagnosis = "reranking"
+    else:
+        m5_reranking_diagnosis = "ok"
+
+    context_chunks = select_context_chunks(final_chunks)
+    context_metrics = calculate_metrics(context_chunks, expected_sources, FINAL_K_VALUES)
+    context_metrics["mrr@5"] = reciprocal_rank(context_chunks, expected_sources, 5)
+    context_metrics["chunk_count"] = len(context_chunks)
+    context_metrics["context_chars"] = len(build_context(context_chunks))
+    context_metrics["dropped_chunks"] = len(final_chunks) - len(context_chunks)
+
+    relevant_before = matched_expected_sources(final_chunks, expected_sources)
+    relevant_after = matched_expected_sources(context_chunks, expected_sources)
+    context_metrics["dropped_relevant"] = len(relevant_before - relevant_after)
+
+    if not hybrid_metrics["hit@25"]:
+        m5_context_diagnosis = "candidate_retrieval"
+    elif not final_metrics["hit@5"]:
+        m5_context_diagnosis = "reranking"
+    elif not context_metrics["hit@5"]:
+        m5_context_diagnosis = "context_selection"
+    else:
+        m5_context_diagnosis = "ok"
 
     return {
         "id": item["id"],
         "question": question,
         "expected_sources": expected_sources,
-        "raw_faiss": {
-            "retrieved_sources": serialize_chunks(raw_chunks),
-            "metrics": raw_metrics,
+        "dense": {
+            "retrieved_sources": serialize_chunks(dense_chunks),
+            "metrics": dense_metrics,
         },
-        "reranked": {
-            "retrieved_sources": serialize_chunks(reranked_chunks),
-            "metrics": reranked_metrics,
+        "lexical": {
+            "retrieved_sources": serialize_chunks(lexical_chunks),
+            "metrics": lexical_metrics,
         },
-        "diagnosis": diagnosis,
+        "hybrid": {
+            "retrieved_sources": serialize_chunks(hybrid_chunks),
+            "metrics": hybrid_metrics,
+        },
+        "m4": {
+            "retrieved_sources": serialize_chunks(m4_chunks),
+            "metrics": m4_metrics,
+            "diagnosis": m4_diagnosis,
+        },
+        "m5_reranking": {
+            "final": reranking_results["rrf_equal"],
+            "strategies": reranking_results,
+            "diagnosis": m5_reranking_diagnosis,
+        },
+        "m5_context": {
+            "retrieved_sources": serialize_chunks(context_chunks),
+            "metrics": context_metrics,
+            "diagnosis": m5_context_diagnosis,
+        },
     }
 
 
@@ -210,28 +286,40 @@ def mean(values: list[float]) -> float:
     return sum(values) / len(values) if values else 0.0
 
 
-def aggregate_metrics(results: list[dict], mode: str) -> dict:
-    metric_names = results[0][mode]["metrics"].keys()
+def aggregate_metrics(results: list[dict], getter) -> dict:
+    first_metrics = getter(results[0])
 
     return {
-        metric: mean(
-            [result[mode]["metrics"][metric] for result in results]
-        )
-        for metric in metric_names
+        metric: mean([getter(result)[metric] for result in results])
+        for metric in first_metrics
     }
 
 
-def aggregate_diagnosis(results: list[dict]) -> dict:
+def aggregate_diagnosis(results: list[dict], getter) -> dict:
     counts = {
         "ok": 0,
         "candidate_retrieval": 0,
         "reranking": 0,
+        "context_selection": 0,
     }
 
     for result in results:
-        counts[result["diagnosis"]] += 1
+        counts[getter(result)] += 1
 
     return counts
+
+
+def aggregate_reranking_strategies(results: list[dict]) -> dict:
+    aggregates = {}
+
+    for strategy in RERANK_STRATEGIES:
+        aggregates[strategy] = aggregate_metrics(
+            results,
+            lambda result, strategy=strategy:
+                result["m5_reranking"]["strategies"][strategy]["metrics"],
+        )
+
+    return aggregates
 
 
 def load_questions(path: Path) -> list[dict]:
@@ -248,119 +336,87 @@ def load_questions(path: Path) -> list[dict]:
             raise ValueError(f"{item.get('id', '<unknown>')}: missing question.")
 
         if not item.get("expected_sources"):
-            raise ValueError(
-                f"{item['id']}: expected_sources must contain at least one source."
-            )
+            raise ValueError(f"{item['id']}: expected_sources must contain at least one source.")
 
     return questions
 
 
-def build_retriever():
+def load_retriever():
     print(f"Loading embedding model: {EMBEDDING_MODEL}")
     model = SentenceTransformer(EMBEDDING_MODEL)
 
-    print("Reading project files...")
-    files = read_dir(PROJECT_ROOT)
+    print("Loading frozen RAG fixture...")
+    index, chunks = load_index(FIXTURE_DIR)
+    print(f"Loaded {len(chunks)} frozen chunks.")
 
-    chunks = []
-    for file in files:
-        chunks.extend(chunking(file))
-
-    print(f"Building FAISS index from {len(chunks)} chunks...")
-
-    index = build_index(
-        model=model,
-        chunks=chunks,
-        dimension=EMBEDDING_DIMENSION,
-    )
-
-    retriever = FaissRetriever(
-        model=model,
-        index=index,
-        chunks=chunks,
-    )
-
-    return retriever, len(chunks)
-
-
-def print_question_result(result: dict) -> None:
-    raw = result["raw_faiss"]["metrics"]
-    reranked = result["reranked"]["metrics"]
-
-    print(
-        f"{result['id']} | "
-        f"Raw H@5={raw['hit@5']:.0f} "
-        f"H@25={raw['hit@25']:.0f} | "
-        f"Rerank H@1={reranked['hit@1']:.0f} "
-        f"H@5={reranked['hit@5']:.0f} | "
-        f"{result['diagnosis']}"
-    )
+    return FaissRetriever(model=model, index=index, chunks=chunks), len(chunks)
 
 
 def print_summary(
     question_count: int,
     chunk_count: int,
-    raw: dict,
-    reranked: dict,
-    diagnosis: dict,
+    m4_raw: dict,
+    m4_final: dict,
+    m5_final: dict,
+    context: dict,
+    m4_diagnosis: dict,
+    m5_diagnosis: dict,
+    context_diagnosis: dict,
+    total_dropped_relevant: int,
 ) -> None:
-    print("\n========== RAG RETRIEVAL BENCHMARK ==========")
+    print("\n========== BENCHMARK SUMMARY ==========")
     print(f"Questions : {question_count}")
     print(f"Chunks    : {chunk_count}")
     print(f"Model     : {EMBEDDING_MODEL}")
+    print("Corpus    : frozen RAG fixture")
 
-    print("\n---------- RAW FAISS ----------")
+    print("\n---------- M4 BASELINE ----------")
+    print(f"Dense Hit@25   : {m4_raw['hit@25']:.4f}")
+    print(f"Dense Recall@25: {m4_raw['recall@25']:.4f}")
+    print(f"Final Hit@1    : {m4_final['hit@1']:.4f}")
+    print(f"Final Hit@3    : {m4_final['hit@3']:.4f}")
+    print(f"Final Hit@5    : {m4_final['hit@5']:.4f}")
+    print(f"Final Recall@5 : {m4_final['recall@5']:.4f}")
+    print(f"Final MRR@5    : {m4_final['mrr@5']:.4f}")
+    print(f"Diagnosis      : {m4_diagnosis}")
 
-    for k in RAW_K_VALUES:
-        print(f"Hit@{k:<2}       : {raw[f'hit@{k}']:.4f}")
-        print(f"Recall@{k:<2}    : {raw[f'recall@{k}']:.4f}")
+    print("\n---------- M5 RERANKING ----------")
+    print(f"Hit@1    : {m5_final['hit@1']:.4f}")
+    print(f"Hit@3    : {m5_final['hit@3']:.4f}")
+    print(f"Hit@5    : {m5_final['hit@5']:.4f}")
+    print(f"Recall@5 : {m5_final['recall@5']:.4f}")
+    print(f"MRR@5    : {m5_final['mrr@5']:.4f}")
+    print(f"Diagnosis: {m5_diagnosis}")
 
-    print(f"MRR@5       : {raw['mrr@5']:.4f}")
-    print(f"MRR@25      : {raw['mrr@25']:.4f}")
+    print("\n---------- M5 CONTEXT ----------")
+    print(f"Hit@1                  : {context['hit@1']:.4f}")
+    print(f"Hit@3                  : {context['hit@3']:.4f}")
+    print(f"Hit@5                  : {context['hit@5']:.4f}")
+    print(f"Recall@5               : {context['recall@5']:.4f}")
+    print(f"MRR@5                  : {context['mrr@5']:.4f}")
+    print(f"Average chunks kept    : {context['chunk_count']:.2f}")
+    print(f"Average context chars  : {context['context_chars']:.2f}")
+    print(f"Average dropped chunks : {context['dropped_chunks']:.2f}")
+    print(f"Total dropped relevant : {total_dropped_relevant}")
+    print(f"Diagnosis               : {context_diagnosis}")
 
-    print("\n------ FAISS + RERANKING ------")
 
-    for k in RERANKED_K_VALUES:
-        print(f"Hit@{k:<2}       : {reranked[f'hit@{k}']:.4f}")
-        print(f"Recall@{k:<2}    : {reranked[f'recall@{k}']:.4f}")
+def write_json(path: Path, payload: dict) -> None:
+    path.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
 
-    print(f"MRR@5       : {reranked['mrr@5']:.4f}")
-
-    print("\n----------- DELTA ------------")
-
-    for k in (1, 3, 5):
-        delta = reranked[f"hit@{k}"] - raw[f"hit@{k}"]
-        print(f"Hit@{k} delta : {delta:+.4f}")
-
-    mrr_delta = reranked["mrr@5"] - raw["mrr@5"]
-    print(f"MRR@5 delta : {mrr_delta:+.4f}")
-
-    print("\n--------- DIAGNOSIS ----------")
-    print(f"OK                  : {diagnosis['ok']}")
-    print(f"Candidate retrieval : {diagnosis['candidate_retrieval']}")
-    print(f"Reranking           : {diagnosis['reranking']}")
+    print(f"Saved: {path}")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Benchmark CodeAgent RAG retrieval."
-    )
-
-    parser.add_argument(
-        "--questions",
-        type=Path,
-        default=DEFAULT_QUESTIONS,
-    )
-
-    parser.add_argument(
-        "--output",
-        type=Path,
-        default=None,
-    )
-
+    parser = argparse.ArgumentParser(description="Benchmark CodeAgent RAG.")
+    parser.add_argument("--questions", type=Path, default=DEFAULT_QUESTIONS)
     args = parser.parse_args()
+
     questions = load_questions(args.questions)
-    retriever, chunk_count = build_retriever()
+    retriever, chunk_count = load_retriever()
 
     print(f"\nRunning {len(questions)} benchmark questions...\n")
 
@@ -369,53 +425,160 @@ def main() -> None:
     for item in questions:
         result = evaluate_question(retriever, item)
         results.append(result)
-        print_question_result(result)
 
-    raw_aggregate = aggregate_metrics(results, "raw_faiss")
-    reranked_aggregate = aggregate_metrics(results, "reranked")
-    diagnosis = aggregate_diagnosis(results)
+        print(
+            f"{result['id']} | "
+            f"M4 H@5={result['m4']['metrics']['hit@5']:.0f} | "
+            f"M5 H@5={result['m5_reranking']['final']['metrics']['hit@5']:.0f} | "
+            f"Context H@5={result['m5_context']['metrics']['hit@5']:.0f}"
+        )
+
+    dense_aggregate = aggregate_metrics(
+        results,
+        lambda result: result["dense"]["metrics"],
+    )
+
+    lexical_aggregate = aggregate_metrics(
+        results,
+        lambda result: result["lexical"]["metrics"],
+    )
+
+    hybrid_aggregate = aggregate_metrics(
+        results,
+        lambda result: result["hybrid"]["metrics"],
+    )
+
+    m4_aggregate = aggregate_metrics(
+        results,
+        lambda result: result["m4"]["metrics"],
+    )
+
+    m5_final_aggregate = aggregate_metrics(
+        results,
+        lambda result: result["m5_reranking"]["final"]["metrics"],
+    )
+
+    context_aggregate = aggregate_metrics(
+        results,
+        lambda result: result["m5_context"]["metrics"],
+    )
+
+    reranking_strategies = aggregate_reranking_strategies(results)
+
+    m4_diagnosis = aggregate_diagnosis(
+        results,
+        lambda result: result["m4"]["diagnosis"],
+    )
+
+    m5_diagnosis = aggregate_diagnosis(
+        results,
+        lambda result: result["m5_reranking"]["diagnosis"],
+    )
+
+    context_diagnosis = aggregate_diagnosis(
+        results,
+        lambda result: result["m5_context"]["diagnosis"],
+    )
+
+    total_dropped_relevant = sum(
+        result["m5_context"]["metrics"]["dropped_relevant"]
+        for result in results
+    )
 
     print_summary(
         question_count=len(results),
         chunk_count=chunk_count,
-        raw=raw_aggregate,
-        reranked=reranked_aggregate,
-        diagnosis=diagnosis,
+        m4_raw=dense_aggregate,
+        m4_final=m4_aggregate,
+        m5_final=m5_final_aggregate,
+        context=context_aggregate,
+        m4_diagnosis=m4_diagnosis,
+        m5_diagnosis=m5_diagnosis,
+        context_diagnosis=context_diagnosis,
+        total_dropped_relevant=total_dropped_relevant,
     )
 
-    output = args.output
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    if output is None:
-        DEFAULT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-        output = DEFAULT_RESULTS_DIR / "baseline_m4.json"
-    else:
-        output.parent.mkdir(parents=True, exist_ok=True)
-
-    payload = {
+    common = {
         "created_at": datetime.now(timezone.utc).isoformat(),
         "embedding_model": EMBEDDING_MODEL,
         "question_count": len(results),
         "chunk_count": chunk_count,
-        "raw_k_values": list(RAW_K_VALUES),
-        "reranked_k_values": list(RERANKED_K_VALUES),
-        "aggregate": {
-            "raw_faiss": raw_aggregate,
-            "reranked": reranked_aggregate,
-            "diagnosis": diagnosis,
-        },
-        "results": results,
+        "fixture": relative_path(FIXTURE_DIR),
     }
 
-    output.write_text(
-        json.dumps(
-            payload,
-            ensure_ascii=False,
-            indent=2,
-        ),
-        encoding="utf-8",
-    )
+    m4_payload = {
+        **common,
+        "pipeline": "dense_faiss + lexical_reranking",
+        "aggregate": {
+            "dense": dense_aggregate,
+            "final": m4_aggregate,
+            "diagnosis": m4_diagnosis,
+        },
+        "results": [
+            {
+                "id": result["id"],
+                "question": result["question"],
+                "expected_sources": result["expected_sources"],
+                "dense": result["dense"],
+                "final": result["m4"],
+            }
+            for result in results
+        ],
+    }
 
-    print(f"\nResults saved to: {output}")
+    m5_reranking_payload = {
+        **common,
+        "pipeline": "dense + lexical + hybrid + RRF",
+        "aggregate": {
+            "dense": dense_aggregate,
+            "lexical": lexical_aggregate,
+            "hybrid": hybrid_aggregate,
+            "final": m5_final_aggregate,
+            "reranking_strategies": reranking_strategies,
+            "diagnosis": m5_diagnosis,
+        },
+        "results": [
+            {
+                "id": result["id"],
+                "question": result["question"],
+                "expected_sources": result["expected_sources"],
+                "dense": result["dense"],
+                "lexical": result["lexical"],
+                "hybrid": result["hybrid"],
+                "final": result["m5_reranking"]["final"],
+                "reranking_strategies": result["m5_reranking"]["strategies"],
+                "diagnosis": result["m5_reranking"]["diagnosis"],
+            }
+            for result in results
+        ],
+    }
+
+    m5_context_payload = {
+        **common,
+        "pipeline": "M5 retrieval + context selection",
+        "aggregate": {
+            "final": m5_final_aggregate,
+            "context": context_aggregate,
+            "total_dropped_relevant": total_dropped_relevant,
+            "diagnosis": context_diagnosis,
+        },
+        "results": [
+            {
+                "id": result["id"],
+                "question": result["question"],
+                "expected_sources": result["expected_sources"],
+                "final": result["m5_reranking"]["final"],
+                "context": result["m5_context"],
+            }
+            for result in results
+        ],
+    }
+
+    write_json(RESULTS_DIR / "m4_baseline.json", m4_payload)
+    write_json(RESULTS_DIR / "m5_reranking.json", m5_reranking_payload)
+    write_json(RESULTS_DIR / "m5_context.json", m5_context_payload)
 
 
 if __name__ == "__main__":

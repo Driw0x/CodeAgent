@@ -1,0 +1,843 @@
+{
+  "summary": {
+    "questions": 16,
+    "retrieval_questions": 12,
+    "retrieval": {
+      "hit@1": 0.4166666666666667,
+      "recall@1": 0.4166666666666667,
+      "precision@1": 0.4166666666666667,
+      "hit@3": 0.5833333333333334,
+      "recall@3": 0.5833333333333334,
+      "precision@3": 0.19444444444444442,
+      "hit@5": 0.6666666666666666,
+      "recall@5": 0.6666666666666666,
+      "precision@5": 0.13333333333333333,
+      "mrr@5": 0.5069444444444444
+    },
+    "response_behavior_matches": 10,
+    "response_behavior_match_rate": 0.625,
+    "average_generation_time": 4.35963777500001
+  },
+  "results": [
+    {
+      "id": "final_001",
+      "category": "answerable",
+      "question": "Avec quel encodage le contenu d'un fichier source est-il lu ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/parser/file_loader.py",
+          "type": "function",
+          "name": "read"
+        },
+        {
+          "rank": 2,
+          "file": "app/rag/prompt.py",
+          "type": "function",
+          "name": "format_sources"
+        },
+        {
+          "rank": 3,
+          "file": "app/parser/file_loader.py",
+          "type": "function",
+          "name": "read_dir"
+        },
+        {
+          "rank": 4,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "load_benchmark"
+        },
+        {
+          "rank": 5,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "save_index"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 1.0,
+        "recall@1": 1.0,
+        "precision@1": 1.0,
+        "hit@3": 1.0,
+        "recall@3": 1.0,
+        "precision@3": 0.3333333333333333,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "answer": "Le contenu d'un fichier source est lu avec l'encodage 'utf-8'. Cela se voit dans la fonction `read` du fichier `app/parser/file_loader.py` à la ligne 8 :\n\n```python\nwith open(path, 'r', encoding='utf-8') as fichier:\n```",
+      "abstention": false,
+      "has_answer_content": true,
+      "response_behavior_match": true,
+      "generation_time": 3.9061034999904223
+    },
+    {
+      "id": "final_002",
+      "category": "answerable",
+      "question": "Comment le parcours d'un projet évite-t-il de charger des fichiers qui ne correspondent pas au langage attendu ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/parser/file_loader.py",
+          "type": "function",
+          "name": "read_dir"
+        },
+        {
+          "rank": 2,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "parse_args"
+        },
+        {
+          "rank": 3,
+          "file": "app/parser/file_loader.py",
+          "type": "function",
+          "name": "read"
+        },
+        {
+          "rank": 4,
+          "file": "app/rag/prompt.py",
+          "type": "function",
+          "name": "relative_file_path"
+        },
+        {
+          "rank": 5,
+          "file": "app/rag/prompt.py",
+          "type": "function",
+          "name": "build_prompt"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 1.0,
+        "recall@1": 1.0,
+        "precision@1": 1.0,
+        "hit@3": 1.0,
+        "recall@3": 1.0,
+        "precision@3": 0.3333333333333333,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "answer": "Le parcours d'un projet évite de charger des fichiers qui ne correspondent pas au langage attendu grâce à la ligne suivante dans la fonction `read_dir` du fichier `app/parser/file_loader.py` :\n\n```python\nfor prog in p.glob('**/*.%s' % EXTENSIONS[LANGAGE.lower()]):\n```\n\nCette ligne utilise la méthode `glob` pour rechercher des fichiers qui correspondent à l'extension définie pour le langage spécifié dans la variable `LANGAGE`. Seuls les fichiers avec cette extension spécifique seront considérés pour le chargement.",
+      "abstention": false,
+      "has_answer_content": true,
+      "response_behavior_match": true,
+      "generation_time": 5.048416699981317
+    },
+    {
+      "id": "final_003",
+      "category": "answerable",
+      "question": "Quelles informations de position dans le fichier source sont conservées lors de la création d'un chunk AST ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "update_index"
+        },
+        {
+          "rank": 2,
+          "file": "app/parser/chunker.py",
+          "type": "function",
+          "name": "chunking"
+        },
+        {
+          "rank": 3,
+          "file": "app/rag/prompt.py",
+          "type": "function",
+          "name": "format_sources"
+        },
+        {
+          "rank": 4,
+          "file": "app/memory/embeddings.py",
+          "type": "function",
+          "name": "chunk_embedding_text"
+        },
+        {
+          "rank": 5,
+          "file": "app/parser/chunker.py",
+          "type": "function",
+          "name": "extract_names"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 0.0,
+        "recall@1": 0.0,
+        "precision@1": 0.0,
+        "hit@3": 1.0,
+        "recall@3": 1.0,
+        "precision@3": 0.3333333333333333,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.5
+      },
+      "answer": "Lors de la création d'un chunk AST, les informations de position dans le fichier source suivantes sont conservées :\n\n- `start_line` : La ligne de début du nœud dans le fichier source.\n- `end_line` : La ligne de fin du nœud dans le fichier source.\n\nCes informations sont ajoutées aux chunks pour chaque type de nœud (assignation, définition de fonction, importation, définition de classe, importation relative, annotation d'assignation, définition de fonction asynchrone) dans la fonction `chunking` du fichier `app/parser/chunker.py`.",
+      "abstention": false,
+      "has_answer_content": true,
+      "response_behavior_match": true,
+      "generation_time": 5.604831899981946
+    },
+    {
+      "id": "final_004",
+      "category": "answerable",
+      "question": "Quels fichiers doivent être présents pour que CodeAgent considère qu'un index persistant existe ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "save_index"
+        },
+        {
+          "rank": 2,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "build_index"
+        },
+        {
+          "rank": 3,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "update_index"
+        },
+        {
+          "rank": 4,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "index_exists"
+        },
+        {
+          "rank": 5,
+          "file": "app/memory/project_state.py",
+          "type": "function",
+          "name": "manifest_exists"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 0.0,
+        "recall@1": 0.0,
+        "precision@1": 0.0,
+        "hit@3": 0.0,
+        "recall@3": 0.0,
+        "precision@3": 0.0,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.25
+      },
+      "answer": "Pour que CodeAgent considère qu'un index persistant existe, les fichiers suivants doivent être présents dans le répertoire spécifié :\n\n1. `INDEX_FILE` (le fichier d'index FAISS)\n2. `CHUNKS_FILE` (le fichier contenant les morceaux de texte)\n\nCes fichiers sont vérifiés par la fonction `index_exists` dans le fichier `app/memory/vector_store.py` (lignes 55-61).",
+      "abstention": false,
+      "has_answer_content": true,
+      "response_behavior_match": true,
+      "generation_time": 4.619585599983111
+    },
+    {
+      "id": "final_005",
+      "category": "answerable",
+      "question": "Que se passe-t-il au chargement si le nombre de vecteurs FAISS ne correspond pas au nombre de chunks ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "load_index"
+        },
+        {
+          "rank": 2,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "build_index"
+        },
+        {
+          "rank": 3,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "update_index"
+        },
+        {
+          "rank": 4,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "save_index"
+        },
+        {
+          "rank": 5,
+          "file": "app/rag/prompt.py",
+          "type": "function",
+          "name": "build_context"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 1.0,
+        "recall@1": 1.0,
+        "precision@1": 1.0,
+        "hit@3": 1.0,
+        "recall@3": 1.0,
+        "precision@3": 0.3333333333333333,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "answer": "Au chargement, si le nombre de vecteurs FAISS ne correspond pas au nombre de chunks, une erreur `ValueError` est levée avec un message indiquant le désaccord entre le nombre de vecteurs et le nombre de chunks.",
+      "abstention": false,
+      "has_answer_content": true,
+      "response_behavior_match": true,
+      "generation_time": 3.7153641000040807
+    },
+    {
+      "id": "final_006",
+      "category": "answerable",
+      "question": "Comment un chemin de fichier absolu est-il transformé en chemin relatif utilisé dans l'état du projet ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/parser/file_loader.py",
+          "type": "function",
+          "name": "read"
+        },
+        {
+          "rank": 2,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "parse_args"
+        },
+        {
+          "rank": 3,
+          "file": "app/retrieval/faiss_retriever.py",
+          "type": "function",
+          "name": "tokenize"
+        },
+        {
+          "rank": 4,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "safe_model_name"
+        },
+        {
+          "rank": 5,
+          "file": "app/parser/file_loader.py",
+          "type": "function",
+          "name": "read_dir"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 0.0,
+        "recall@1": 0.0,
+        "precision@1": 0.0,
+        "hit@3": 0.0,
+        "recall@3": 0.0,
+        "precision@3": 0.0,
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0
+      },
+      "answer": "Je ne peux pas déterminer comment un chemin de fichier absolu est transformé en chemin relatif utilisé dans l'état du projet à partir du contexte fourni. Le contexte ne contient aucune information sur la transformation de chemins de fichiers.",
+      "abstention": true,
+      "has_answer_content": false,
+      "response_behavior_match": false,
+      "generation_time": 3.66703489999054
+    },
+    {
+      "id": "final_007",
+      "category": "answerable",
+      "question": "Quelle partie du hash du chemin du projet est utilisée pour construire l'identifiant de son dossier mémoire ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "parse_args"
+        },
+        {
+          "rank": 2,
+          "file": "app/memory/project_state.py",
+          "type": "function",
+          "name": "build_manifest"
+        },
+        {
+          "rank": 3,
+          "file": "app/utils/paths.py",
+          "type": "function",
+          "name": "project_memory_dir"
+        },
+        {
+          "rank": 4,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "compute_tokens_per_second"
+        },
+        {
+          "rank": 5,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "load_benchmark"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 0.0,
+        "recall@1": 0.0,
+        "precision@1": 0.0,
+        "hit@3": 1.0,
+        "recall@3": 1.0,
+        "precision@3": 0.3333333333333333,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 0.3333333333333333
+      },
+      "answer": "Selon le code dans le fichier `app/utils/paths.py` (lignes 6-16), l'identifiant de dossier mémoire du projet est construit en utilisant les 8 premiers caractères du hash SHA-256 du chemin du projet.",
+      "abstention": false,
+      "has_answer_content": true,
+      "response_behavior_match": true,
+      "generation_time": 3.8552339000161737
+    },
+    {
+      "id": "final_008",
+      "category": "answerable",
+      "question": "Quelles statistiques de tokens sont mémorisées après une génération du LLM local ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/retrieval/faiss_retriever.py",
+          "type": "function",
+          "name": "tokenize"
+        },
+        {
+          "rank": 2,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "warm_up"
+        },
+        {
+          "rank": 3,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "compute_tokens_per_second"
+        },
+        {
+          "rank": 4,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "build_summary"
+        },
+        {
+          "rank": 5,
+          "file": "app/memory/history.py",
+          "type": "function",
+          "name": "save_analysis"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 0.0,
+        "recall@1": 0.0,
+        "precision@1": 0.0,
+        "hit@3": 0.0,
+        "recall@3": 0.0,
+        "precision@3": 0.0,
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0
+      },
+      "answer": "Je ne peux pas déterminer quelles statistiques de tokens sont mémorisées après une génération du LLM local à partir du contexte fourni. Le contexte ne contient aucune information sur la fonctionnalité de mémorisation des statistiques de tokens après une génération du LLM local.",
+      "abstention": true,
+      "has_answer_content": false,
+      "response_behavior_match": false,
+      "generation_time": 4.152739199984353
+    },
+    {
+      "id": "final_009",
+      "category": "partial",
+      "question": "Comment l'index FAISS est-il construit et cette construction utilise-t-elle une accélération GPU ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "build_index"
+        },
+        {
+          "rank": 2,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "update_index"
+        },
+        {
+          "rank": 3,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "save_index"
+        },
+        {
+          "rank": 4,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "load_index"
+        },
+        {
+          "rank": 5,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "main"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 1.0,
+        "recall@1": 1.0,
+        "precision@1": 1.0,
+        "hit@3": 1.0,
+        "recall@3": 1.0,
+        "precision@3": 0.3333333333333333,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "answer": "L'index FAISS est construit dans la fonction `build_index` du fichier `app/memory/vector_store.py` (lignes 13-21). Voici le processus de construction :\n\n1. Un index FAISS de type `IndexFlatL2` est créé avec une dimension spécifiée (par défaut 384).\n2. Pour chaque morceau (chunk) dans la liste `chunks`, le texte est extrait et converti en vecteur en utilisant les fonctions `chunk_embedding_text` et `embeddings`.\n3. Le vecteur est ensuite ajouté à l'index FAISS.\n\nLe code ne montre aucune indication d'utilisation d'une accélération GPU. La création de l'index et l'ajout des vecteurs sont effectués avec `faiss.IndexFlatL2`, qui est une implémentation CPU par défaut. Pour utiliser une accélération GPU, il faudrait utiliser une variante de l'index FAISS qui prend en charge les GPU, comme `faiss.IndexFlatL2` avec une configuration spécifique pour utiliser les GPU, mais cela n'est pas visible dans le code fourni.",
+      "abstention": false,
+      "has_answer_content": true,
+      "response_behavior_match": false,
+      "generation_time": 8.068103700003121
+    },
+    {
+      "id": "final_010",
+      "category": "partial",
+      "question": "Quelles informations sont enregistrées dans une entrée d'historique et existe-t-il une durée maximale de conservation ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/memory/history.py",
+          "type": "function",
+          "name": "save_analysis"
+        },
+        {
+          "rank": 2,
+          "file": "app/memory/project_state.py",
+          "type": "function",
+          "name": "compare_manifests"
+        },
+        {
+          "rank": 3,
+          "file": "app/memory/project_state.py",
+          "type": "function",
+          "name": "save_manifest"
+        },
+        {
+          "rank": 4,
+          "file": "app/rag/pipeline.py",
+          "type": "class",
+          "name": "RAGPipeline"
+        },
+        {
+          "rank": 5,
+          "file": "app/rag/prompt.py",
+          "type": "variable",
+          "name": "SYSTEM_PROMPT"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 1.0,
+        "recall@1": 1.0,
+        "precision@1": 1.0,
+        "hit@3": 1.0,
+        "recall@3": 1.0,
+        "precision@3": 0.3333333333333333,
+        "hit@5": 1.0,
+        "recall@5": 1.0,
+        "precision@5": 0.2,
+        "mrr@5": 1.0
+      },
+      "answer": "Dans une entrée d'historique, les informations suivantes sont enregistrées :\n\n- `timestamp` : La date et l'heure de l'entrée, formatée en ISO 8601.\n- `question` : La question posée.\n- `answer` : La réponse générée.\n\nConcernant la durée maximale de conservation, il n'y a aucune information fournie dans le contexte fourni sur une durée maximale de conservation des entrées d'historique.",
+      "abstention": false,
+      "has_answer_content": true,
+      "response_behavior_match": false,
+      "generation_time": 4.847226999991108
+    },
+    {
+      "id": "final_011",
+      "category": "partial",
+      "question": "Comment les chunks sont-ils sélectionnés lorsque la taille maximale du contexte est atteinte et pourquoi cette limite précise a-t-elle été choisie ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/rag/pipeline.py",
+          "type": "class",
+          "name": "RAGPipeline"
+        },
+        {
+          "rank": 2,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "load_index"
+        },
+        {
+          "rank": 3,
+          "file": "app/rag/prompt.py",
+          "type": "function",
+          "name": "build_context"
+        },
+        {
+          "rank": 4,
+          "file": "app/memory/vector_store.py",
+          "type": "function",
+          "name": "build_index"
+        },
+        {
+          "rank": 5,
+          "file": "app/retrieval/faiss_retriever.py",
+          "type": "class",
+          "name": "FaissRetriever"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 0.0,
+        "recall@1": 0.0,
+        "precision@1": 0.0,
+        "hit@3": 0.0,
+        "recall@3": 0.0,
+        "precision@3": 0.0,
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0
+      },
+      "answer": "Je ne peux pas déterminer comment les chunks sont sélectionnés lorsque la taille maximale du contexte est atteinte, ni pourquoi cette limite précise a été choisie. Le contexte fourni ne contient aucune information sur la gestion de la taille maximale du contexte ou sur la sélection des chunks dans ce cas.",
+      "abstention": true,
+      "has_answer_content": false,
+      "response_behavior_match": false,
+      "generation_time": 4.308119900000747
+    },
+    {
+      "id": "final_012",
+      "category": "partial",
+      "question": "Comment LocalLLM communique-t-il avec Ollama et combien de nouvelles tentatives automatiques sont effectuées si la requête échoue ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "parse_args"
+        },
+        {
+          "rank": 2,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "call_ollama"
+        },
+        {
+          "rank": 3,
+          "file": "app/rag/pipeline.py",
+          "type": "class",
+          "name": "RAGPipeline"
+        },
+        {
+          "rank": 4,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "warm_up"
+        },
+        {
+          "rank": 5,
+          "file": "app/parser/file_loader.py",
+          "type": "function",
+          "name": "read"
+        }
+      ],
+      "retrieval": {
+        "hit@1": 0.0,
+        "recall@1": 0.0,
+        "precision@1": 0.0,
+        "hit@3": 0.0,
+        "recall@3": 0.0,
+        "precision@3": 0.0,
+        "hit@5": 0.0,
+        "recall@5": 0.0,
+        "precision@5": 0.0,
+        "mrr@5": 0.0
+      },
+      "answer": "Je ne peux pas déterminer comment LocalLLM communique avec Ollama ou combien de nouvelles tentatives automatiques sont effectuées si la requête échoue. Le contexte fourni ne contient aucune information sur la classe LocalLLM ou ses interactions avec Ollama.",
+      "abstention": true,
+      "has_answer_content": false,
+      "response_behavior_match": false,
+      "generation_time": 4.065644600021187
+    },
+    {
+      "id": "final_013",
+      "category": "unanswerable",
+      "question": "Quelle base de données vectorielle distante est utilisée en production par CodeAgent ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/rag/prompt.py",
+          "type": "variable",
+          "name": "SYSTEM_PROMPT"
+        },
+        {
+          "rank": 2,
+          "file": "scripts/benchmark_llm.py",
+          "type": "variable",
+          "name": "DEFAULT_BASE_URL"
+        },
+        {
+          "rank": 3,
+          "file": "app/parser/variable.py",
+          "type": "variable",
+          "name": "EXTENSIONS"
+        },
+        {
+          "rank": 4,
+          "file": "app/llm/__init__.py",
+          "type": "variable",
+          "name": "__all__"
+        },
+        {
+          "rank": 5,
+          "file": "app/retrieval/__init__.py",
+          "type": "variable",
+          "name": "__all__"
+        }
+      ],
+      "retrieval": null,
+      "answer": "Je ne peux pas déterminer quelle base de données vectorielle distante est utilisée en production par CodeAgent à partir du contexte fourni.",
+      "abstention": true,
+      "has_answer_content": false,
+      "response_behavior_match": true,
+      "generation_time": 3.1453333999961615
+    },
+    {
+      "id": "final_014",
+      "category": "unanswerable",
+      "question": "Quel service de télémétrie collecte les requêtes des utilisateurs de CodeAgent ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "call_ollama"
+        },
+        {
+          "rank": 2,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "run_test"
+        },
+        {
+          "rank": 3,
+          "file": "app/rag/prompt.py",
+          "type": "function",
+          "name": "build_prompt"
+        },
+        {
+          "rank": 4,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "build_prompt"
+        },
+        {
+          "rank": 5,
+          "file": "app/parser/file_loader.py",
+          "type": "function",
+          "name": "read"
+        }
+      ],
+      "retrieval": null,
+      "answer": "Je ne peux pas déterminer quel service de télémétrie collecte les requêtes des utilisateurs de CodeAgent à partir du contexte fourni. Le contexte ne contient aucune information sur la collecte de télémétrie.",
+      "abstention": true,
+      "has_answer_content": false,
+      "response_behavior_match": true,
+      "generation_time": 3.9592474000528455
+    },
+    {
+      "id": "final_015",
+      "category": "unanswerable",
+      "question": "Quel SLA de latence est garanti pour les réponses de CodeAgent en production ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "parse_args"
+        },
+        {
+          "rank": 2,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "load_benchmark"
+        },
+        {
+          "rank": 3,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "warm_up"
+        },
+        {
+          "rank": 4,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "run_test"
+        },
+        {
+          "rank": 5,
+          "file": "scripts/benchmark_llm.py",
+          "type": "function",
+          "name": "build_summary"
+        }
+      ],
+      "retrieval": null,
+      "answer": "Je ne peux pas déterminer le SLA de latence garanti pour les réponses de CodeAgent en production à partir du contexte fourni. Le code source fourni ne contient aucune information sur les SLA ou les contrats de niveau de service.",
+      "abstention": true,
+      "has_answer_content": false,
+      "response_behavior_match": true,
+      "generation_time": 3.8516524000442587
+    },
+    {
+      "id": "final_016",
+      "category": "unanswerable",
+      "question": "Combien d'utilisateurs actifs utilisent actuellement CodeAgent en production ?",
+      "retrieved_sources": [
+        {
+          "rank": 1,
+          "file": "app/rag/prompt.py",
+          "type": "variable",
+          "name": "SYSTEM_PROMPT"
+        },
+        {
+          "rank": 2,
+          "file": "app/parser/variable.py",
+          "type": "variable",
+          "name": "EXTENSIONS"
+        },
+        {
+          "rank": 3,
+          "file": "app/retrieval/__init__.py",
+          "type": "variable",
+          "name": "__all__"
+        },
+        {
+          "rank": 4,
+          "file": "app/__init__.py",
+          "type": "variable",
+          "name": "__all__"
+        },
+        {
+          "rank": 5,
+          "file": "app/utils/__init__.py",
+          "type": "variable",
+          "name": "__all__"
+        }
+      ],
+      "retrieval": null,
+      "answer": "Je ne peux pas déterminer combien d'utilisateurs actifs utilisent actuellement CodeAgent en production à partir du contexte fourni.",
+      "abstention": true,
+      "has_answer_content": false,
+      "response_behavior_match": true,
+      "generation_time": 2.93956619995879
+    }
+  ]
+}
