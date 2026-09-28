@@ -1,14 +1,14 @@
 # CodeAgent — Project Memory
 
-> Mémoire synthétique du projet jusqu’à la fin du Milestone 4.
+> Mémoire synthétique du projet jusqu’à la fin du Milestone 5.
 
 ## État actuel
 
-Les Milestones 1, 2, 3 et 4 sont terminés.
+Les Milestones 1, 2, 3, 4 et 5 sont terminés.
 
-Le périmètre principal de CodeAgent est considéré comme terminé à M4.
+Le périmètre principal de CodeAgent est considéré comme terminé à M5.
 
-CodeAgent est actuellement capable d’analyser un projet Python, d’indexer son code, de retrouver les portions pertinentes pour une question, de générer une réponse avec un LLM local en citant les fichiers et lignes concernés, puis de conserver et mettre à jour automatiquement la mémoire du projet entre deux exécutions.
+CodeAgent est actuellement capable d’analyser un projet Python, d’indexer son code, de retrouver les portions pertinentes pour une question, de générer une réponse avec un LLM local en citant les sources utilisées, de vérifier automatiquement les citations et le grounding, puis de conserver et mettre à jour automatiquement la mémoire du projet entre deux exécutions.
 
 ## M1 — Lecture et extraction
 
@@ -116,6 +116,19 @@ Lorsqu’aucune modification n’est détectée, CodeAgent réutilise directemen
 
 Les analyses sont également enregistrées dans un historique JSONL contenant la date, la question et la réponse générée.
 
+## M5 — RAG Quality & Grounding
+
+M5 a renforcé et évalué le pipeline RAG avec :
+
+- un benchmark de retrieval avec Hit@K, Recall@K, Precision@K et MRR ;
+- une recherche hybride dense + lexicale ;
+- un reranking et une sélection de contexte améliorés ;
+- un prompt renforcé contre les hallucinations ;
+- des citations `[Sx]` vérifiées automatiquement ;
+- une vérification claim-by-claim du support des réponses par les sources.
+
+Sur le holdout final de 16 questions, M5 améliore `Hit@5` et `Recall@5` de `0.6667` à `0.8333`, ainsi que le comportement réponse/abstention de `0.6250` à `0.7500`. Le `MRR@5` passe de `0.5069` à `0.3917` et la vérification du grounding ajoute en moyenne `2.54 s` au pipeline.
+
 ## Décisions techniques principales
 
 - fonctionnement local ;
@@ -130,19 +143,13 @@ Les analyses sont également enregistrées dans un historique JSONL contenant la
 - persistance locale de l’index FAISS et des chunks ;
 - manifeste SHA-256 pour détecter les changements du projet ;
 - mise à jour incrémentale afin de recalculer uniquement les fichiers modifiés ;
-- historique des analyses stocké en JSONL.
+- historique des analyses stocké en JSONL ;
+- recherche hybride dense + lexicale ;
+- validation automatique des citations ;
+- vérification du grounding avec le LLM local.
 
 ## État du projet et suite
 
-Le périmètre principal de CodeAgent est terminé à M4.
+Le périmètre principal de CodeAgent est terminé à M5.
 
-Le Milestone 5 — RAG Quality & Grounding est une amélioration future consacrée à l’évaluation et à l’amélioration de la qualité du RAG :
-
-- benchmark du retrieval ;
-- analyse des erreurs ;
-- amélioration du candidate retrieval ;
-- recherche hybride dense + lexicale ;
-- amélioration du reranking ;
-- vérification de la cohérence entre sources et réponses.
-
-M5 n’est pas nécessaire pour considérer la version actuelle de CodeAgent comme fonctionnelle et terminée sur son périmètre principal.
+Une évolution future peut ajouter des capacités agentiques avec MCP et des tools. Le grounding pourra également être amélioré avec un modèle NLI ou un second LLM spécialisé.
