@@ -11,17 +11,19 @@ L’objectif du projet est de créer un agent capable de :
 - indexer le code avec des embeddings,
 - comprendre la structure générale du projet,
 - répondre à des questions sur le code,
-- conserver une mémoire simple du projet.
+- conserver une mémoire simple du projet,
+- utiliser des outils de manière contrôlée lorsque nécessaire,
+- planifier les tâches multi-étapes lorsque cela apporte un bénéfice réel.
 
 Le projet fonctionne entièrement en local grâce à un LLM local et une base vectorielle.
 
 ### Statut du projet
 
-**Core project completed — M5**
+**Core RAG completed — M5 · M6/M7 planned**
 
-Le périmètre principal de CodeAgent est terminé et fonctionnel : analyse de code, recherche hybride, pipeline RAG, réponses sourcées, persistance de l'index, mise à jour incrémentale, validation des citations et vérification du grounding.
+Le socle principal de CodeAgent est terminé et fonctionnel : analyse de code, recherche hybride, pipeline RAG, réponses sourcées, persistance de l'index, mise à jour incrémentale, validation des citations et vérification du grounding.
 
-Le Milestone 5 — RAG Quality & Grounding est terminé.
+Le Milestone 5 — RAG Quality & Grounding est terminé. Les prochains milestones étendent ce socle vers l'utilisation contrôlée d'outils puis la planification multi-étapes.
 
 ---
 
@@ -289,8 +291,65 @@ Sur le holdout final de 16 questions, M5 améliore `Hit@5` et `Recall@5` de `0.6
 
 ---
 
-## État final du projet
+## Milestone 6 — MCP & Tool Use
+
+### Objectifs
+
+- [ ] Définir une interface minimale pour les tools
+- [ ] Décrire chaque tool avec un nom, une description et un `JSON Schema`
+- [ ] Valider les paramètres avant exécution
+- [ ] Implémenter un premier ensemble de tools read-only : lecture de fichiers, recherche de code, listing de fichiers, inspection du diff Git et exécution des tests
+- [ ] Laisser le LLM décider si un tool est nécessaire et lequel utiliser
+- [ ] Intégrer les tools via MCP
+- [ ] Mettre en place la boucle `LLM -> Tool Call -> Validation -> Exécution -> Observation -> LLM`
+- [ ] Ajouter timeout, nombre maximal d'étapes, retries limités et détection des appels identiques `tool + arguments`
+- [ ] Valider les résultats des tools et retourner des erreurs structurées au LLM
+- [ ] Réutiliser le grounding M5 pour la réponse finale lorsque des sources projet sont utilisées
+- [ ] Évaluer le tool use sur un benchmark dédié
+
+### Implémentation prévue
+
+Le premier périmètre reste read-only. Les tools modifiant l'état du projet ne seront ajoutés qu'après stabilisation de la boucle d'exécution et devront demander une confirmation explicite pour les opérations à risque.
+
+Le benchmark suivra au minimum le taux de réussite des tâches, les appels invalides, les retries, les appels dupliqués, les erreurs de tools et le nombre d'étapes.
+
+### Résultat attendu
+
+CodeAgent est capable de déterminer lorsqu'un outil est nécessaire, de sélectionner et exécuter le bon tool via MCP, de récupérer d'erreurs simples sans boucle incontrôlée et de produire une réponse finale fondée sur les observations obtenues.
+
+### Future improvement
+
+- Remplacer ou compléter la validation basée sur Qwen par un modèle NLI ou un second LLM spécialisé si les évaluations montrent un gain mesurable.
+
+---
+
+## Milestone 7 — Planning & Controlled Autonomous Execution
+
+### Objectifs
+
+- [ ] Détecter les tâches nécessitant réellement plusieurs étapes dépendantes
+- [ ] Générer un plan court uniquement pour ces tâches
+- [ ] Maintenir un état minimal : objectif, étapes terminées, observations, échecs et budget restant
+- [ ] Exécuter chaque étape avec la boucle de tools M6
+- [ ] Replanifier uniquement les étapes restantes lorsqu'une observation ou une erreur invalide le plan
+- [ ] Préserver le travail déjà validé lors d'un replanning
+- [ ] Arrêter l'exécution lorsque l'objectif est atteint, que le budget est épuisé ou qu'une décision utilisateur est nécessaire
+- [ ] Évaluer les tâches multi-étapes en comparant la boucle directe M6 et la planification M7
+
+### Implémentation prévue
+
+La boucle cible reste simple : `Goal -> Plan optionnel -> Step -> Tool -> Observation -> Next Step / Replan -> Final Answer`.
+
+La planification n'est pas utilisée pour les requêtes simples : elles continuent d'utiliser directement la boucle M6.
+
+### Résultat attendu
+
+CodeAgent est capable d'exécuter de manière contrôlée des tâches de développement multi-étapes, de suivre leur progression et de récupérer d'échecs simples sans recommencer inutilement le travail déjà accompli.
+
+---
+
+## État actuel du projet
 
 CodeAgent dispose désormais d'un pipeline complet permettant d'analyser un projet Python, d'indexer son code, de retrouver les portions pertinentes, de générer des réponses contextualisées avec un LLM local et de maintenir l'index à jour lorsque le projet évolue.
 
-Le développement principal est considéré comme **terminé à M5**. Le pipeline inclut désormais l'évaluation du retrieval, la recherche hybride, les citations vérifiées et le contrôle du grounding.
+Le socle RAG est considéré comme **terminé à M5**. Le pipeline inclut désormais l'évaluation du retrieval, la recherche hybride, les citations vérifiées et le contrôle du grounding. Les M6 et M7 sont planifiés pour ajouter respectivement le tool use via MCP puis la planification multi-étapes contrôlée.
