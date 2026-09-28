@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from app.retrieval import FaissRetriever
+from app.retrieval.faiss_retriever import rerank_score, tokenize
 
 
 CHUNKS = [
@@ -224,3 +225,152 @@ def test_retrieve_reranks_behavior_chunk_above_imports():
     assert results[0]["name"] == "build_index"
     assert results[0]["type"] == "function"
     assert results[0]["rerank_score"] > results[1]["rerank_score"]
+
+
+def test_lexical_retrieve_searches_all_chunks():
+    chunks = [
+        {
+            "file": "app/parser/chunker.py",
+            "type": "function",
+            "name": "chunking",
+            "content": "def chunking(data): ...",
+            "start_line": 1,
+            "end_line": 10,
+        },
+        {
+            "file": "app/memory/history.py",
+            "type": "function",
+            "name": "save_analysis",
+            "content": "def save_analysis(directory, question, answer): ...",
+            "start_line": 7,
+            "end_line": 25,
+        },
+    ]
+
+    model = MagicMock()
+    retriever = FaissRetriever(model, MagicMock(), chunks)
+
+    results = retriever.lexical_retrieve(
+        "Comment save_analysis enregistre-t-il l'historique ?",
+        k=2,
+    )
+
+    assert results[0]["name"] == "save_analysis"
+    assert results[0]["lexical_score"] > 0
+    model.encode.assert_not_called()
+
+
+def test_hybrid_retrieve_recovers_candidate_missing_from_dense():
+    chunks = [
+        {
+            "file": "app/parser/chunker.py",
+            "type": "function",
+            "name": "chunking",
+            "content": "def chunking(data): ...",
+            "start_line": 1,
+            "end_line": 10,
+        },
+        {
+            "file": "app/memory/vector_store.py",
+            "type": "function",
+            "name": "build_index",
+            "content": "def build_index(model, chunks): ...",
+            "start_line": 10,
+            "end_line": 20,
+        },
+        {
+            "file": "app/memory/history.py",
+            "type": "function",
+            "name": "save_analysis",
+            "content": "def save_analysis(directory, question, answer): ...",
+            "start_line": 7,
+            "end_line": 25,
+        },
+    ]
+
+    model = MagicMock()
+    model.encode.return_value = np.zeros((1, 384), dtype="float32")
+
+    index = MagicMock()
+    index.search.return_value = (
+        np.array([[0.1, 0.2]], dtype="float32"),
+        np.array([[0, 1]]),
+    )
+
+    retriever = FaissRetriever(model, index, chunks)
+
+    results = retriever.hybrid_retrieve(
+        "Comment save_analysis enregistre-t-il l'historique ?",
+        k=3,
+    )
+
+    assert results[0]["name"] == "save_analysis"
+    assert results[0]["dense_rank"] is None
+    assert results[0]["lexical_rank"] == 1
+
+
+def test_retrieve_uses_hybrid_candidate_search():
+    chunks = [
+        {
+            "file": "app/parser/chunker.py",
+            "type": "function",
+            "name": "chunking",
+            "content": "def chunking(data): ...",
+            "start_line": 1,
+            "end_line": 10,
+        },
+        {
+            "file": "app/memory/history.py",
+            "type": "function",
+            "name": "save_analysis",
+            "content": "def save_analysis(directory, question, answer): ...",
+            "start_line": 7,
+            "end_line": 25,
+        },
+    ]
+
+    model = MagicMock()
+    model.encode.return_value = np.zeros((1, 384), dtype="float32")
+
+    index = MagicMock()
+    index.search.return_value = (
+        np.array([[0.1]], dtype="float32"),
+        np.array([[0]]),
+    )
+
+    retriever = FaissRetriever(model, index, chunks)
+
+    results = retriever.retrieve(
+        "Comment save_analysis enregistre-t-il l'historique ?",
+        k=1,
+    )
+
+    assert results[0]["name"] == "save_analysis"
+
+
+def test_tokenize_splits_code_identifiers():
+    assert {"local", "llm"} <= tokenize("LocalLLM")
+    assert {"build", "manifest"} <= tokenize("build_manifest")
+
+
+def test_rerank_prefers_matching_symbol_name():
+    question = "Comment le manifest est-il construit ?"
+
+    build_manifest = {
+        "file": "app/memory/project_state.py",
+        "type": "function",
+        "name": "build_manifest",
+        "content": "def build_manifest(files, project_path): ...",
+    }
+
+    unrelated = {
+        "file": "app/main.py",
+        "type": "function",
+        "name": "main",
+        "content": "manifest = build_manifest(files, PROJECT_PATH)",
+    }
+
+    assert rerank_score(question, build_manifest) > rerank_score(
+        question,
+        unrelated,
+    )
