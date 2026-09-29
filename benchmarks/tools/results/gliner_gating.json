@@ -1,0 +1,274 @@
+{
+  "router": "gliner",
+  "dataset": "baseline_tasks.json",
+  "benchmark": "tool_gating",
+  "summary": {
+    "tasks": 20,
+    "gating_accuracy": 0.45,
+    "tool_selection_accuracy": 0.4117647058823529,
+    "no_tool_accuracy": 0.6666666666666666,
+    "average_latency_seconds": 0.10693,
+    "median_latency_seconds": 0.10064999999999999,
+    "p95_latency_seconds": 0.1422,
+    "average_confidence": 0.911062790453434,
+    "errors": 0
+  },
+  "results": [
+    {
+      "id": "no_tool_01",
+      "prompt": "Réponds uniquement par OK.",
+      "expected_tools": [],
+      "predicted_tool": "no_tool",
+      "correct": true,
+      "confidence": 0.9999963045120239,
+      "latency_seconds": 0.0972,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "no_tool_02",
+      "prompt": "Réponds uniquement par OUI.",
+      "expected_tools": [],
+      "predicted_tool": "no_tool",
+      "correct": true,
+      "confidence": 0.9999964237213135,
+      "latency_seconds": 0.0927,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "no_tool_03",
+      "prompt": "Donne le résultat de 2 + 2.",
+      "expected_tools": [],
+      "predicted_tool": "get_git_diff",
+      "correct": false,
+      "confidence": 0.29406240582466125,
+      "latency_seconds": 0.0958,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "list_files_01",
+      "prompt": "Liste les fichiers du projet.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": "list_files",
+      "correct": true,
+      "confidence": 0.9999980926513672,
+      "latency_seconds": 0.096,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "list_files_02",
+      "prompt": "Quels fichiers se trouvent dans le dossier app/rag ?",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": "list_files",
+      "correct": true,
+      "confidence": 0.9997015595436096,
+      "latency_seconds": 0.1035,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "list_files_03",
+      "prompt": "Liste les fichiers du dossier tests.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": "list_files",
+      "correct": true,
+      "confidence": 0.9999237060546875,
+      "latency_seconds": 0.0961,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "read_file_01",
+      "prompt": "Lis les 20 premières lignes du README.md.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "list_files",
+      "correct": false,
+      "confidence": 0.8635333180427551,
+      "latency_seconds": 0.1125,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "read_file_02",
+      "prompt": "Lis app/llm/local_llm.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "list_files",
+      "correct": false,
+      "confidence": 0.8926722407341003,
+      "latency_seconds": 0.1015,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "read_file_03",
+      "prompt": "Lis les lignes 1 à 40 de app/rag/grounding.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "list_files",
+      "correct": false,
+      "confidence": 0.9869864583015442,
+      "latency_seconds": 0.1422,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "read_file_04",
+      "prompt": "Que contient app/mcp_server.py ?",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "list_files",
+      "correct": false,
+      "confidence": 0.8834674954414368,
+      "latency_seconds": 0.0958,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "search_code_01",
+      "prompt": "Recherche où LocalLLM est défini dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "search_code",
+      "correct": true,
+      "confidence": 0.9999967813491821,
+      "latency_seconds": 0.1001,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "search_code_02",
+      "prompt": "Recherche les occurrences de verify_grounding dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "search_code",
+      "correct": true,
+      "confidence": 0.9999872446060181,
+      "latency_seconds": 0.1012,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "search_code_03",
+      "prompt": "Recherche où PROJECT_ROOT est utilisé.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "no_tool",
+      "correct": false,
+      "confidence": 0.6899148225784302,
+      "latency_seconds": 0.0966,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "search_code_04",
+      "prompt": "Recherche les occurrences de read_file dans le projet.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "read_file",
+      "correct": false,
+      "confidence": 0.9998950958251953,
+      "latency_seconds": 0.0959,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "git_diff_01",
+      "prompt": "Montre-moi le diff Git actuel du projet.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "predicted_tool": "get_git_diff",
+      "correct": true,
+      "confidence": 0.9999512434005737,
+      "latency_seconds": 0.1016,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "git_diff_02",
+      "prompt": "Inspecte les modifications Git non commitées.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "predicted_tool": "no_tool",
+      "correct": false,
+      "confidence": 0.9998724460601807,
+      "latency_seconds": 0.1815,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "run_tests_01",
+      "prompt": "Exécute les tests du projet.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "predicted_tool": "run_tests",
+      "correct": true,
+      "confidence": 0.9998362064361572,
+      "latency_seconds": 0.0931,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "run_tests_02",
+      "prompt": "Lance uniquement tests/test_local_llm.py.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "predicted_tool": "no_tool",
+      "correct": false,
+      "confidence": 0.909878134727478,
+      "latency_seconds": 0.1093,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "recovery_01",
+      "prompt": "Lis missing_file.py. Si le fichier n'existe pas, utilise les outils disponibles pour vérifier s'il existe ailleurs dans le projet.",
+      "expected_tools": [
+        "list_files",
+        "read_file",
+        "search_code"
+      ],
+      "predicted_tool": "no_tool",
+      "correct": false,
+      "confidence": 0.7412925958633423,
+      "latency_seconds": 0.1217,
+      "error": null,
+      "details": {}
+    },
+    {
+      "id": "multi_step_01",
+      "prompt": "Trouve où LocalLLM est défini puis lis le fichier correspondant pour m'indiquer le modèle par défaut.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "read_file",
+      "correct": false,
+      "confidence": 0.9602932333946228,
+      "latency_seconds": 0.1043,
+      "error": null,
+      "details": {}
+    }
+  ]
+}

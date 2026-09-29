@@ -1,0 +1,658 @@
+[
+  {
+    "id": "read_file_supported_01",
+    "category": "read_file",
+    "answer": "Le modèle par défaut est `qwen2.5-coder:14b` [S1].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_MODEL = \"qwen2.5-coder:14b\"",
+        "start_line": 1,
+        "end_line": 1
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "read_file_unsupported_01",
+    "category": "read_file",
+    "answer": "Le modèle par défaut est `devstral:24b` [S1].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_MODEL = \"qwen2.5-coder:14b\"",
+        "start_line": 1,
+        "end_line": 1
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "list_files_supported_01",
+    "category": "list_files",
+    "answer": "Le dossier `app/rag` contient `citations.py`, `grounding.py`, `pipeline.py` et `prompt.py` [S1].",
+    "sources": [
+      {
+        "file": "app/rag",
+        "type": "tool",
+        "name": "list_files",
+        "content": "Tool: list_files\nArguments: {\"path\":\"app/rag\"}\nResult:\n{\"files\":[\"app/rag/citations.py\",\"app/rag/grounding.py\",\"app/rag/pipeline.py\",\"app/rag/prompt.py\"],\"truncated\":false}",
+        "start_line": 1,
+        "end_line": 1
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "list_files_unsupported_01",
+    "category": "list_files",
+    "answer": "Le dossier `app/rag` contient aussi `planner.py` [S1].",
+    "sources": [
+      {
+        "file": "app/rag",
+        "type": "tool",
+        "name": "list_files",
+        "content": "Tool: list_files\nResult:\n{\"files\":[\"app/rag/citations.py\",\"app/rag/grounding.py\",\"app/rag/pipeline.py\",\"app/rag/prompt.py\"],\"truncated\":false}",
+        "start_line": 1,
+        "end_line": 1
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "search_code_supported_01",
+    "category": "search_code",
+    "answer": "`verify_grounding` est défini dans `app/rag/grounding.py` [S1].",
+    "sources": [
+      {
+        "file": "app/rag/grounding.py",
+        "type": "tool",
+        "name": "search_code",
+        "content": "app/rag/grounding.py:78:def verify_grounding(answer: str, chunks: list[dict], llm) -> bool:",
+        "start_line": 78,
+        "end_line": 78
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "search_code_unsupported_01",
+    "category": "search_code",
+    "answer": "`verify_grounding` est appelé uniquement depuis `app/main.py` [S1].",
+    "sources": [
+      {
+        "file": "app/rag/grounding.py",
+        "type": "tool",
+        "name": "search_code",
+        "content": "app/rag/grounding.py:78:def verify_grounding(answer: str, chunks: list[dict], llm) -> bool:",
+        "start_line": 78,
+        "end_line": 78
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "run_tests_supported_01",
+    "category": "run_tests",
+    "answer": "La suite de tests a terminé avec `121 passed` [S1].",
+    "sources": [
+      {
+        "file": "tool/run_tests",
+        "type": "tool",
+        "name": "run_tests",
+        "content": "121 passed in 1.07s",
+        "start_line": 1,
+        "end_line": 1
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "run_tests_unsupported_01",
+    "category": "run_tests",
+    "answer": "La suite de tests a terminé avec `122 passed` [S1].",
+    "sources": [
+      {
+        "file": "tool/run_tests",
+        "type": "tool",
+        "name": "run_tests",
+        "content": "121 passed in 1.07s",
+        "start_line": 1,
+        "end_line": 1
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "git_diff_supported_01",
+    "category": "git_diff",
+    "answer": "`app/main.py` a été modifié [S1].",
+    "sources": [
+      {
+        "file": "tool/get_git_diff",
+        "type": "tool",
+        "name": "get_git_diff",
+        "content": "diff --git a/app/main.py b/app/main.py\n--- a/app/main.py\n+++ b/app/main.py\n@@ -1,3 +1,4 @@\n+import asyncio",
+        "start_line": 1,
+        "end_line": 5
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "git_diff_unsupported_01",
+    "category": "git_diff",
+    "answer": "`README.md` a été modifié [S1].",
+    "sources": [
+      {
+        "file": "tool/get_git_diff",
+        "type": "tool",
+        "name": "get_git_diff",
+        "content": "diff --git a/app/main.py b/app/main.py\n--- a/app/main.py\n+++ b/app/main.py\n@@ -1,3 +1,4 @@\n+import asyncio",
+        "start_line": 1,
+        "end_line": 5
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "multi_source_supported_01",
+    "category": "multi_source",
+    "answer": "LocalLLM est défini dans `app/llm/local_llm.py` [S1]. Le modèle par défaut est `qwen2.5-coder:14b` [S2].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "search_code",
+        "content": "app/llm/local_llm.py:9:class LocalLLM:",
+        "start_line": 9,
+        "end_line": 9
+      },
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_MODEL = \"qwen2.5-coder:14b\"\n\nclass LocalLLM:",
+        "start_line": 4,
+        "end_line": 9
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "multi_source_unsupported_01",
+    "category": "multi_source",
+    "answer": "LocalLLM est défini dans `app/llm/local_llm.py` [S1]. Le modèle par défaut est `devstral:24b` [S2].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "search_code",
+        "content": "app/llm/local_llm.py:9:class LocalLLM:",
+        "start_line": 9,
+        "end_line": 9
+      },
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_MODEL = \"qwen2.5-coder:14b\"\n\nclass LocalLLM:",
+        "start_line": 4,
+        "end_line": 9
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "path_guard_supported_01",
+    "category": "safety",
+    "answer": "Les chemins situés hors du projet sont rejetés [S1].",
+    "sources": [
+      {
+        "file": "app/tools/project_tools.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "if not resolved.is_relative_to(PROJECT_ROOT):\n    raise ValueError(\"Path must stay inside the project.\")",
+        "start_line": 20,
+        "end_line": 21
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "path_guard_unsupported_01",
+    "category": "safety",
+    "answer": "Les chemins hors projet sont automatiquement copiés dans le dépôt [S1].",
+    "sources": [
+      {
+        "file": "app/tools/project_tools.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "if not resolved.is_relative_to(PROJECT_ROOT):\n    raise ValueError(\"Path must stay inside the project.\")",
+        "start_line": 20,
+        "end_line": 21
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "timeout_supported_01",
+    "category": "safeguards",
+    "answer": "Le timeout par défaut des tools est de 60 secondes [S1].",
+    "sources": [
+      {
+        "file": "app/agent/tool_loop.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_TOOL_TIMEOUT = 60.0",
+        "start_line": 18,
+        "end_line": 18
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "timeout_unsupported_01",
+    "category": "safeguards",
+    "answer": "Le timeout par défaut des tools est de 30 secondes [S1].",
+    "sources": [
+      {
+        "file": "app/agent/tool_loop.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_TOOL_TIMEOUT = 60.0",
+        "start_line": 18,
+        "end_line": 18
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "mcp_tools_supported_01",
+    "category": "mcp",
+    "answer": "Le serveur MCP expose `read_file`, `list_files`, `search_code`, `get_git_diff` et `run_tests` [S1].",
+    "sources": [
+      {
+        "file": "app/mcp_server.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "mcp.tool()(read_file)\nmcp.tool()(list_files)\nmcp.tool()(search_code)\nmcp.tool()(get_git_diff)\nmcp.tool()(run_tests)",
+        "start_line": 10,
+        "end_line": 14
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "mcp_tools_unsupported_01",
+    "category": "mcp",
+    "answer": "Le serveur MCP expose un tool `write_file` [S1].",
+    "sources": [
+      {
+        "file": "app/mcp_server.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "mcp.tool()(read_file)\nmcp.tool()(list_files)\nmcp.tool()(search_code)\nmcp.tool()(get_git_diff)\nmcp.tool()(run_tests)",
+        "start_line": 10,
+        "end_line": 14
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "max_steps_supported_01",
+    "category": "safeguards",
+    "answer": "Le nombre maximal d'étapes par défaut est 5 [S1].",
+    "sources": [
+      {
+        "file": "app/agent/tool_loop.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_MAX_STEPS = 5",
+        "start_line": 16,
+        "end_line": 16
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "max_steps_unsupported_01",
+    "category": "safeguards",
+    "answer": "La limite de 5 étapes garantit qu'aucune boucle logique ne peut se produire [S1].",
+    "sources": [
+      {
+        "file": "app/agent/tool_loop.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_MAX_STEPS = 5",
+        "start_line": 16,
+        "end_line": 16
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "keep_alive_supported_01",
+    "category": "runtime",
+    "answer": "Le `keep_alive` par défaut de CodeAgent est configuré à `30m` [S1].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_KEEP_ALIVE = os.getenv(\"CODEAGENT_OLLAMA_KEEP_ALIVE\", \"30m\")",
+        "start_line": 6,
+        "end_line": 6
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "keep_alive_unsupported_01",
+    "category": "runtime",
+    "answer": "Le `keep_alive` garantit que Devstral et Qwen restent simultanément en VRAM [S1].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_KEEP_ALIVE = os.getenv(\"CODEAGENT_OLLAMA_KEEP_ALIVE\", \"30m\")",
+        "start_line": 6,
+        "end_line": 6
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "grounding_output_supported_01",
+    "category": "grounding",
+    "answer": "Le vérificateur doit répondre uniquement par `SUPPORTED` ou `UNSUPPORTED` [S1].",
+    "sources": [
+      {
+        "file": "app/rag/grounding.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "- Réponds uniquement par SUPPORTED ou UNSUPPORTED.",
+        "start_line": 14,
+        "end_line": 14
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "grounding_output_unsupported_01",
+    "category": "grounding",
+    "answer": "Le vérificateur retourne une probabilité calibrée entre 0 et 1 [S1].",
+    "sources": [
+      {
+        "file": "app/rag/grounding.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "- Réponds uniquement par SUPPORTED ou UNSUPPORTED.",
+        "start_line": 14,
+        "end_line": 14
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "absence_inference_supported_01",
+    "category": "grounding",
+    "answer": "Le prompt interdit de considérer l'absence d'une information comme une preuve de son contraire [S1].",
+    "sources": [
+      {
+        "file": "app/rag/grounding.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "- L'absence d'une information dans les sources ne prouve jamais son contraire.",
+        "start_line": 9,
+        "end_line": 9
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "absence_inference_unsupported_01",
+    "category": "grounding",
+    "answer": "Comme le GPU n'est pas mentionné, le code s'exécute forcément sur CPU [S1].",
+    "sources": [
+      {
+        "file": "sample.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "def compute(values):\n    return sum(values)",
+        "start_line": 1,
+        "end_line": 2
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "line_range_supported_01",
+    "category": "read_file",
+    "answer": "La constante `DEFAULT_MODEL` apparaît à la ligne 4 [S1].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_MODEL = \"qwen2.5-coder:14b\"",
+        "start_line": 4,
+        "end_line": 4
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "line_range_unsupported_01",
+    "category": "read_file",
+    "answer": "La constante `DEFAULT_MODEL` apparaît à la ligne 40 [S1].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_MODEL = \"qwen2.5-coder:14b\"",
+        "start_line": 4,
+        "end_line": 4
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "literal_search_supported_01",
+    "category": "search_code",
+    "answer": "La recherche retourne une occurrence de `DEFAULT_MODEL` dans `app/llm/local_llm.py` [S1].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "search_code",
+        "content": "app/llm/local_llm.py:4:DEFAULT_MODEL = \"qwen2.5-coder:14b\"",
+        "start_line": 4,
+        "end_line": 4
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "literal_search_unsupported_01",
+    "category": "search_code",
+    "answer": "La recherche prouve que `DEFAULT_MODEL` n'est utilisé nulle part ailleurs [S1].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "search_code",
+        "content": "app/llm/local_llm.py:4:DEFAULT_MODEL = \"qwen2.5-coder:14b\"",
+        "start_line": 4,
+        "end_line": 4
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "pytest_supported_01",
+    "category": "run_tests",
+    "answer": "`run_tests` exécute Pytest via le Python courant [S1].",
+    "sources": [
+      {
+        "file": "app/tools/project_tools.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "command = [sys.executable, \"-m\", \"pytest\", path]",
+        "start_line": 120,
+        "end_line": 120
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "pytest_unsupported_01",
+    "category": "run_tests",
+    "answer": "`run_tests` modifie automatiquement les fichiers qui échouent [S1].",
+    "sources": [
+      {
+        "file": "app/tools/project_tools.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "command = [sys.executable, \"-m\", \"pytest\", path]",
+        "start_line": 120,
+        "end_line": 120
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "git_staged_supported_01",
+    "category": "git_diff",
+    "answer": "`get_git_diff(staged=True)` utilise `git diff --cached` [S1].",
+    "sources": [
+      {
+        "file": "app/tools/project_tools.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "args = [\"git\", \"diff\", \"--cached\"] if staged else [\"git\", \"diff\"]",
+        "start_line": 96,
+        "end_line": 96
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "git_staged_unsupported_01",
+    "category": "git_diff",
+    "answer": "`get_git_diff(staged=True)` inclut automatiquement les fichiers non suivis [S1].",
+    "sources": [
+      {
+        "file": "app/tools/project_tools.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "args = [\"git\", \"diff\", \"--cached\"] if staged else [\"git\", \"diff\"]",
+        "start_line": 96,
+        "end_line": 96
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "structured_error_supported_01",
+    "category": "errors",
+    "answer": "Un appel dupliqué produit l'erreur `duplicate_tool_call` [S1].",
+    "sources": [
+      {
+        "file": "tool/list_files",
+        "type": "tool",
+        "name": "list_files",
+        "content": "{\"ok\":false,\"error\":\"duplicate_tool_call\",\"message\":\"The same tool was already called with the same arguments.\"}",
+        "start_line": 1,
+        "end_line": 1
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "structured_error_unsupported_01",
+    "category": "errors",
+    "answer": "L'appel dupliqué est causé par un problème réseau [S1].",
+    "sources": [
+      {
+        "file": "tool/list_files",
+        "type": "tool",
+        "name": "list_files",
+        "content": "{\"ok\":false,\"error\":\"duplicate_tool_call\",\"message\":\"The same tool was already called with the same arguments.\"}",
+        "start_line": 1,
+        "end_line": 1
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "same_source_two_claims_supported_01",
+    "category": "multi_claim",
+    "answer": "Devstral est le modèle de tool calling par défaut [S1]. Le nombre maximal d'étapes par défaut est 5 [S1].",
+    "sources": [
+      {
+        "file": "app/agent/tool_loop.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_TOOL_MODEL = \"devstral:24b\"\nDEFAULT_MAX_STEPS = 5",
+        "start_line": 15,
+        "end_line": 16
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "same_source_two_claims_unsupported_01",
+    "category": "multi_claim",
+    "answer": "Devstral est le modèle de tool calling par défaut [S1]. Le nombre maximal d'étapes par défaut est 10 [S1].",
+    "sources": [
+      {
+        "file": "app/agent/tool_loop.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "DEFAULT_TOOL_MODEL = \"devstral:24b\"\nDEFAULT_MAX_STEPS = 5",
+        "start_line": 15,
+        "end_line": 16
+      }
+    ],
+    "expected": false
+  },
+  {
+    "id": "preload_supported_01",
+    "category": "runtime",
+    "answer": "`preload()` envoie une requête `/api/chat` avec une liste de messages vide [S1].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "def preload(self) -> dict:\n    data = self._request(\"/api/chat\", {\"model\": self.model, \"messages\": [], \"stream\": False, \"keep_alive\": self.keep_alive})",
+        "start_line": 60,
+        "end_line": 61
+      }
+    ],
+    "expected": true
+  },
+  {
+    "id": "preload_unsupported_01",
+    "category": "runtime",
+    "answer": "`preload()` supprime définitivement le coût de changement entre deux modèles [S1].",
+    "sources": [
+      {
+        "file": "app/llm/local_llm.py",
+        "type": "tool",
+        "name": "read_file",
+        "content": "def preload(self) -> dict:\n    data = self._request(\"/api/chat\", {\"model\": self.model, \"messages\": [], \"stream\": False, \"keep_alive\": self.keep_alive})",
+        "start_line": 60,
+        "end_line": 61
+      }
+    ],
+    "expected": false
+  }
+]

@@ -1,0 +1,393 @@
+{
+  "model": "devstral:24b",
+  "dataset": "baseline_tasks.json",
+  "benchmark": "tool_routing",
+  "summary": {
+    "tasks": 20,
+    "routing_success_rate": 0.9,
+    "tool_selection_accuracy": 0.9411764705882353,
+    "no_tool_accuracy": 1.0,
+    "argument_accuracy": 0.8823529411764706,
+    "average_routing_latency_seconds": 7.7659199999999995,
+    "min_routing_latency_seconds": 3.008,
+    "max_routing_latency_seconds": 13.313,
+    "errors": 0
+  },
+  "results": [
+    {
+      "id": "no_tool_01",
+      "prompt": "Réponds uniquement par OK.",
+      "expected_tools": [],
+      "expected_arguments": {},
+      "first_tool": null,
+      "arguments": {},
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 4.8622,
+      "content": "OK",
+      "error": null
+    },
+    {
+      "id": "no_tool_02",
+      "prompt": "Réponds uniquement par OUI.",
+      "expected_tools": [],
+      "expected_arguments": {},
+      "first_tool": null,
+      "arguments": {},
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 3.008,
+      "content": "OUI",
+      "error": null
+    },
+    {
+      "id": "no_tool_03",
+      "prompt": "Donne le résultat de 2 + 2.",
+      "expected_tools": [],
+      "expected_arguments": {},
+      "first_tool": null,
+      "arguments": {},
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 5.949,
+      "content": "Le résultat de 2 + 2 est 4.",
+      "error": null
+    },
+    {
+      "id": "list_files_01",
+      "prompt": "Liste les fichiers du projet.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "expected_arguments": {},
+      "first_tool": "list_files",
+      "arguments": {},
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 6.212,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "list_files_02",
+      "prompt": "Quels fichiers se trouvent dans le dossier app/rag ?",
+      "expected_tools": [
+        "list_files"
+      ],
+      "expected_arguments": {
+        "path": "app/rag"
+      },
+      "first_tool": "list_files",
+      "arguments": {
+        "path": "app/rag"
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 7.7226,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "list_files_03",
+      "prompt": "Liste les fichiers du dossier tests.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "expected_arguments": {
+        "path": "tests"
+      },
+      "first_tool": "list_files",
+      "arguments": {
+        "path": "./tests"
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": false,
+      "routing_success": false,
+      "latency_seconds": 7.4362,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "read_file_01",
+      "prompt": "Lis les 20 premières lignes du README.md.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "expected_arguments": {
+        "path": "README.md",
+        "end_line": 20
+      },
+      "first_tool": "read_file",
+      "arguments": {
+        "path": "README.md",
+        "end_line": 20
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 9.8294,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "read_file_02",
+      "prompt": "Lis app/llm/local_llm.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "expected_arguments": {
+        "path": "app/llm/local_llm.py"
+      },
+      "first_tool": "list_files",
+      "arguments": {
+        "path": "app/llm/local_llm.py"
+      },
+      "tool_selection_correct": false,
+      "arguments_correct": false,
+      "routing_success": false,
+      "latency_seconds": 9.2168,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "read_file_03",
+      "prompt": "Lis les lignes 1 à 40 de app/rag/grounding.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "expected_arguments": {
+        "path": "app/rag/grounding.py",
+        "end_line": 40
+      },
+      "first_tool": "read_file",
+      "arguments": {
+        "start_line": 1,
+        "end_line": 40,
+        "path": "app/rag/grounding.py"
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 13.313,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "read_file_04",
+      "prompt": "Que contient app/mcp_server.py ?",
+      "expected_tools": [
+        "read_file"
+      ],
+      "expected_arguments": {
+        "path": "app/mcp_server.py"
+      },
+      "first_tool": "read_file",
+      "arguments": {
+        "path": "app/mcp_server.py"
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 8.5452,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "search_code_01",
+      "prompt": "Recherche où LocalLLM est défini dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "expected_arguments": {
+        "query": "LocalLLM"
+      },
+      "first_tool": "search_code",
+      "arguments": {
+        "query": "LocalLLM",
+        "path": "./"
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 9.2609,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "search_code_02",
+      "prompt": "Recherche les occurrences de verify_grounding dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "expected_arguments": {
+        "query": "verify_grounding"
+      },
+      "first_tool": "search_code",
+      "arguments": {
+        "query": "verify_grounding"
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 8.1248,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "search_code_03",
+      "prompt": "Recherche où PROJECT_ROOT est utilisé.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "expected_arguments": {
+        "query": "PROJECT_ROOT"
+      },
+      "first_tool": "search_code",
+      "arguments": {
+        "query": "PROJECT_ROOT"
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 7.696,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "search_code_04",
+      "prompt": "Recherche les occurrences de read_file dans le projet.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "expected_arguments": {
+        "query": "read_file"
+      },
+      "first_tool": "search_code",
+      "arguments": {
+        "query": "read_file",
+        "path": "."
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 8.8815,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "git_diff_01",
+      "prompt": "Montre-moi le diff Git actuel du projet.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "expected_arguments": {},
+      "first_tool": "get_git_diff",
+      "arguments": {},
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 6.8303,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "git_diff_02",
+      "prompt": "Inspecte les modifications Git non commitées.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "expected_arguments": {},
+      "first_tool": "get_git_diff",
+      "arguments": {},
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 6.849,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "run_tests_01",
+      "prompt": "Exécute les tests du projet.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "expected_arguments": {},
+      "first_tool": "run_tests",
+      "arguments": {
+        "path": "./tests"
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 7.4589,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "run_tests_02",
+      "prompt": "Lance uniquement tests/test_local_llm.py.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "expected_arguments": {
+        "path": "tests/test_local_llm.py"
+      },
+      "first_tool": "run_tests",
+      "arguments": {
+        "path": "tests/test_local_llm.py"
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 8.8917,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "recovery_01",
+      "prompt": "Lis missing_file.py. Si le fichier n'existe pas, utilise les outils disponibles pour vérifier s'il existe ailleurs dans le projet.",
+      "expected_tools": [
+        "list_files",
+        "read_file",
+        "search_code"
+      ],
+      "expected_arguments": {},
+      "first_tool": "list_files",
+      "arguments": {
+        "path": "./project"
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 7.5046,
+      "content": "",
+      "error": null
+    },
+    {
+      "id": "multi_step_01",
+      "prompt": "Trouve où LocalLLM est défini puis lis le fichier correspondant pour m'indiquer le modèle par défaut.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "expected_arguments": {
+        "query": "LocalLLM"
+      },
+      "first_tool": "search_code",
+      "arguments": {
+        "query": "LocalLLM"
+      },
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 7.7263,
+      "content": "",
+      "error": null
+    }
+  ]
+}

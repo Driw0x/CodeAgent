@@ -1,14 +1,14 @@
 # CodeAgent — Project Memory
 
-> Mémoire synthétique du projet jusqu’à la fin du Milestone 5.
+> Mémoire synthétique du projet jusqu’à la fin du Milestone 6.
 
 ## État actuel
 
-Les Milestones 1, 2, 3, 4 et 5 sont terminés.
+Les Milestones 1, 2, 3, 4, 5 et 6 sont terminés.
 
-Le périmètre principal de CodeAgent est considéré comme terminé à M5.
+Le socle RAG est terminé à M5 et le tool use contrôlé via MCP est terminé à M6.
 
-CodeAgent est actuellement capable d’analyser un projet Python, d’indexer son code, de retrouver les portions pertinentes pour une question, de générer une réponse avec un LLM local en citant les sources utilisées, de vérifier automatiquement les citations et le grounding, puis de conserver et mettre à jour automatiquement la mémoire du projet entre deux exécutions.
+CodeAgent est actuellement capable d’analyser un projet Python, d’indexer son code, de retrouver les portions pertinentes pour une question, de générer une réponse sourcée, de vérifier les citations et le grounding, de maintenir sa mémoire projet et d'utiliser des tools read-only via MCP dans une boucle contrôlée.
 
 ## M1 — Lecture et extraction
 
@@ -129,6 +129,25 @@ M5 a renforcé et évalué le pipeline RAG avec :
 
 Sur le holdout final de 16 questions, M5 améliore `Hit@5` et `Recall@5` de `0.6667` à `0.8333`, ainsi que le comportement réponse/abstention de `0.6250` à `0.7500`. Le `MRR@5` passe de `0.5069` à `0.3917` et la vérification du grounding ajoute en moyenne `2.54 s` au pipeline.
 
+## M6 — MCP & Tool Use
+
+M6 ajoute l'utilisation contrôlée de tools via MCP :
+
+- tools read-only `read_file`, `search_code`, `list_files`, `get_git_diff` et `run_tests` ;
+- tool calling avec `Devstral 24B` ;
+- boucle `LLM -> Tool Call -> Validation -> Exécution -> Observation -> LLM` ;
+- timeout, limite d'étapes, retries limités, détection des appels dupliqués et erreurs structurées ;
+- réutilisation du grounding M5 sur les réponses fondées sur des observations de tools ;
+- suivi par question des tokens Devstral / grounding, des étapes, appels de tools, temps par étape et temps individuel des tools ;
+- génération finale dédiée à partir des observations sourcées, avec validation des citations puis grounding ;
+- réduction du contexte tool avec résultats de recherche bornés, lecture ciblée par plage de lignes et consolidation des sources redondantes.
+
+Le benchmark end-to-end final de 20 tâches atteint `80 %` de succès, avec `100 %` de succès de routing, `100 %` de précision de sélection des tools, `100 %` de précision no-tool et `100 %` de précision des arguments. Les 20 tâches produisent 13 réponses groundées acceptées, 4 rejets `unsupported` et 0 `citation_error`. La latence moyenne reste élevée (`131.05 s`) et dépend principalement des LLM locaux, les tools eux-mêmes étant désormais rapides.
+
+Sur le benchmark de grounding figé de 40 cas équilibrés, `Qwen2.5-Coder 14B` atteint `97.5 %` d'accuracy, `100 %` de recall sur les cas unsupported, 0 false accept et 1 false reject. `Devstral 24B` atteint `90 %` avec 0 false accept et 4 false rejects ; `Qwen2.5-Coder 14B` reste donc le grounder par défaut. Sur le benchmark de gating de 20 tâches, Devstral atteint `100 %` de précision. Laya et Verdict atteignent `75 %`, ModernBERT-NLI `65 %` et GLiNER2.5 `45 %`. Jev n'a pas pu être évalué car l'API externe est restée inaccessible malgré un appel conforme à la documentation. La cascade Verdict -> Devstral réduit la latence de `42.9 %` mais baisse la précision de `100 %` à `93.3 %` ; elle n'est pas retenue.
+
+L'optimisation finale du contexte réduit le smoke test multi-tool d'environ `10.5k` à `6.6k` tokens sans perte de grounding. `search_code` a également été optimisé en évitant la traversée des dossiers ignorés avant filtrage : son temps observé passe d'environ `17.1 s` à `0.01-0.12 s` dans les smoke tests.
+
 ## Décisions techniques principales
 
 - fonctionnement local ;
@@ -146,10 +165,15 @@ Sur le holdout final de 16 questions, M5 améliore `Hit@5` et `Recall@5` de `0.6
 - historique des analyses stocké en JSONL ;
 - recherche hybride dense + lexicale ;
 - validation automatique des citations ;
-- vérification du grounding avec le LLM local.
+- vérification du grounding avec le LLM local ;
+- MCP pour exposer et exécuter les tools read-only ;
+- `Devstral 24B` retenu pour le tool calling ;
+- `Qwen2.5-Coder 14B` retenu pour le grounding M6 après benchmark dédié ;
+- préchargement Ollama et `keep_alive` pour limiter les cold starts lorsque les modèles peuvent rester résidents ;
+- routeurs spécialisés évalués mais non intégrés, Devstral restant plus précis.
 
 ## État du projet et suite
 
-Le périmètre principal de CodeAgent est terminé à M5.
+Le socle RAG est terminé à M5 et le tool use contrôlé est terminé à M6.
 
-Une évolution future peut ajouter des capacités agentiques avec MCP et des tools. Le grounding pourra également être amélioré avec un modèle NLI ou un second LLM spécialisé.
+La suite prévue est M7 — Memory & Context Management, puis M8 — Planning & Controlled Autonomous Execution. Le grounding pourra encore être amélioré avec un modèle spécialisé si un futur benchmark montre un gain mesurable.

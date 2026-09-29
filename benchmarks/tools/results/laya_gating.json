@@ -1,0 +1,814 @@
+{
+  "router": "laya",
+  "dataset": "baseline_tasks.json",
+  "benchmark": "tool_gating",
+  "summary": {
+    "tasks": 20,
+    "gating_accuracy": 0.75,
+    "tool_selection_accuracy": 0.7058823529411765,
+    "no_tool_accuracy": 1.0,
+    "average_latency_seconds": 1.958745,
+    "median_latency_seconds": 0.1114,
+    "p95_latency_seconds": 0.3634,
+    "average_confidence": 0.8455199999999999,
+    "errors": 0
+  },
+  "results": [
+    {
+      "id": "no_tool_01",
+      "prompt": "Réponds uniquement par OK.",
+      "expected_tools": [],
+      "predicted_tool": "no_tool",
+      "correct": true,
+      "confidence": 0.9299,
+      "latency_seconds": 0.1213,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.9806,
+          "list_files": 0.0026,
+          "read_file": 0.0034,
+          "search_code": 0.0022,
+          "get_git_diff": 0.0046,
+          "run_tests": 0.0066
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script, language not identified but 4% non-English letters; not safe for the English checkpoint",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": null,
+            "is_english": false,
+            "language_undecided": true,
+            "diacritic_rate": 0.0385,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "no_tool_02",
+      "prompt": "Réponds uniquement par OUI.",
+      "expected_tools": [],
+      "predicted_tool": "no_tool",
+      "correct": true,
+      "confidence": 0.8496,
+      "latency_seconds": 0.1055,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.9509,
+          "list_files": 0.0056,
+          "read_file": 0.009,
+          "search_code": 0.0057,
+          "get_git_diff": 0.0098,
+          "run_tests": 0.0191
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script, language not identified but 4% non-English letters; not safe for the English checkpoint",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": null,
+            "is_english": false,
+            "language_undecided": true,
+            "diacritic_rate": 0.037,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "no_tool_03",
+      "prompt": "Donne le résultat de 2 + 2.",
+      "expected_tools": [],
+      "predicted_tool": "no_tool",
+      "correct": true,
+      "confidence": 0.7208,
+      "latency_seconds": 0.1083,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.8928,
+          "list_files": 0.0107,
+          "read_file": 0.0182,
+          "search_code": 0.0108,
+          "get_git_diff": 0.0319,
+          "run_tests": 0.0356
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script, language not identified but 4% non-English letters; not safe for the English checkpoint",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": null,
+            "is_english": false,
+            "language_undecided": true,
+            "diacritic_rate": 0.037,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "list_files_01",
+      "prompt": "Liste les fichiers du projet.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": "list_files",
+      "correct": true,
+      "confidence": 0.9999,
+      "latency_seconds": 0.1052,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0,
+          "list_files": 1.0,
+          "read_file": 0.0,
+          "search_code": 0.0,
+          "get_git_diff": 0.0,
+          "run_tests": 0.0
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script but language looks like 'fr', not English",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": "fr",
+            "is_english": false,
+            "language_undecided": false,
+            "diacritic_rate": 0.0,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "list_files_02",
+      "prompt": "Quels fichiers se trouvent dans le dossier app/rag ?",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": "list_files",
+      "correct": true,
+      "confidence": 0.9785,
+      "latency_seconds": 0.1114,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0033,
+          "list_files": 0.9947,
+          "read_file": 0.0007,
+          "search_code": 0.0009,
+          "get_git_diff": 0.0001,
+          "run_tests": 0.0001
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script but language looks like 'fr', not English",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": "fr",
+            "is_english": false,
+            "language_undecided": false,
+            "diacritic_rate": 0.0,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "list_files_03",
+      "prompt": "Liste les fichiers du dossier tests.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": "list_files",
+      "correct": true,
+      "confidence": 0.9997,
+      "latency_seconds": 0.1114,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0,
+          "list_files": 1.0,
+          "read_file": 0.0,
+          "search_code": 0.0,
+          "get_git_diff": 0.0,
+          "run_tests": 0.0
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script but language looks like 'fr', not English",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": "fr",
+            "is_english": false,
+            "language_undecided": false,
+            "diacritic_rate": 0.0,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "read_file_01",
+      "prompt": "Lis les 20 premières lignes du README.md.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "read_file",
+      "correct": true,
+      "confidence": 0.6806,
+      "latency_seconds": 0.119,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.1511,
+          "list_files": 0.0233,
+          "read_file": 0.8193,
+          "search_code": 0.005,
+          "get_git_diff": 0.0007,
+          "run_tests": 0.0005
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script but language looks like 'fr', not English",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": "fr",
+            "is_english": false,
+            "language_undecided": false,
+            "diacritic_rate": 0.0244,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "read_file_02",
+      "prompt": "Lis app/llm/local_llm.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "no_tool",
+      "correct": false,
+      "confidence": 0.641,
+      "latency_seconds": 36.5234,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.8512,
+          "list_files": 0.0312,
+          "read_file": 0.0186,
+          "search_code": 0.0396,
+          "get_git_diff": 0.0109,
+          "run_tests": 0.0484
+        },
+        "routing": {
+          "model": "english",
+          "repo": "convaiinnovations/laya",
+          "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": null,
+            "is_english": true,
+            "language_undecided": true,
+            "diacritic_rate": 0.0,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "read_file_03",
+      "prompt": "Lis les lignes 1 à 40 de app/rag/grounding.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "no_tool",
+      "correct": false,
+      "confidence": 0.2893,
+      "latency_seconds": 0.1173,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.496,
+          "list_files": 0.0812,
+          "read_file": 0.271,
+          "search_code": 0.1282,
+          "get_git_diff": 0.013,
+          "run_tests": 0.0105
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script, language not identified but 2% non-English letters; not safe for the English checkpoint",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": null,
+            "is_english": false,
+            "language_undecided": true,
+            "diacritic_rate": 0.0217,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "read_file_04",
+      "prompt": "Que contient app/mcp_server.py ?",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "no_tool",
+      "correct": false,
+      "confidence": 0.6979,
+      "latency_seconds": 0.3621,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.8775,
+          "list_files": 0.0417,
+          "read_file": 0.0219,
+          "search_code": 0.0439,
+          "get_git_diff": 0.0083,
+          "run_tests": 0.0067
+        },
+        "routing": {
+          "model": "english",
+          "repo": "convaiinnovations/laya",
+          "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": null,
+            "is_english": true,
+            "language_undecided": true,
+            "diacritic_rate": 0.0,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "search_code_01",
+      "prompt": "Recherche où LocalLLM est défini dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "search_code",
+      "correct": true,
+      "confidence": 1.0,
+      "latency_seconds": 0.1176,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0,
+          "list_files": 0.0,
+          "read_file": 0.0,
+          "search_code": 1.0,
+          "get_git_diff": 0.0,
+          "run_tests": 0.0
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script but language looks like 'fr', not English",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": "fr",
+            "is_english": false,
+            "language_undecided": false,
+            "diacritic_rate": 0.0435,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "search_code_02",
+      "prompt": "Recherche les occurrences de verify_grounding dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "search_code",
+      "correct": true,
+      "confidence": 1.0,
+      "latency_seconds": 0.1078,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0,
+          "list_files": 0.0,
+          "read_file": 0.0,
+          "search_code": 1.0,
+          "get_git_diff": 0.0,
+          "run_tests": 0.0
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script but language looks like 'fr', not English",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": "fr",
+            "is_english": false,
+            "language_undecided": false,
+            "diacritic_rate": 0.0,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "search_code_03",
+      "prompt": "Recherche où PROJECT_ROOT est utilisé.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "search_code",
+      "correct": true,
+      "confidence": 0.8738,
+      "latency_seconds": 0.1086,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0577,
+          "list_files": 0.0002,
+          "read_file": 0.0001,
+          "search_code": 0.9418,
+          "get_git_diff": 0.0002,
+          "run_tests": 0.0001
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script, language not identified but 5% non-English letters; not safe for the English checkpoint",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": null,
+            "is_english": false,
+            "language_undecided": true,
+            "diacritic_rate": 0.0526,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "search_code_04",
+      "prompt": "Recherche les occurrences de read_file dans le projet.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "read_file",
+      "correct": false,
+      "confidence": 0.8676,
+      "latency_seconds": 0.102,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0002,
+          "list_files": 0.0001,
+          "read_file": 0.9374,
+          "search_code": 0.0621,
+          "get_git_diff": 0.0001,
+          "run_tests": 0.0001
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script but language looks like 'fr', not English",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": "fr",
+            "is_english": false,
+            "language_undecided": false,
+            "diacritic_rate": 0.0,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "git_diff_01",
+      "prompt": "Montre-moi le diff Git actuel du projet.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "predicted_tool": "get_git_diff",
+      "correct": true,
+      "confidence": 1.0,
+      "latency_seconds": 0.111,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0,
+          "list_files": 0.0,
+          "read_file": 0.0,
+          "search_code": 0.0,
+          "get_git_diff": 1.0,
+          "run_tests": 0.0
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script but language looks like 'fr', not English",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": "fr",
+            "is_english": false,
+            "language_undecided": false,
+            "diacritic_rate": 0.0,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "git_diff_02",
+      "prompt": "Inspecte les modifications Git non commitées.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "predicted_tool": "get_git_diff",
+      "correct": true,
+      "confidence": 0.905,
+      "latency_seconds": 0.109,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0287,
+          "list_files": 0.0012,
+          "read_file": 0.0017,
+          "search_code": 0.0012,
+          "get_git_diff": 0.966,
+          "run_tests": 0.0012
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script, language not identified but 2% non-English letters; not safe for the English checkpoint",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": null,
+            "is_english": false,
+            "language_undecided": true,
+            "diacritic_rate": 0.0222,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "run_tests_01",
+      "prompt": "Exécute les tests du projet.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "predicted_tool": "run_tests",
+      "correct": true,
+      "confidence": 0.994,
+      "latency_seconds": 0.1107,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0007,
+          "list_files": 0.0001,
+          "read_file": 0.0001,
+          "search_code": 0.0001,
+          "get_git_diff": 0.0001,
+          "run_tests": 0.9988
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script but language looks like 'fr', not English",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": "fr",
+            "is_english": false,
+            "language_undecided": false,
+            "diacritic_rate": 0.0357,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "run_tests_02",
+      "prompt": "Lance uniquement tests/test_local_llm.py.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "predicted_tool": "run_tests",
+      "correct": true,
+      "confidence": 0.9927,
+      "latency_seconds": 0.3634,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0015,
+          "list_files": 0.0001,
+          "read_file": 0.0,
+          "search_code": 0.0,
+          "get_git_diff": 0.0,
+          "run_tests": 0.9983
+        },
+        "routing": {
+          "model": "english",
+          "repo": "convaiinnovations/laya",
+          "reason": "Latin script, language not identified and no non-English letters; using default (english)",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": null,
+            "is_english": true,
+            "language_undecided": true,
+            "diacritic_rate": 0.0,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "recovery_01",
+      "prompt": "Lis missing_file.py. Si le fichier n'existe pas, utilise les outils disponibles pour vérifier s'il existe ailleurs dans le projet.",
+      "expected_tools": [
+        "list_files",
+        "read_file",
+        "search_code"
+      ],
+      "predicted_tool": "list_files",
+      "correct": true,
+      "confidence": 0.8952,
+      "latency_seconds": 0.1334,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.0062,
+          "list_files": 0.963,
+          "read_file": 0.0277,
+          "search_code": 0.0022,
+          "get_git_diff": 0.0005,
+          "run_tests": 0.0005
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script but language looks like 'fr', not English",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": "fr",
+            "is_english": false,
+            "language_undecided": false,
+            "diacritic_rate": 0.0077,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    },
+    {
+      "id": "multi_step_01",
+      "prompt": "Trouve où LocalLLM est défini puis lis le fichier correspondant pour m'indiquer le modèle par défaut.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "no_tool",
+      "correct": false,
+      "confidence": 0.5949,
+      "latency_seconds": 0.1265,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.8228,
+          "list_files": 0.0447,
+          "read_file": 0.0662,
+          "search_code": 0.013,
+          "get_git_diff": 0.0355,
+          "run_tests": 0.0179
+        },
+        "routing": {
+          "model": "multilingual",
+          "repo": "convaiinnovations/laya/multilingual",
+          "reason": "Latin script but language looks like 'fr', not English",
+          "detection": {
+            "script": "latin",
+            "script_profile": {
+              "latin": 1.0
+            },
+            "language": "fr",
+            "is_english": false,
+            "language_undecided": false,
+            "diacritic_rate": 0.0396,
+            "non_latin_fraction": 0.0,
+            "mixed_segment": null
+          },
+          "workflow": null
+        }
+      }
+    }
+  ]
+}

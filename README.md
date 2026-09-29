@@ -19,11 +19,11 @@ Le projet fonctionne entièrement en local grâce à un LLM local et une base ve
 
 ### Statut du projet
 
-**Core RAG completed — M5 · M6/M7 planned**
+**Core RAG + Tool Use completed — M6 · M7/M8 planned**
 
-Le socle principal de CodeAgent est terminé et fonctionnel : analyse de code, recherche hybride, pipeline RAG, réponses sourcées, persistance de l'index, mise à jour incrémentale, validation des citations et vérification du grounding.
+Le socle principal de CodeAgent est terminé et fonctionnel : analyse de code, recherche hybride, pipeline RAG, réponses sourcées, persistance de l'index, mise à jour incrémentale, grounding et utilisation contrôlée de tools via MCP.
 
-Le Milestone 5 — RAG Quality & Grounding est terminé. Les prochains milestones étendent ce socle vers l'utilisation contrôlée d'outils puis la planification multi-étapes.
+Les Milestones 1 à 6 sont terminés. Le prochain milestone ajoute la gestion de la mémoire conversationnelle et du contexte, avant la planification multi-étapes contrôlée.
 
 ---
 
@@ -82,12 +82,15 @@ Exemples de requêtes :
 
 ```text
 app
+├── agent
 ├── llm
 ├── memory
 ├── parser
 ├── rag
 ├── retrieval
-└── main.py
+├── tools
+├── main.py
+└── mcp_server.py
 ```
 
 ---
@@ -111,6 +114,7 @@ app
 
 * Ollama
 * Qwen2.5-Coder 14B
+* Devstral 24B pour le tool calling
 
 ### RAG
 
@@ -151,12 +155,13 @@ ollama --version
 
 ### 4. Télécharger le LLM local
 
-CodeAgent utilise par défaut `qwen2.5-coder:14b`.
+CodeAgent utilise `qwen2.5-coder:14b` pour le RAG / grounding et `devstral:24b` pour le tool calling.
 
 Télécharger le modèle avec :
 
 ```bash
 ollama pull qwen2.5-coder:14b
+ollama pull devstral:24b
 ```
 
 Vérifier que le modèle est disponible :
@@ -181,7 +186,7 @@ Le programme demande ensuite une question sur le projet :
 Question : Comment les embeddings sont-ils ajoutés dans FAISS ?
 ```
 
-CodeAgent recherche les portions de code pertinentes, les injecte dans le contexte du LLM local et génère une réponse accompagnée des fichiers et lignes concernés.
+CodeAgent propose un mode RAG et un mode Agent. Le mode Agent utilise la boucle MCP M6, précharge les modèles locaux et affiche par question les tokens Devstral / grounding, les temps par étape, les appels de tools, leur durée, le statut du grounding et le temps de réponse.
 
 ---
 
@@ -295,35 +300,61 @@ Sur le holdout final de 16 questions, M5 améliore `Hit@5` et `Recall@5` de `0.6
 
 ### Objectifs
 
-- [ ] Définir une interface minimale pour les tools
-- [ ] Décrire chaque tool avec un nom, une description et un `JSON Schema`
-- [ ] Valider les paramètres avant exécution
-- [ ] Implémenter un premier ensemble de tools read-only : lecture de fichiers, recherche de code, listing de fichiers, inspection du diff Git et exécution des tests
-- [ ] Laisser le LLM décider si un tool est nécessaire et lequel utiliser
-- [ ] Intégrer les tools via MCP
-- [ ] Mettre en place la boucle `LLM -> Tool Call -> Validation -> Exécution -> Observation -> LLM`
-- [ ] Ajouter timeout, nombre maximal d'étapes, retries limités et détection des appels identiques `tool + arguments`
-- [ ] Valider les résultats des tools et retourner des erreurs structurées au LLM
-- [ ] Réutiliser le grounding M5 pour la réponse finale lorsque des sources projet sont utilisées
-- [ ] Évaluer le tool use sur un benchmark dédié
+- [x] Définir une interface minimale pour les tools
+- [x] Décrire chaque tool avec un nom, une description et un `JSON Schema`
+- [x] Valider les paramètres avant exécution
+- [x] Implémenter un premier ensemble de tools read-only : lecture de fichiers, recherche de code, listing de fichiers, inspection du diff Git et exécution des tests
+- [x] Laisser le LLM décider si un tool est nécessaire et lequel utiliser
+- [x] Intégrer les tools via MCP
+- [x] Mettre en place la boucle `LLM -> Tool Call -> Validation -> Exécution -> Observation -> LLM`
+- [x] Ajouter timeout, nombre maximal d'étapes, retries limités et détection des appels identiques `tool + arguments`
+- [x] Valider les résultats des tools et retourner des erreurs structurées au LLM
+- [x] Réutiliser le grounding M5 pour la réponse finale lorsque des sources projet sont utilisées
+- [x] Évaluer le tool use sur un benchmark dédié
+- [x] Suivre par question les tokens Devstral / grounding, les étapes, appels de tools, temps par étape et temps individuel des tools
+- [x] Optimiser le contexte tool avec recherche bornée, lecture ciblée et consolidation des sources redondantes
+- [x] Évaluer séparément les modèles de grounding sur un holdout dédié
 
-### Implémentation prévue
+### Implémentation
 
 Le premier périmètre reste read-only. Les tools modifiant l'état du projet ne seront ajoutés qu'après stabilisation de la boucle d'exécution et devront demander une confirmation explicite pour les opérations à risque.
 
-Le benchmark suivra au minimum le taux de réussite des tâches, les appels invalides, les retries, les appels dupliqués, les erreurs de tools et le nombre d'étapes.
+Le benchmark suit le taux de réussite des tâches, les appels invalides, retries, appels dupliqués, erreurs de tools, nombre d'étapes, grounding, tokens et latence.
 
-### Résultat attendu
+### Résultat
 
-CodeAgent est capable de déterminer lorsqu'un outil est nécessaire, de sélectionner et exécuter le bon tool via MCP, de récupérer d'erreurs simples sans boucle incontrôlée et de produire une réponse finale fondée sur les observations obtenues.
+CodeAgent détermine lorsqu'un outil est nécessaire, sélectionne et exécute le bon tool via MCP, récupère d'erreurs simples sans boucle incontrôlée et génère une réponse finale sourcée avant validation du grounding.
+
+Sur le benchmark end-to-end final de 20 tâches, le routing, la sélection du tool, le no-tool et les arguments atteignent `100 %`, tandis que le succès end-to-end atteint `80 %` (`13` réponses groundées acceptées, `4` rejets `unsupported`, `0` `citation_error`). La moyenne est de `2.10` étapes et `1.15` appels de tools par tâche ; la latence moyenne reste élevée à `131.05 s`, principalement à cause des LLM locaux.
+
+Sur un holdout grounding de 40 cas équilibrés, `Qwen2.5-Coder 14B` atteint `97.5 %` d'accuracy, `100 %` de recall sur les cas unsupported, 0 false accept et 1 false reject. `Devstral 24B` atteint `90 %` avec 0 false accept et 4 false rejects ; Qwen14 est donc retenu pour le grounding M6. L'optimisation du contexte réduit le smoke test multi-tool d'environ `10.5k` à `6.6k` tokens, et l'optimisation de `search_code` réduit son temps observé d'environ `17.1 s` à `0.01-0.12 s`.
+
+Sur le benchmark de gating de 20 tâches, Devstral atteint `100 %` de précision ; Laya et Verdict `75 %`, ModernBERT-NLI `65 %` et GLiNER2.5 `45 %`. Jev n'a pas pu être évalué car l'API externe est restée inaccessible malgré un appel conforme à la documentation. Une cascade Verdict -> Devstral testée sur un holdout de 30 tâches réduit la latence moyenne de `42.9 %`, mais atteint `93.3 %` de précision contre `100 %` pour Devstral seul ; elle n'est donc pas retenue.
 
 ### Future improvement
 
-- Remplacer ou compléter la validation basée sur Qwen par un modèle NLI ou un second LLM spécialisé si les évaluations montrent un gain mesurable.
+- Réévaluer Jev lorsque son API sera accessible et de futurs routeurs / grounders spécialisés uniquement s'ils améliorent le compromis précision / latence sans augmenter les false accepts.
 
 ---
 
-## Milestone 7 — Planning & Controlled Autonomous Execution
+## Milestone 7 — Memory & Context Management
+
+### Objectifs
+
+- [ ] Conserver une mémoire court terme des derniers tours de conversation
+- [ ] Résumer et compresser les anciens tours
+- [ ] Définir un budget de tokens pour le contexte
+- [ ] Déclencher automatiquement la compression lorsque le seuil est dépassé
+- [ ] Persister le résumé entre deux exécutions
+- [ ] Optionnel : récupérer d'anciens échanges pertinents par recherche sémantique
+
+### Résultat attendu
+
+CodeAgent conserve le contexte récent, compresse automatiquement l'historique ancien lorsque le budget est dépassé et peut reprendre une conversation avec un résumé persistant.
+
+---
+
+## Milestone 8 — Planning & Controlled Autonomous Execution
 
 ### Objectifs
 
@@ -334,7 +365,7 @@ CodeAgent est capable de déterminer lorsqu'un outil est nécessaire, de sélect
 - [ ] Replanifier uniquement les étapes restantes lorsqu'une observation ou une erreur invalide le plan
 - [ ] Préserver le travail déjà validé lors d'un replanning
 - [ ] Arrêter l'exécution lorsque l'objectif est atteint, que le budget est épuisé ou qu'une décision utilisateur est nécessaire
-- [ ] Évaluer les tâches multi-étapes en comparant la boucle directe M6 et la planification M7
+- [ ] Évaluer les tâches multi-étapes en comparant la boucle directe M6 et la planification M8
 
 ### Implémentation prévue
 
@@ -352,4 +383,4 @@ CodeAgent est capable d'exécuter de manière contrôlée des tâches de dévelo
 
 CodeAgent dispose désormais d'un pipeline complet permettant d'analyser un projet Python, d'indexer son code, de retrouver les portions pertinentes, de générer des réponses contextualisées avec un LLM local et de maintenir l'index à jour lorsque le projet évolue.
 
-Le socle RAG est considéré comme **terminé à M5**. Le pipeline inclut désormais l'évaluation du retrieval, la recherche hybride, les citations vérifiées et le contrôle du grounding. Les M6 et M7 sont planifiés pour ajouter respectivement le tool use via MCP puis la planification multi-étapes contrôlée.
+Le socle RAG est terminé à M5 et le tool use contrôlé via MCP est terminé à M6. M7 ajoute la gestion de la mémoire conversationnelle et du contexte ; M8 ajoutera ensuite la planification multi-étapes contrôlée.

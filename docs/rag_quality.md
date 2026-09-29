@@ -140,9 +140,10 @@ Sur M5, 8 réponses ont été vérifiées par le grounding : 6 ont été support
 
 Le holdout final est figé et ne doit plus être utilisé pour retuner M5.
 
+M6 réutilise ensuite ce grounding pour valider les réponses fondées sur des observations de tools. Sur un holdout dédié de 40 cas équilibrés, `Qwen2.5-Coder 14B` atteint `97.5 %` d'accuracy, `100 %` de recall sur les cas unsupported, 0 false accept et 1 false reject ; il est retenu comme grounder M6. Le benchmark end-to-end M6 final atteint `80 %` de succès avec 0 `citation_error`, les échecs restants étant des rejets `unsupported`.
+
 ## Future improvements
 
-- modèle NLI ou second LLM spécialisé pour le grounding ;
+- modèle NLI ou autre vérificateur spécialisé uniquement si un benchmark montre un gain mesurable sur le grounder actuel ;
 - amélioration du ranking top-1 ;
-- réduction de la latence du grounding ;
-- MCP + tools.
+- réduction de la latence des LLM locaux et des cold starts lorsque plusieurs modèles ne peuvent pas rester résidents.

@@ -29,49 +29,90 @@ Verdict : UNSUPPORTED
 
 def extract_claims(answer: str) -> list[tuple[str, list[int]]]:
     claims = []
-
     for paragraph in answer.split("\n\n"):
         paragraph = paragraph.strip()
         if not paragraph:
             continue
-
-        source_ids = sorted(set(extract_citations(paragraph)))
-        clean_paragraph = re.sub(r"\[S\d+\]", "", paragraph).strip()
-
-        for sentence in re.split(r"(?<=[.!?])\s+", clean_paragraph):
+        paragraph_source_ids = sorted(set(extract_citations(paragraph)))
+        for sentence in re.split(r"(?<=[.!?])\s+", paragraph):
             sentence = sentence.strip()
-            if sentence and not is_abstention(sentence) and not is_missing_information(sentence):
-                claims.append((sentence, source_ids))
-
+            if not sentence:
+                continue
+            sentence_source_ids = sorted(set(extract_citations(sentence)))
+            source_ids = sentence_source_ids or paragraph_source_ids
+            clean_sentence = re.sub(r"\[S\d+\]", "", sentence).strip()
+            if (
+                clean_sentence
+                and not is_abstention(clean_sentence)
+                and not is_missing_information(clean_sentence)
+            ):
+                claims.append((clean_sentence, source_ids))
     return claims
 
 
-def build_claim_prompt(claim: str, source_ids: list[int], chunks: list[dict]) -> str:
-    sources = "\n\n".join(format_chunk(chunks[source_id - 1], source_id) for source_id in source_ids)
-    return f"SOURCES:\n{sources}\n\nAFFIRMATION À VÉRIFIER:\n{claim}\n\nCette affirmation est-elle explicitement supportée par les sources ?"
+def build_claim_prompt(
+    claim: str,
+    source_ids: list[int],
+    chunks: list[dict],
+) -> str:
+    sources = "\n\n".join(
+        format_chunk(chunks[source_id - 1], source_id)
+        for source_id in source_ids
+    )
+    return (
+        f"SOURCES:\n{sources}\n\n"
+        f"AFFIRMATION À VÉRIFIER:\n{claim}\n\n"
+        "Cette affirmation est-elle explicitement supportée par les sources ?"
+    )
 
 
-def verify_claim(claim: str, source_ids: list[int], chunks: list[dict], llm) -> bool:
-    if not source_ids or any(source_id < 1 or source_id > len(chunks) for source_id in source_ids):
+def verify_claim(
+    claim: str,
+    source_ids: list[int],
+    chunks: list[dict],
+    llm,
+) -> bool:
+    if (
+        not source_ids
+        or any(source_id < 1 or source_id > len(chunks) for source_id in source_ids)
+    ):
         return False
-
-    prompt = build_claim_prompt(claim, source_ids, chunks)
-    previous_stats = getattr(llm, "last_stats", None)
-    verdict = llm.generate(prompt=prompt, system_prompt=GROUNDING_SYSTEM_PROMPT).strip().upper()
-
+    prompt = build_claim_prompt(
+        claim,
+        source_ids,
+        chunks,
+    )
+    previous_stats = getattr(
+        llm,
+        "last_stats",
+        None,
+    )
+    verdict = llm.generate(
+        prompt=prompt,
+        system_prompt=GROUNDING_SYSTEM_PROMPT,
+    ).strip().upper()
     if hasattr(llm, "last_stats"):
         llm.last_stats = previous_stats
-
     return verdict == "SUPPORTED"
 
 
-def verify_grounding(answer: str, chunks: list[dict], llm) -> bool:
+def verify_grounding(
+    answer: str,
+    chunks: list[dict],
+    llm,
+) -> bool:
     claims = extract_claims(answer)
-
     if not claims:
         return False
-
-    return all(verify_claim(claim, source_ids, chunks, llm) for claim, source_ids in claims)
+    return all(
+        verify_claim(
+            claim,
+            source_ids,
+            chunks,
+            llm,
+        )
+        for claim, source_ids in claims
+    )
 
 
 def is_missing_information(sentence: str) -> bool:

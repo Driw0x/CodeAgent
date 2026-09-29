@@ -1,0 +1,169 @@
+[
+  {
+    "id": "no_tool_h01",
+    "prompt": "Réponds exactement par DONE.",
+    "expected_tool": null
+  },
+  {
+    "id": "no_tool_h02",
+    "prompt": "Quel est le résultat de 7 multiplié par 6 ?",
+    "expected_tool": null
+  },
+  {
+    "id": "no_tool_h03",
+    "prompt": "Écris exactement : test terminé",
+    "expected_tool": null
+  },
+  {
+    "id": "no_tool_h04",
+    "prompt": "Traduis le mot hello en français.",
+    "expected_tool": null
+  },
+  {
+    "id": "list_files_h01",
+    "prompt": "Montre-moi les fichiers disponibles dans app/memory.",
+    "expected_tool": "list_files"
+  },
+  {
+    "id": "list_files_h02",
+    "prompt": "Quels fichiers composent le dossier app/parser ?",
+    "expected_tool": "list_files"
+  },
+  {
+    "id": "list_files_h03",
+    "prompt": "Affiche les fichiers présents sous benchmarks/rag/results.",
+    "expected_tool": "list_files"
+  },
+  {
+    "id": "list_files_h04",
+    "prompt": "Donne-moi la liste des fichiers du dossier scripts.",
+    "expected_tool": "list_files"
+  },
+  {
+    "id": "read_file_h01",
+    "prompt": "Ouvre app/rag/prompt.py et montre-moi son contenu.",
+    "expected_tool": "read_file"
+  },
+  {
+    "id": "read_file_h02",
+    "prompt": "Affiche le contenu de app/parser/chunker.py.",
+    "expected_tool": "read_file"
+  },
+  {
+    "id": "read_file_h03",
+    "prompt": "Lis les 25 premières lignes de tests/test_rag_pipeline.py.",
+    "expected_tool": "read_file"
+  },
+  {
+    "id": "read_file_h04",
+    "prompt": "Montre-moi ce qui est écrit dans docs/rag_quality.md.",
+    "expected_tool": "read_file"
+  },
+  {
+    "id": "search_code_h01",
+    "prompt": "Où apparaît DEFAULT_MODEL dans le code du projet ?",
+    "expected_tool": "search_code"
+  },
+  {
+    "id": "search_code_h02",
+    "prompt": "Cherche les occurrences de build_prompt dans le code.",
+    "expected_tool": "search_code"
+  },
+  {
+    "id": "search_code_h03",
+    "prompt": "Trouve où save_analysis est utilisé dans le projet.",
+    "expected_tool": "search_code"
+  },
+  {
+    "id": "search_code_h04",
+    "prompt": "Localise les occurrences de FaissRetriever dans le code.",
+    "expected_tool": "search_code"
+  },
+  {
+    "id": "git_diff_h01",
+    "prompt": "Quelles modifications locales sont actuellement présentes dans Git ?",
+    "expected_tool": "get_git_diff"
+  },
+  {
+    "id": "git_diff_h02",
+    "prompt": "Montre-moi le patch Git des changements actuels.",
+    "expected_tool": "get_git_diff"
+  },
+  {
+    "id": "git_diff_h03",
+    "prompt": "Inspecte les différences Git déjà ajoutées à l'index.",
+    "expected_tool": "get_git_diff"
+  },
+  {
+    "id": "git_diff_h04",
+    "prompt": "Je veux examiner les changements de code non commités.",
+    "expected_tool": "get_git_diff"
+  },
+  {
+    "id": "run_tests_h01",
+    "prompt": "Vérifie en exécutant la suite de tests que le projet fonctionne.",
+    "expected_tool": "run_tests"
+  },
+  {
+    "id": "run_tests_h02",
+    "prompt": "Exécute seulement tests/test_rag_grounding.py.",
+    "expected_tool": "run_tests"
+  },
+  {
+    "id": "run_tests_h03",
+    "prompt": "Lance les tests contenus dans tests/test_project_state.py.",
+    "expected_tool": "run_tests"
+  },
+  {
+    "id": "run_tests_h04",
+    "prompt": "Teste uniquement tests/test_faiss_retriever.py.",
+    "expected_tool": "run_tests"
+  },
+  {
+    "id": "ambiguous_h01",
+    "prompt": "Je veux trouver la définition de build_index puis examiner son implémentation.",
+    "expected_tools": [
+      "search_code",
+      "read_file"
+    ]
+  },
+  {
+    "id": "ambiguous_h02",
+    "prompt": "Vérifie que README.md existe puis consulte son contenu.",
+    "expected_tools": [
+      "list_files",
+      "read_file"
+    ]
+  },
+  {
+    "id": "recovery_h01",
+    "prompt": "Vérifie si app/does_not_exist.py existe. S'il n'existe pas, cherche si un fichier ou symbole proche est présent dans le projet.",
+    "expected_tools": [
+      "list_files",
+      "read_file",
+      "search_code"
+    ]
+  },
+  {
+    "id": "multi_step_h01",
+    "prompt": "Détermine à partir du code quel modèle est utilisé par défaut par LocalLLM.",
+    "expected_tools": [
+      "search_code",
+      "read_file"
+    ]
+  },
+  {
+    "id": "multi_step_h02",
+    "prompt": "Inspecte d'abord les changements Git actuels puis vérifie les tests si cela est nécessaire.",
+    "expected_tool": "get_git_diff"
+  },
+  {
+    "id": "multi_step_h03",
+    "prompt": "Trouve comment le grounding est testé puis ouvre le fichier de test pertinent.",
+    "expected_tools": [
+      "search_code",
+      "list_files",
+      "read_file"
+    ]
+  }
+]

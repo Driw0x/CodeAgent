@@ -1,0 +1,274 @@
+{
+  "router": "jev",
+  "dataset": "baseline_tasks.json",
+  "benchmark": "tool_gating",
+  "summary": {
+    "tasks": 20,
+    "gating_accuracy": 0.0,
+    "tool_selection_accuracy": 0.0,
+    "no_tool_accuracy": 0.0,
+    "average_latency_seconds": 0.0,
+    "median_latency_seconds": 0.0,
+    "p95_latency_seconds": 0.0,
+    "average_confidence": null,
+    "errors": 20
+  },
+  "results": [
+    {
+      "id": "no_tool_01",
+      "prompt": "Réponds uniquement par OK.",
+      "expected_tools": [],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0713,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "no_tool_02",
+      "prompt": "Réponds uniquement par OUI.",
+      "expected_tools": [],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.029,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "no_tool_03",
+      "prompt": "Donne le résultat de 2 + 2.",
+      "expected_tools": [],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0341,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "list_files_01",
+      "prompt": "Liste les fichiers du projet.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0417,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "list_files_02",
+      "prompt": "Quels fichiers se trouvent dans le dossier app/rag ?",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0378,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "list_files_03",
+      "prompt": "Liste les fichiers du dossier tests.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0499,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "read_file_01",
+      "prompt": "Lis les 20 premières lignes du README.md.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0419,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "read_file_02",
+      "prompt": "Lis app/llm/local_llm.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0614,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "read_file_03",
+      "prompt": "Lis les lignes 1 à 40 de app/rag/grounding.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0487,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "read_file_04",
+      "prompt": "Que contient app/mcp_server.py ?",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0405,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "search_code_01",
+      "prompt": "Recherche où LocalLLM est défini dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0361,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "search_code_02",
+      "prompt": "Recherche les occurrences de verify_grounding dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0438,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "search_code_03",
+      "prompt": "Recherche où PROJECT_ROOT est utilisé.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0501,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "search_code_04",
+      "prompt": "Recherche les occurrences de read_file dans le projet.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0394,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "git_diff_01",
+      "prompt": "Montre-moi le diff Git actuel du projet.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0294,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "git_diff_02",
+      "prompt": "Inspecte les modifications Git non commitées.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0304,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "run_tests_01",
+      "prompt": "Exécute les tests du projet.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.034,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "run_tests_02",
+      "prompt": "Lance uniquement tests/test_local_llm.py.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0379,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "recovery_01",
+      "prompt": "Lis missing_file.py. Si le fichier n'existe pas, utilise les outils disponibles pour vérifier s'il existe ailleurs dans le projet.",
+      "expected_tools": [
+        "list_files",
+        "read_file",
+        "search_code"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0412,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    },
+    {
+      "id": "multi_step_01",
+      "prompt": "Trouve où LocalLLM est défini puis lis le fichier correspondant pour m'indiquer le modèle par défaut.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": null,
+      "correct": false,
+      "confidence": null,
+      "latency_seconds": 0.0493,
+      "error": "Jev HTTP 403: error code: 1010\n",
+      "details": {}
+    }
+  ]
+}

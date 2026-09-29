@@ -1,0 +1,705 @@
+{
+  "model": "devstral:24b",
+  "dataset": "baseline_tasks.json",
+  "summary": {
+    "tasks": 20,
+    "routing_success_rate": 1.0,
+    "end_to_end_success_rate": 0.8,
+    "tool_selection_accuracy": 1.0,
+    "no_tool_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "average_steps": 2.1,
+    "average_tool_calls": 1.15,
+    "average_latency_seconds": 131.053035,
+    "tool_errors": 2,
+    "duplicates": 3,
+    "retry_limits": 0,
+    "grounding": {
+      "not_used": 3,
+      "unsupported": 4,
+      "citation_error": 0,
+      "passed": 13
+    }
+  },
+  "results": [
+    {
+      "id": "no_tool_01",
+      "prompt": "Réponds uniquement par OK.",
+      "expected_tools": [],
+      "first_tool": null,
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 1,
+      "tool_calls": 0,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "not_used",
+      "latency_seconds": 8.1285,
+      "answer": "OK",
+      "error": null,
+      "trace": []
+    },
+    {
+      "id": "no_tool_02",
+      "prompt": "Réponds uniquement par OUI.",
+      "expected_tools": [],
+      "first_tool": null,
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 1,
+      "tool_calls": 0,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "not_used",
+      "latency_seconds": 2.9859,
+      "answer": "OUI",
+      "error": null,
+      "trace": []
+    },
+    {
+      "id": "no_tool_03",
+      "prompt": "Donne le résultat de 2 + 2.",
+      "expected_tools": [],
+      "first_tool": null,
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 1,
+      "tool_calls": 0,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "not_used",
+      "latency_seconds": 3.2965,
+      "answer": "Le résultat de 2 + 2 est 4.",
+      "error": null,
+      "trace": []
+    },
+    {
+      "id": "list_files_01",
+      "prompt": "Liste les fichiers du projet.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "first_tool": "list_files",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 184.3128,
+      "answer": "Voici la liste des fichiers du projet : [S1]\n\n- .gitignore\n- LICENSE\n- README.md\n- requirements.txt\n- app/__init__.py\n- app/main.py\n- app/mcp_server.py\n- app/agent/__init__.py\n- app/agent/tool_loop.py\n- app/llm/__init__.py\n- app/llm/local_llm.py\n- app/memory/__init__.py\n- app/memory/embeddings.py\n- app/memory/history.py\n- app/memory/project_state.py\n- app/memory/vector_store.py\n- app/parser/__init__.py\n- app/parser/chunker.py\n- app/parser/file_loader.py\n- app/parser/variable.py\n- app/rag/__init__.py\n- app/rag/citations.py\n- app/rag/grounding.py\n- app/rag/pipeline.py\n- app/rag/prompt.py\n- app/retrieval/__init__.py\n- app/retrieval/faiss_retriever.py\n- app/tools/__init__.py\n- app/tools/project_tools.py\n- app/utils/__init__.py\n- app/utils/paths.py\n- benchmarks/grounding/grounding_holdout.json\n- benchmarks/grounding/results/grounding_models_20260929-222743.json\n- benchmarks/grounding/results/grounding_models_20260929-233145.json\n- benchmarks/llm/README.md\n- benchmarks/llm/benchmark.json\n- benchmarks/llm/results/deepseek-coder-v2_16b.json\n- benchmarks/llm/results/devstral_24b.json\n- benchmarks/llm/results/gemma3_12b.json\n- benchmarks/llm/results/llama3.1_8b.json\n- benchmarks/llm/results/qwen2.5-coder_14b.json\n- benchmarks/llm/results/qwen2.5-coder_7b.json\n- benchmarks/llm/results/qwen3-coder_30b.json\n- benchmarks/rag/final_questions.json\n- benchmarks/rag/grounding_questions.json\n- benchmarks/ [S1]",
+      "error": null,
+      "trace": [
+        {
+          "tool": "list_files",
+          "arguments": {},
+          "status": "success",
+          "duration_seconds": 0.043040800010203384
+        }
+      ]
+    },
+    {
+      "id": "list_files_02",
+      "prompt": "Quels fichiers se trouvent dans le dossier app/rag ?",
+      "expected_tools": [
+        "list_files"
+      ],
+      "first_tool": "list_files",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 60.8196,
+      "answer": "Les fichiers suivants se trouvent dans le dossier app/rag : [S1]\n\n- app/rag/__init__.py [S1]\n- app/rag/citations.py [S1]\n- app/rag/grounding.py [S1]\n- app/rag/pipeline.py [S1]\n- app/rag/prompt.py [S1]",
+      "error": null,
+      "trace": [
+        {
+          "tool": "list_files",
+          "arguments": {
+            "path": "app/rag"
+          },
+          "status": "success",
+          "duration_seconds": 0.0040603999950690195
+        }
+      ]
+    },
+    {
+      "id": "list_files_03",
+      "prompt": "Liste les fichiers du dossier tests.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "first_tool": "list_files",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 147.2753,
+      "answer": "Les fichiers du dossier \"tests\" sont les suivants : [S1]\n\n- \"tests/__init__.py\" [S1]\n- \"tests/test_embeddings.py\" [S1]\n- \"tests/test_faiss_retriever.py\" [S1]\n- \"tests/test_grounding_source_mapping.py\" [S1]\n- \"tests/test_history.py\" [S1]\n- \"tests/test_local_llm.py\" [S1]\n- \"tests/test_mcp_server.py\" [S1]\n- \"tests/test_parser.py\" [S1]\n- \"tests/test_project_state.py\" [S1]\n- \"tests/test_project_tools.py\" [S1]\n- \"tests/test_project_tools_traversal.py\" [S1]\n- \"tests/test_rag_citations.py\" [S1]\n- \"tests/test_rag_grounding.py\" [S1]\n- \"tests/test_rag_pipeline.py\" [S1]\n- \"tests/test_rag_prompt.py\" [S1]\n- \"tests/test_tool_context_optimization.py\" [S1]\n- \"tests/test_tool_loop.py\" [S1]\n- \"tests/test_tool_timing.py\" [S1]\n- \"tests/test_vector_store.py\" [S1]",
+      "error": null,
+      "trace": [
+        {
+          "tool": "list_files",
+          "arguments": {
+            "path": "tests"
+          },
+          "status": "success",
+          "duration_seconds": 0.0036241000052541494
+        }
+      ]
+    },
+    {
+      "id": "read_file_01",
+      "prompt": "Lis les 20 premières lignes du README.md.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "first_tool": "read_file",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 134.0965,
+      "answer": "# CodeAgent\nProjet personnel de création d’un Agent IA local pour l’analyse de code Python et la mémoire de projet. [S1]\n\n## Présentation [S1]\n\nCodeAgent est un assistant IA local conçu pour analyser des projets Python et répondre à des questions sur leur code [S1].\n\nL’objectif du projet est de créer un agent capable de :\n- lire automatiquement les fichiers Python d’un projet,\n- indexer le code avec des embeddings,\n- comprendre la structure générale du projet,\n- répondre à des questions sur le code,\n- conserver une mémoire simple du projet,\n- utiliser des outils de manière contrôlée lorsque nécessaire,\n- planifier les tâches multi-étapes lorsque cela apporte un bénéfice réel [S1].\n\nLe projet fonctionne entièrement en local grâce à un LLM local et une base vectorielle [S1].\n\n### Statut du projet [S1]",
+      "error": null,
+      "trace": [
+        {
+          "tool": "read_file",
+          "arguments": {
+            "path": "README.md",
+            "end_line": 20
+          },
+          "status": "success",
+          "duration_seconds": 0.05410789999586996
+        }
+      ]
+    },
+    {
+      "id": "read_file_02",
+      "prompt": "Lis app/llm/local_llm.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "first_tool": "read_file",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 174.6759,
+      "answer": "Le fichier `app/llm/local_llm.py` contient la classe `LocalLLM` qui est utilisée pour interagir avec un modèle de langage local. Voici quelques points clés du fichier :\n\n- La classe `LocalLLM` est définie avec plusieurs paramètres par défaut tels que `DEFAULT_MODEL`, `DEFAULT_BASE_URL`, et `DEFAULT_KEEP_ALIVE` [S1].\n- La méthode `_request` est utilisée pour envoyer des requêtes HTTP POST à une API locale [S1].\n- La méthode `generate` permet de générer du texte en utilisant un prompt et un système de prompt optionnel [S1].\n- La méthode `chat` permet d'interagir avec le modèle en utilisant une liste de messages et une liste optionnelle d'outils [S1].\n\nJe ne peux pas déterminer le reste à partir des sources disponibles.",
+      "error": null,
+      "trace": [
+        {
+          "tool": "read_file",
+          "arguments": {
+            "path": "app/llm/local_llm.py"
+          },
+          "status": "success",
+          "duration_seconds": 0.0033404999994672835
+        }
+      ]
+    },
+    {
+      "id": "read_file_03",
+      "prompt": "Lis les lignes 1 à 40 de app/rag/grounding.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "first_tool": "read_file",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 208.1484,
+      "answer": "Le fichier `app/rag/grounding.py` contient une importation de modules et une définition de fonction. Voici les détails :\n\n- Le fichier commence par importer le module `re` et deux fonctions `extract_citations` et `is_abstention` depuis `app.rag.citations`, ainsi que la fonction `format_chunk` depuis `app.rag.prompt` [S1].\n- Il définit une constante `GROUNDING_SYSTEM_PROMPT` qui contient des règles pour vérifier si une affirmation est strictement supportée par les sources fournies [S1].\n- La fonction `extract_claims` est définie pour extraire des affirmations à partir d'une réponse. Elle divise la réponse en paragraphes et extrait les citations de chaque paragraphe [S1].\n\nJe ne peux pas déterminer le reste à partir des sources disponibles.",
+      "error": null,
+      "trace": [
+        {
+          "tool": "read_file",
+          "arguments": {
+            "path": "app/rag/grounding.py",
+            "start_line": 1,
+            "end_line": 40
+          },
+          "status": "success",
+          "duration_seconds": 0.0037305000005289912
+        }
+      ]
+    },
+    {
+      "id": "read_file_04",
+      "prompt": "Que contient app/mcp_server.py ?",
+      "expected_tools": [
+        "read_file"
+      ],
+      "first_tool": "read_file",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 109.5564,
+      "answer": "Le fichier `app/mcp_server.py` contient les éléments suivants :\n\n- Importations :\n  - `MCPServer` depuis le module `mcp.server` [S1].\n  - `get_git_diff`, `list_files`, `read_file`, `run_tests`, et `search_code` depuis le module `app.tools` [S1].\n\n- Création d'une instance de `MCPServer` nommée `mcp` avec le nom `\"CodeAgent\"` [S1].\n\n- Appels aux méthodes `tool` de l'instance `mcp` pour enregistrer les fonctions `read_file`, `search_code`, `list_files`, `get_git_diff`, et `run_tests` [S1].\n\n- Un bloc `if __name__ == \"__main__\":` qui exécute la méthode `run` de l'instance `mcp` [S1].\n\nJe ne peux pas déterminer le reste à partir des sources disponibles.",
+      "error": null,
+      "trace": [
+        {
+          "tool": "read_file",
+          "arguments": {
+            "path": "app/mcp_server.py"
+          },
+          "status": "success",
+          "duration_seconds": 0.003243400002247654
+        }
+      ]
+    },
+    {
+      "id": "search_code_01",
+      "prompt": "Recherche où LocalLLM est défini dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "first_tool": "search_code",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 5,
+      "tool_calls": 5,
+      "tool_errors": 1,
+      "duplicates": 3,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 111.4258,
+      "answer": "Pour déterminer où `LocalLLM` est défini dans le code, nous devons rechercher des définitions de classes ou des importations qui pourraient indiquer où cette classe est définie. Les sources disponibles montrent les occurrences suivantes :\n\n1. Dans `app/main.py`, il y a une importation de `LocalLLM` à la ligne 9 : `from app.llm import LocalLLM` [S1].\n2. Dans `app/agent/tool_loop.py`, il y a également une importation de `LocalLLM` à la ligne 12 : `from app.llm import LocalLLM` [S1].\n\nCes importations suggèrent que `LocalLLM` est défini dans le module `app.llm`. Cependant, les sources disponibles ne montrent pas directement la définition de `LocalLLM` dans ce module.\n\nJe ne peux pas déterminer la définition exacte de `LocalLLM` à partir des sources disponibles.",
+      "error": null,
+      "trace": [
+        {
+          "tool": "search_code",
+          "arguments": {
+            "query": "LocalLLM",
+            "max_results": 5
+          },
+          "status": "success",
+          "duration_seconds": 0.03027599999040831
+        },
+        {
+          "tool": "read_file",
+          "arguments": {
+            "path": "app/llm.py"
+          },
+          "status": "error",
+          "duration_seconds": 1.0383871999947587
+        },
+        {
+          "tool": "read_file",
+          "arguments": {
+            "path": "app/llm.py"
+          },
+          "status": "duplicate",
+          "duration_seconds": 0.0
+        },
+        {
+          "tool": "read_file",
+          "arguments": {
+            "path": "app/llm.py"
+          },
+          "status": "duplicate",
+          "duration_seconds": 0.0
+        },
+        {
+          "tool": "read_file",
+          "arguments": {
+            "path": "app/llm.py"
+          },
+          "status": "duplicate",
+          "duration_seconds": 0.0
+        }
+      ]
+    },
+    {
+      "id": "search_code_02",
+      "prompt": "Recherche les occurrences de verify_grounding dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "first_tool": "search_code",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": false,
+      "task_success": false,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "unsupported",
+      "latency_seconds": 233.92,
+      "answer": "La réponse générée contient des affirmations non supportées par les sources.",
+      "error": null,
+      "trace": [
+        {
+          "tool": "search_code",
+          "arguments": {
+            "query": "verify_grounding",
+            "max_results": 10
+          },
+          "status": "success",
+          "duration_seconds": 0.3492463000002317
+        }
+      ]
+    },
+    {
+      "id": "search_code_03",
+      "prompt": "Recherche où PROJECT_ROOT est utilisé.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "first_tool": "search_code",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 230.9423,
+      "answer": "PROJECT_ROOT est utilisé dans plusieurs fichiers et lignes de code. Voici les occurrences :\n\n- Dans `app/agent/tool_loop.py` à la ligne 17, PROJECT_ROOT est défini comme `Path(__file__).resolve().parents[2]` [S1].\n- Dans `app/agent/tool_loop.py` à la ligne 55, PROJECT_ROOT est utilisé avec `cwd=PROJECT_ROOT,` [S1].\n- Dans `app/rag/prompt.py` à la ligne 4, PROJECT_ROOT est défini comme `Path(__file__).resolve().parents[2]` [S1].\n- Dans `app/rag/prompt.py` à la ligne 40, PROJECT_ROOT est utilisé dans `return path.resolve().relative_to(PROJECT_ROOT).as_posix()` [S1].\n- Dans `app/tools/project_tools.py` à la ligne 6, PROJECT_ROOT est défini comme `Path(__file__).resolve().parents[2]` [S1].\n- Dans `app/tools/project_tools.py` à la ligne 21, PROJECT_ROOT est utilisé dans `resolved = (PROJECT_ROOT / path).resolve()` [S1].\n- Dans `app/tools/project_tools.py` à la ligne 22, PROJECT_ROOT est utilisé dans `project_root = PROJECT_ROOT.resolve()` [S1].\n- Dans `app/tools/project_tools.py` à la ligne 25, PROJECT_ROOT est utilisé dans `resolved.relative_to(project_root)` [S1].\n- Dans `app/tools/project_tools.py` à la ligne 33, PROJECT_ROOT est utilisé dans `relative = path.resolve().relative_to(PROJECT_ROOT.resolve())` [S1].\n- Dans `app/tools/project_tools.py` à la ligne 124, PROJECT_ROOT est mentionné [S1].\n\nJe ne peux pas déterminer le reste à partir des sources disponibles.",
+      "error": null,
+      "trace": [
+        {
+          "tool": "search_code",
+          "arguments": {
+            "query": "PROJECT_ROOT",
+            "max_results": 10
+          },
+          "status": "success",
+          "duration_seconds": 0.009851099996012636
+        }
+      ]
+    },
+    {
+      "id": "search_code_04",
+      "prompt": "Recherche les occurrences de read_file dans le projet.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "first_tool": "search_code",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": false,
+      "task_success": false,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "unsupported",
+      "latency_seconds": 199.5344,
+      "answer": "La réponse générée contient des affirmations non supportées par les sources.",
+      "error": null,
+      "trace": [
+        {
+          "tool": "search_code",
+          "arguments": {
+            "query": "read_file",
+            "max_results": 10
+          },
+          "status": "success",
+          "duration_seconds": 0.35287410000455566
+        }
+      ]
+    },
+    {
+      "id": "git_diff_01",
+      "prompt": "Montre-moi le diff Git actuel du projet.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "first_tool": "get_git_diff",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": false,
+      "task_success": false,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "unsupported",
+      "latency_seconds": 353.3023,
+      "answer": "La réponse générée contient des affirmations non supportées par les sources.",
+      "error": null,
+      "trace": [
+        {
+          "tool": "get_git_diff",
+          "arguments": {},
+          "status": "success",
+          "duration_seconds": 0.06447130000742618
+        }
+      ]
+    },
+    {
+      "id": "git_diff_02",
+      "prompt": "Inspecte les modifications Git non commitées.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "first_tool": "get_git_diff",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": false,
+      "task_success": false,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "unsupported",
+      "latency_seconds": 198.5018,
+      "answer": "La réponse générée contient des affirmations non supportées par les sources.",
+      "error": null,
+      "trace": [
+        {
+          "tool": "get_git_diff",
+          "arguments": {},
+          "status": "success",
+          "duration_seconds": 0.05225789999531116
+        }
+      ]
+    },
+    {
+      "id": "run_tests_01",
+      "prompt": "Exécute les tests du projet.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "first_tool": "run_tests",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 67.289,
+      "answer": "Les tests du projet ont été exécutés avec succès. Tous les tests ont passé, et il n'y a pas eu de dépassement de temps. Le code de retour est 0, ce qui indique une exécution réussie. Le message de sortie indique que 133 tests ont été exécutés et tous ont réussi en 3,48 secondes [S1].",
+      "error": null,
+      "trace": [
+        {
+          "tool": "run_tests",
+          "arguments": {
+            "path": "."
+          },
+          "status": "success",
+          "duration_seconds": 8.18214769999031
+        }
+      ]
+    },
+    {
+      "id": "run_tests_02",
+      "prompt": "Lance uniquement tests/test_local_llm.py.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "first_tool": "run_tests",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 2,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 55.8269,
+      "answer": "Le test `tests/test_local_llm.py` a été exécuté avec succès. Tous les tests ont passé, et il n'y a pas eu de timeout. Le code de retour est 0, ce qui indique une exécution réussie sans erreurs. Le message de sortie standard indique que 9 tests ont été exécutés en 0,02 secondes [S1].",
+      "error": null,
+      "trace": [
+        {
+          "tool": "run_tests",
+          "arguments": {
+            "path": "tests/test_local_llm.py"
+          },
+          "status": "success",
+          "duration_seconds": 0.821382199996151
+        }
+      ]
+    },
+    {
+      "id": "recovery_01",
+      "prompt": "Lis missing_file.py. Si le fichier n'existe pas, utilise les outils disponibles pour vérifier s'il existe ailleurs dans le projet.",
+      "expected_tools": [
+        "list_files",
+        "read_file",
+        "search_code"
+      ],
+      "first_tool": "list_files",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 3,
+      "tool_calls": 2,
+      "tool_errors": 1,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 61.9016,
+      "answer": "Le fichier \"missing_file.py\" n'existe pas dans le projet. La liste des fichiers disponibles dans le projet ne contient pas de fichier nommé \"missing_file.py\" [S1].\n\nJe ne peux pas déterminer s'il existe ailleurs dans le projet à partir des sources disponibles.",
+      "error": null,
+      "trace": [
+        {
+          "tool": "list_files",
+          "arguments": {},
+          "status": "success",
+          "duration_seconds": 0.00803710000764113
+        },
+        {
+          "tool": "read_file",
+          "arguments": {
+            "path": "missing_file.py"
+          },
+          "status": "error",
+          "duration_seconds": 0.5581153000093764
+        }
+      ]
+    },
+    {
+      "id": "multi_step_01",
+      "prompt": "Trouve où LocalLLM est défini puis lis le fichier correspondant pour m'indiquer le modèle par défaut.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "first_tool": "search_code",
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "answer_correct": true,
+      "grounding_success": true,
+      "task_success": true,
+      "steps": 3,
+      "tool_calls": 2,
+      "tool_errors": 0,
+      "duplicates": 0,
+      "retry_limits": 0,
+      "grounding": "passed",
+      "latency_seconds": 75.1208,
+      "answer": "LocalLLM est défini dans le fichier `app/llm/local_llm.py` à la ligne 10 [S1]. Le modèle par défaut pour LocalLLM est `qwen2.5-coder:14b` [S2].",
+      "error": null,
+      "trace": [
+        {
+          "tool": "search_code",
+          "arguments": {
+            "query": "LocalLLM",
+            "max_results": 10
+          },
+          "status": "success",
+          "duration_seconds": 0.010330300006899051
+        },
+        {
+          "tool": "read_file",
+          "arguments": {
+            "path": "app/llm/local_llm.py",
+            "start_line": 1,
+            "end_line": 45
+          },
+          "status": "success",
+          "duration_seconds": 0.0030220000044209883
+        }
+      ]
+    }
+  ]
+}

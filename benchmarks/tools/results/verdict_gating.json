@@ -1,0 +1,554 @@
+{
+  "router": "verdict",
+  "dataset": "baseline_tasks.json",
+  "benchmark": "tool_gating",
+  "summary": {
+    "tasks": 20,
+    "gating_accuracy": 0.75,
+    "tool_selection_accuracy": 0.7058823529411765,
+    "no_tool_accuracy": 1.0,
+    "average_latency_seconds": 0.12739,
+    "median_latency_seconds": 0.1265,
+    "p95_latency_seconds": 0.1443,
+    "average_confidence": 0.466004151634535,
+    "errors": 0
+  },
+  "results": [
+    {
+      "id": "no_tool_01",
+      "prompt": "Réponds uniquement par OK.",
+      "expected_tools": [],
+      "predicted_tool": "no_tool",
+      "correct": true,
+      "confidence": 0.41731002176016374,
+      "latency_seconds": 0.1081,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.41731002176016374,
+          "list_files": 0.08559635261329836,
+          "read_file": 0.09731503451034118,
+          "search_code": 0.055447990705252526,
+          "get_git_diff": 0.03519357426223985,
+          "run_tests": 0.07438580771811536,
+          "__insufficient_evidence__": 0.234751218430589
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 107.91819999940344
+      }
+    },
+    {
+      "id": "no_tool_02",
+      "prompt": "Réponds uniquement par OUI.",
+      "expected_tools": [],
+      "predicted_tool": "no_tool",
+      "correct": true,
+      "confidence": 0.43506612419458685,
+      "latency_seconds": 0.1207,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.43506612419458685,
+          "list_files": 0.0843314120700309,
+          "read_file": 0.09902850999629637,
+          "search_code": 0.05210213605790101,
+          "get_git_diff": 0.02992965979174058,
+          "run_tests": 0.05649207795467591,
+          "__insufficient_evidence__": 0.24305007993476838
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 120.50679999993008
+      }
+    },
+    {
+      "id": "no_tool_03",
+      "prompt": "Donne le résultat de 2 + 2.",
+      "expected_tools": [],
+      "predicted_tool": "no_tool",
+      "correct": true,
+      "confidence": 0.3408336265198821,
+      "latency_seconds": 0.1226,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.3408336265198821,
+          "list_files": 0.08426365067965573,
+          "read_file": 0.17059038198164742,
+          "search_code": 0.07527538220713924,
+          "get_git_diff": 0.032191838349584376,
+          "run_tests": 0.059915470482808264,
+          "__insufficient_evidence__": 0.23692964977928288
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 122.38439999964612
+      }
+    },
+    {
+      "id": "list_files_01",
+      "prompt": "Liste les fichiers du projet.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": "list_files",
+      "correct": true,
+      "confidence": 0.5879480712834693,
+      "latency_seconds": 0.1275,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.12838124953883817,
+          "list_files": 0.5879480712834693,
+          "read_file": 0.12385330828966006,
+          "search_code": 0.041503462051432925,
+          "get_git_diff": 0.010108760341534868,
+          "run_tests": 0.029306072113998553,
+          "__insufficient_evidence__": 0.07889907638106611
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 127.36480000057782
+      }
+    },
+    {
+      "id": "list_files_02",
+      "prompt": "Quels fichiers se trouvent dans le dossier app/rag ?",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": "list_files",
+      "correct": true,
+      "confidence": 0.4383987302660611,
+      "latency_seconds": 0.128,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.06935902120736669,
+          "list_files": 0.4383987302660611,
+          "read_file": 0.22150934320153817,
+          "search_code": 0.03162969731318906,
+          "get_git_diff": 0.01954696750949611,
+          "run_tests": 0.03127170435675208,
+          "__insufficient_evidence__": 0.1882845361455968
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 127.78049999906216
+      }
+    },
+    {
+      "id": "list_files_03",
+      "prompt": "Liste les fichiers du dossier tests.",
+      "expected_tools": [
+        "list_files"
+      ],
+      "predicted_tool": "list_files",
+      "correct": true,
+      "confidence": 0.4908933974123999,
+      "latency_seconds": 0.1234,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.06564022649556567,
+          "list_files": 0.4908933974123999,
+          "read_file": 0.14847417286391684,
+          "search_code": 0.022411538454976218,
+          "get_git_diff": 0.011178718963106862,
+          "run_tests": 0.13960644706790482,
+          "__insufficient_evidence__": 0.12179549874212964
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 123.18769999910728
+      }
+    },
+    {
+      "id": "read_file_01",
+      "prompt": "Lis les 20 premières lignes du README.md.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "__insufficient_evidence__",
+      "correct": false,
+      "confidence": 0.20831683433291937,
+      "latency_seconds": 0.1202,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.1803885264723638,
+          "list_files": 0.18500366944822422,
+          "read_file": 0.16723430281307028,
+          "search_code": 0.1774168027744949,
+          "get_git_diff": 0.03622200367020073,
+          "run_tests": 0.04541786048872665,
+          "__insufficient_evidence__": 0.20831683433291937
+        },
+        "is_abstention": true,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 120.01539999982924
+      }
+    },
+    {
+      "id": "read_file_02",
+      "prompt": "Lis app/llm/local_llm.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "no_tool",
+      "correct": false,
+      "confidence": 0.24555907202271532,
+      "latency_seconds": 0.1234,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.24555907202271532,
+          "list_files": 0.13859094989130533,
+          "read_file": 0.22608301548845355,
+          "search_code": 0.09144991095624665,
+          "get_git_diff": 0.02464567552460005,
+          "run_tests": 0.05372525499147002,
+          "__insufficient_evidence__": 0.21994612112520906
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 123.23180000021239
+      }
+    },
+    {
+      "id": "read_file_03",
+      "prompt": "Lis les lignes 1 à 40 de app/rag/grounding.py.",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "no_tool",
+      "correct": false,
+      "confidence": 0.25584532380968383,
+      "latency_seconds": 0.1539,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.25584532380968383,
+          "list_files": 0.15151100504150586,
+          "read_file": 0.16251926706064862,
+          "search_code": 0.07632801255240966,
+          "get_git_diff": 0.029786395107224858,
+          "run_tests": 0.07159319119938512,
+          "__insufficient_evidence__": 0.252416805229142
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 153.76440000000002
+      }
+    },
+    {
+      "id": "read_file_04",
+      "prompt": "Que contient app/mcp_server.py ?",
+      "expected_tools": [
+        "read_file"
+      ],
+      "predicted_tool": "read_file",
+      "correct": true,
+      "confidence": 0.3038857062429188,
+      "latency_seconds": 0.1285,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.2304789782067867,
+          "list_files": 0.08365594068762505,
+          "read_file": 0.3038857062429188,
+          "search_code": 0.09836633759947257,
+          "get_git_diff": 0.027998653039301078,
+          "run_tests": 0.043765717395991166,
+          "__insufficient_evidence__": 0.21184866682790468
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 128.27809999907913
+      }
+    },
+    {
+      "id": "search_code_01",
+      "prompt": "Recherche où LocalLLM est défini dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "search_code",
+      "correct": true,
+      "confidence": 0.764891796141008,
+      "latency_seconds": 0.1314,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.05932944212733356,
+          "list_files": 0.025201136011619718,
+          "read_file": 0.04189855193813749,
+          "search_code": 0.764891796141008,
+          "get_git_diff": 0.010673353349106822,
+          "run_tests": 0.01054155257957473,
+          "__insufficient_evidence__": 0.08746416785321974
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 131.25459999901068
+      }
+    },
+    {
+      "id": "search_code_02",
+      "prompt": "Recherche les occurrences de verify_grounding dans le code.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "search_code",
+      "correct": true,
+      "confidence": 0.715145356490758,
+      "latency_seconds": 0.1281,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.05644136624516181,
+          "list_files": 0.027193130787222335,
+          "read_file": 0.052447117731606305,
+          "search_code": 0.715145356490758,
+          "get_git_diff": 0.015103008418215751,
+          "run_tests": 0.02642454571319827,
+          "__insufficient_evidence__": 0.10724547461383743
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 127.9432999999699
+      }
+    },
+    {
+      "id": "search_code_03",
+      "prompt": "Recherche où PROJECT_ROOT est utilisé.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "search_code",
+      "correct": true,
+      "confidence": 0.6428149097083031,
+      "latency_seconds": 0.1177,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.13323877243065305,
+          "list_files": 0.03653726214726665,
+          "read_file": 0.04459095203482636,
+          "search_code": 0.6428149097083031,
+          "get_git_diff": 0.014341220643380614,
+          "run_tests": 0.0166192346425833,
+          "__insufficient_evidence__": 0.1118576483929869
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 117.49199999940174
+      }
+    },
+    {
+      "id": "search_code_04",
+      "prompt": "Recherche les occurrences de read_file dans le projet.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "search_code",
+      "correct": true,
+      "confidence": 0.4490504499029603,
+      "latency_seconds": 0.121,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.2621601658696023,
+          "list_files": 0.07844039461823375,
+          "read_file": 0.05560024000109494,
+          "search_code": 0.4490504499029603,
+          "get_git_diff": 0.01683863712750718,
+          "run_tests": 0.03194500672530418,
+          "__insufficient_evidence__": 0.1059651057552974
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 120.82780000127968
+      }
+    },
+    {
+      "id": "git_diff_01",
+      "prompt": "Montre-moi le diff Git actuel du projet.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "predicted_tool": "no_tool",
+      "correct": false,
+      "confidence": 0.37434836524821136,
+      "latency_seconds": 0.1278,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.37434836524821136,
+          "list_files": 0.07177716359911182,
+          "read_file": 0.0694310577692267,
+          "search_code": 0.09703877387496132,
+          "get_git_diff": 0.24804572299037644,
+          "run_tests": 0.036592575971175434,
+          "__insufficient_evidence__": 0.10276634054693691
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 127.62889999976323
+      }
+    },
+    {
+      "id": "git_diff_02",
+      "prompt": "Inspecte les modifications Git non commitées.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "predicted_tool": "get_git_diff",
+      "correct": true,
+      "confidence": 0.8167938780224387,
+      "latency_seconds": 0.1255,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.053699379174489976,
+          "list_files": 0.01619779356284518,
+          "read_file": 0.02203008956345938,
+          "search_code": 0.0194119964589364,
+          "get_git_diff": 0.8167938780224387,
+          "run_tests": 0.013235423090761134,
+          "__insufficient_evidence__": 0.05863144012706913
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 125.35159999970347
+      }
+    },
+    {
+      "id": "run_tests_01",
+      "prompt": "Exécute les tests du projet.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "predicted_tool": "run_tests",
+      "correct": true,
+      "confidence": 0.6933932908821949,
+      "latency_seconds": 0.124,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.12800223040561848,
+          "list_files": 0.05171429300121901,
+          "read_file": 0.02314719547853359,
+          "search_code": 0.03398353318450831,
+          "get_git_diff": 0.009456683080123589,
+          "run_tests": 0.6933932908821949,
+          "__insufficient_evidence__": 0.06030277396780212
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 123.8418000011734
+      }
+    },
+    {
+      "id": "run_tests_02",
+      "prompt": "Lance uniquement tests/test_local_llm.py.",
+      "expected_tools": [
+        "run_tests"
+      ],
+      "predicted_tool": "run_tests",
+      "correct": true,
+      "confidence": 0.37236820331434045,
+      "latency_seconds": 0.1303,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.16155255955409503,
+          "list_files": 0.0922671375413192,
+          "read_file": 0.1385644216258188,
+          "search_code": 0.04661407900960576,
+          "get_git_diff": 0.01807671576597471,
+          "run_tests": 0.37236820331434045,
+          "__insufficient_evidence__": 0.17055688318884604
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 130.1555999998527
+      }
+    },
+    {
+      "id": "recovery_01",
+      "prompt": "Lis missing_file.py. Si le fichier n'existe pas, utilise les outils disponibles pour vérifier s'il existe ailleurs dans le projet.",
+      "expected_tools": [
+        "list_files",
+        "read_file",
+        "search_code"
+      ],
+      "predicted_tool": "list_files",
+      "correct": true,
+      "confidence": 0.3289413029384801,
+      "latency_seconds": 0.1414,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.11749878505726127,
+          "list_files": 0.3289413029384801,
+          "read_file": 0.2570326892002382,
+          "search_code": 0.13187841866237876,
+          "get_git_diff": 0.012182049750235988,
+          "run_tests": 0.03996678673157788,
+          "__insufficient_evidence__": 0.11249996765982775
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 141.22499999939464
+      }
+    },
+    {
+      "id": "multi_step_01",
+      "prompt": "Trouve où LocalLLM est défini puis lis le fichier correspondant pour m'indiquer le modèle par défaut.",
+      "expected_tools": [
+        "search_code"
+      ],
+      "predicted_tool": "read_file",
+      "correct": false,
+      "confidence": 0.4382785721972053,
+      "latency_seconds": 0.1443,
+      "error": null,
+      "details": {
+        "probabilities": {
+          "no_tool": 0.07855698013890461,
+          "list_files": 0.2207848213905402,
+          "read_file": 0.4382785721972053,
+          "search_code": 0.04734707800101779,
+          "get_git_diff": 0.066324795273125,
+          "run_tests": 0.020657599741876115,
+          "__insufficient_evidence__": 0.128050153257331
+        },
+        "is_abstention": false,
+        "model_id": "knowledgator/gliclass-modern-base-v2.0",
+        "calibration_status": "calibrated_for_scope",
+        "latency_ms": 144.11350000045786
+      }
+    }
+  ]
+}
