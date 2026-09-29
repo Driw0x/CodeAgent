@@ -15,17 +15,25 @@ class RAGPipeline:
     def ask(self, question: str) -> str:
         if not question.strip():
             raise ValueError("Question cannot be empty.")
+
         chunks = self.retriever(question, self.top_k)
+
         if not chunks:
             return "Aucun contexte pertinent n'a été trouvé pour répondre à cette question."
+
         context_chunks = select_context_chunks(chunks)
+
         if not context_chunks:
             return "Aucun contexte pertinent n'a été trouvé pour répondre à cette question."
+
         prompt = build_prompt(question, context_chunks)
         answer = self.llm.generate(prompt=prompt, system_prompt=SYSTEM_PROMPT)
+
         if not validate_citations(answer, len(context_chunks)):
             return "La réponse générée contient des citations invalides ou manquantes."
+
         if extract_citations(answer) and not verify_grounding(answer, context_chunks, self.llm):
             return "La réponse générée contient des affirmations non supportées par les sources."
+
         sources = format_sources(context_chunks)
         return f"{answer}\n\nSources:\n{sources}"

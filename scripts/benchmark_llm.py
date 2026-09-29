@@ -45,6 +45,7 @@ def call_ollama(
         method="POST",
     )
     started_at = time.perf_counter()
+
     try:
         with request.urlopen(req, timeout=timeout) as response:
             data = json.loads(response.read().decode("utf-8"))
@@ -55,7 +56,9 @@ def call_ollama(
         raise RuntimeError(
             f"Unable to reach Ollama at {base_url}. Check that the local server is running."
         ) from exc
+
     data["_wall_time_seconds"] = time.perf_counter() - started_at
+
     return data
 
 
@@ -69,10 +72,7 @@ def nanoseconds_to_seconds(value: int | None) -> float | None:
     return value / 1_000_000_000
 
 
-def compute_tokens_per_second(
-    eval_count: int | None,
-    eval_duration: int | None,
-) -> float | None:
+def compute_tokens_per_second(eval_count: int | None, eval_duration: int | None) -> float | None:
     if not eval_count or not eval_duration:
         return None
     duration_seconds = nanoseconds_to_seconds(eval_duration)
@@ -124,6 +124,7 @@ def run_test(
     eval_count = response.get("eval_count")
     eval_duration = response.get("eval_duration")
     tokens_per_second = compute_tokens_per_second(eval_count, eval_duration)
+
     return {
         "id": test["id"],
         "category": test["category"],
@@ -150,10 +151,7 @@ def build_summary(results: list[dict]) -> dict:
         for result in results
         if result["performance"]["tokens_per_second"] is not None
     ]
-    total_output_tokens = sum(
-        result["performance"]["output_tokens"] or 0
-        for result in results
-    )
+    total_output_tokens = sum(result["performance"]["output_tokens"] or 0 for result in results)
     return {
         "tests": len(results),
         "total_output_tokens": total_output_tokens,
@@ -164,25 +162,15 @@ def build_summary(results: list[dict]) -> dict:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Benchmark commun des LLM locaux pour CodeAgent."
-    )
-    parser.add_argument(
-        "--model",
-        required=True,
-        help="Nom du modèle local à benchmarker.",
-    )
+    parser = argparse.ArgumentParser(description="Benchmark commun des LLM locaux pour CodeAgent.")
+    parser.add_argument("--model", required=True, help="Nom du modèle local à benchmarker.")
     parser.add_argument(
         "--benchmark",
         type=Path,
         default=DEFAULT_BENCHMARK_PATH,
         help="Chemin vers benchmark.json.",
     )
-    parser.add_argument(
-        "--base-url",
-        default=DEFAULT_BASE_URL,
-        help="URL du serveur Ollama.",
-    )
+    parser.add_argument("--base-url", default=DEFAULT_BASE_URL, help="URL du serveur Ollama.")
     parser.add_argument(
         "--timeout",
         type=float,
@@ -194,6 +182,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Désactive le warm-up initial du modèle.",
     )
+
     return parser.parse_args()
 
 
@@ -203,6 +192,7 @@ def main() -> None:
     system_prompt = benchmark["system_prompt"]
     generation = benchmark["generation"]
     tests = benchmark["tests"]
+
     if not args.skip_warmup:
         warm_up(
             base_url=args.base_url,
@@ -211,11 +201,13 @@ def main() -> None:
             generation=generation,
             timeout=args.timeout,
         )
+
     results = []
     print()
     print(f"Modèle : {args.model}")
     print(f"Tests  : {len(tests)}")
     print()
+
     for index, test in enumerate(tests, start=1):
         print(f"[{index}/{len(tests)}] {test['id']} ({test['category']})")
         result = run_test(
@@ -230,8 +222,10 @@ def main() -> None:
         latency = result["performance"]["wall_time_seconds"]
         speed = result["performance"]["tokens_per_second"]
         print(f"  Latence : {latency:.2f} s")
+
         if speed is not None:
             print(f"  Débit   : {speed:.2f} tokens/s")
+
     summary = build_summary(results)
     output = {
         "benchmark_version": benchmark["version"],
@@ -245,15 +239,19 @@ def main() -> None:
     }
     DEFAULT_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     output_path = DEFAULT_RESULTS_DIR / f"{safe_model_name(args.model)}.json"
+
     with output_path.open("w", encoding="utf-8") as file:
         json.dump(output, file, ensure_ascii=False, indent=2)
+
     print()
     print("=== RÉSUMÉ ===")
     print(f"Tests           : {summary['tests']}")
     print(f"Latence moyenne : {summary['mean_latency_seconds']:.2f} s")
     print(f"Latence médiane : {summary['median_latency_seconds']:.2f} s")
+
     if summary["mean_tokens_per_second"] is not None:
         print(f"Débit moyen     : {summary['mean_tokens_per_second']:.2f} tokens/s")
+
     print(f"Tokens générés  : {summary['total_output_tokens']}")
     print(f"Résultats       : {output_path}")
 

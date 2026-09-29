@@ -33,8 +33,10 @@ def find_chunks(chunks: list[dict], sources: list[dict]) -> list[dict]:
 
 def evaluate(item: dict, chunks: list[dict], llm: LocalLLM) -> dict:
     context_chunks = find_chunks(chunks, item["sources"])
+
     if len(context_chunks) != len(item["sources"]):
         raise ValueError(f"{item['id']}: source missing from fixture")
+
     prompt = build_prompt(item["question"], context_chunks)
     start = time.perf_counter()
     answer = llm.generate(prompt=prompt, system_prompt=SYSTEM_PROMPT)
@@ -43,6 +45,7 @@ def evaluate(item: dict, chunks: list[dict], llm: LocalLLM) -> dict:
     has_citations = bool(found_citations)
     valid_citations = validate_citations(answer, len(context_chunks))
     abstention = is_abstention(answer)
+
     if item["category"] == "answerable":
         success = has_citations and valid_citations and not abstention
     elif item["category"] == "partial":
@@ -51,14 +54,18 @@ def evaluate(item: dict, chunks: list[dict], llm: LocalLLM) -> dict:
         success = abstention and valid_citations
     else:
         raise ValueError(f"{item['id']}: invalid category")
+
     grounding_checked = has_citations and valid_citations
     grounding_time = 0.0
     grounding_supported = None
+
     if grounding_checked:
         start = time.perf_counter()
         grounding_supported = verify_grounding(answer, context_chunks, llm)
         grounding_time = time.perf_counter() - start
+
     verification_match = grounding_supported == success if grounding_checked else success
+
     return {
         "id": item["id"],
         "category": item["category"],
@@ -83,6 +90,7 @@ def main() -> None:
     llm = LocalLLM()
     results = []
     total_start = time.perf_counter()
+
     for item in questions:
         result = evaluate(item, chunks, llm)
         results.append(result)
@@ -96,6 +104,7 @@ def main() -> None:
             f"verification={result['grounding_time']:.2f}s"
         )
         print(f"Answer: {result['answer']}\n")
+
     total_time = time.perf_counter() - total_start
     success_count = sum(result["success"] for result in results)
     grounding_checked = sum(result["grounding_checked"] for result in results)

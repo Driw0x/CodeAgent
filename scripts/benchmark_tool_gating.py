@@ -132,6 +132,7 @@ def find_choice(value):
                 if confidence is not None:
                     confidence = float(confidence)
                 return selected, confidence
+
         for child in value.values():
             result = find_choice(child)
             if result is not None:
@@ -141,6 +142,7 @@ def find_choice(value):
             result = find_choice(child)
             if result is not None:
                 return result
+
     return None
 
 
@@ -150,10 +152,7 @@ def build_devstral():
     llm = LocalLLM(model="devstral:24b")
 
     def predict(prompt: str):
-        message = llm.chat(
-            messages=[{"role": "user", "content": prompt}],
-            tools=DEVSTRAL_TOOLS,
-        )
+        message = llm.chat(messages=[{"role": "user", "content": prompt}], tools=DEVSTRAL_TOOLS)
         tool_calls = message.get("tool_calls") or []
         if not tool_calls:
             return "no_tool", None, {"content": message.get("content", "")}
@@ -162,6 +161,7 @@ def build_devstral():
 
     def warm_up():
         predict("Réponds uniquement par OK.")
+
     return predict, warm_up
 
 
@@ -183,6 +183,7 @@ def build_laya():
 
     def warm_up():
         predict("Réponds uniquement par OK.")
+
     return predict, warm_up
 
 
@@ -191,38 +192,24 @@ def build_gliner():
     model = AutoExtractor.from_pretrained("fastino/gliner2.5-multi-v1")
 
     def predict(prompt: str):
-        result = model.classify_text(
-            prompt,
-            {"tool": TOOL_IDS},
-            include_confidence=True,
-        )
+        result = model.classify_text(prompt, {"tool": TOOL_IDS}, include_confidence=True)
         answer = result["tool"]
         if isinstance(answer, dict):
-            return (
-                answer["label"],
-                float(answer.get("confidence", 0.0)),
-                {},
-            )
+            return answer["label"], float(answer.get("confidence", 0.0)), {}
         return answer, None, {}
 
     def warm_up():
         predict("Réponds uniquement par OK.")
+
     return predict, warm_up
 
 
 def build_modernbert():
     from transformers import pipeline
-    classifier = pipeline(
-        "zero-shot-classification",
-        model="tasksource/ModernBERT-base-nli",
-    )
+    classifier = pipeline("zero-shot-classification", model="tasksource/ModernBERT-base-nli")
 
     def predict(prompt: str):
-        result = classifier(
-            prompt,
-            TOOL_IDS,
-            multi_label=False,
-        )
+        result = classifier(prompt, TOOL_IDS, multi_label=False)
         return (
             result["labels"][0],
             float(result["scores"][0]),
@@ -277,6 +264,7 @@ def build_verdict():
 
 def build_jev():
     key = os.getenv("JEV_API_KEY")
+
     if not key:
         raise RuntimeError("JEV_API_KEY is not defined.")
 
@@ -300,23 +288,26 @@ def build_jev():
             },
             method="POST",
         )
+
         try:
             with urllib.request.urlopen(request, timeout=30) as response:
                 result = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as error:
             body = error.read().decode("utf-8", errors="replace")
             raise RuntimeError(f"Jev HTTP {error.code}: {body}") from error
+
         found = find_choice(result)
+
         if found is None:
             raise RuntimeError(f"Unable to parse Jev choice: {result}")
+
         choice, confidence = found
-        return choice, confidence, {
-            "code": result.get("code"),
-            "message": result.get("message"),
-        }
+
+        return choice, confidence, {"code": result.get("code"), "message": result.get("message")}
 
     def warm_up():
         pass
+
     return predict, warm_up
 
 
@@ -339,15 +330,19 @@ def run_task(predict, task: dict) -> dict:
     predicted_tool = None
     confidence = None
     details = {}
+
     try:
         predicted_tool, confidence, details = predict(task["prompt"])
     except Exception as exc:
         error = str(exc)
+
     latency = perf_counter() - start
+
     if valid_tools:
         correct = predicted_tool in valid_tools
     else:
         correct = predicted_tool == "no_tool"
+
     return {
         "id": task["id"],
         "prompt": task["prompt"],
@@ -362,30 +357,12 @@ def run_task(predict, task: dict) -> dict:
 
 
 def summarize(results: list[dict]) -> dict:
-    tool_tasks = [
-        result
-        for result in results
-        if result["expected_tools"]
-    ]
-    no_tool_tasks = [
-        result
-        for result in results
-        if not result["expected_tools"]
-    ]
-    successful = [
-        result
-        for result in results
-        if result["error"] is None
-    ]
-    latencies = [
-        result["latency_seconds"]
-        for result in successful
-    ]
-    confidences = [
-        result["confidence"]
-        for result in successful
-        if result["confidence"] is not None
-    ]
+    tool_tasks = [result for result in results if result["expected_tools"]]
+    no_tool_tasks = [result for result in results if not result["expected_tools"]]
+    successful = [result for result in results if result["error"] is None]
+    latencies = [result["latency_seconds"] for result in successful]
+    confidences = [result["confidence"] for result in successful if result["confidence"] is not None]
+
     return {
         "tasks": len(results),
         "gating_accuracy": (
@@ -446,6 +423,7 @@ def main():
     warm_up()
     print("Warm-up complete.\n")
     results = []
+
     for index, task in enumerate(tasks, start=1):
         print(f"[{index}/{len(tasks)}] {task['id']}")
         result = run_task(predict, task)
@@ -458,6 +436,7 @@ def main():
         )
         if result["error"]:
             print(f"  error={result['error']}")
+
     summary = summarize(results)
     output = {
         "router": args.router,
@@ -467,26 +446,10 @@ def main():
         "results": results,
     }
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    result_path = (
-        RESULTS_DIR
-        / f"{args.router}_gating.json"
-    )
-    result_path.write_text(
-        json.dumps(
-            output,
-            indent=2,
-            ensure_ascii=False,
-        ),
-        encoding="utf-8",
-    )
+    result_path = RESULTS_DIR / f"{args.router}_gating.json"
+    result_path.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
     print("\nSummary")
-    print(
-        json.dumps(
-            summary,
-            indent=2,
-            ensure_ascii=False,
-        )
-    )
+    print(json.dumps(summary, indent=2, ensure_ascii=False))
     print(f"\nSaved to {result_path}")
 
 

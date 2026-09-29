@@ -16,6 +16,7 @@ def extract_names(target):
 def chunking(data):
     ast_data = ast.parse(data["content"])
     chunk = []
+
     for node in ast_data.body:
         if isinstance(node, ast.Assign):
             for target in node.targets:
@@ -72,4 +73,5 @@ def chunking(data):
                           "content": ast.unparse(node),
                           "start_line": node.lineno,
                           "end_line": node.end_lineno})
+
     return chunk

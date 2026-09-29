@@ -35,11 +35,7 @@ def test_read_file_uses_search_window():
         ),
         search_hints={"app/llm/local_llm.py": [20]},
     )
-    assert arguments == {
-        "path": "app/llm/local_llm.py",
-        "start_line": 5,
-        "end_line": 55,
-    }
+    assert arguments == {"path": "app/llm/local_llm.py", "start_line": 5, "end_line": 55}
 
 
 def test_read_file_keeps_full_file_when_requested():
@@ -76,5 +72,6 @@ def test_consolidate_sources_removes_superseded_search():
         },
     ]
     result = consolidate_sources(sources)
+
     assert len(result) == 1
     assert result[0]["name"] == "read_file"

@@ -64,12 +64,7 @@ def test_build_context_respects_max_chars():
     first_section = format_chunk(CHUNK, source_id=1)
     second_section = format_chunk(SECOND_CHUNK, source_id=2)
     separator = "\n\n---\n\n"
-    max_chars = (
-        len(first_section)
-        + len(separator)
-        + len(second_section)
-        - 1
-    )
+    max_chars = len(first_section) + len(separator) + len(second_section) - 1
     result = build_context([CHUNK, SECOND_CHUNK], max_chars=max_chars)
     assert len(result) <= max_chars
     assert "[S1]" in result
@@ -100,9 +95,7 @@ def test_build_prompt_contains_context_and_question():
 
 
 def test_relative_file_path():
-    result = relative_file_path(
-        str(PROJECT_ROOT / "app" / "memory" / "vector_store.py")
-    )
+    result = relative_file_path(str(PROJECT_ROOT / "app" / "memory" / "vector_store.py"))
     assert result == "app/memory/vector_store.py"
 
 

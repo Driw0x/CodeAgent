@@ -44,10 +44,7 @@ def format_sources(chunks: list[dict]) -> str:
     sources = []
     seen = set()
     for chunk in chunks:
-        source = (
-            f"{relative_file_path(chunk['file'])}:"
-            f"{chunk['start_line']}-{chunk['end_line']}"
-        )
+        source = f"{relative_file_path(chunk['file'])}:" f"{chunk['start_line']}-{chunk['end_line']}"
         if source not in seen:
             seen.add(source)
             sources.append(source)
@@ -66,11 +63,7 @@ def format_chunk(chunk: dict, source_id: int) -> str:
 
 
 def chunk_key(chunk: dict) -> tuple:
-    return (
-        str(chunk["file"]),
-        chunk["start_line"],
-        chunk["end_line"],
-    )
+    return str(chunk["file"]), chunk["start_line"], chunk["end_line"]
 
 
 def unique_chunks(chunks: list[dict]) -> list[dict]:

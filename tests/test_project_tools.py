@@ -11,11 +11,7 @@ def test_read_file(tmp_path, monkeypatch):
     monkeypatch.setattr(project_tools, "PROJECT_ROOT", tmp_path)
     file = tmp_path / "example.py"
     file.write_text("line 1\nline 2\nline 3\n", encoding="utf-8")
-    result = project_tools.read_file(
-        "example.py",
-        start_line=2,
-        end_line=3,
-    )
+    result = project_tools.read_file("example.py", start_line=2, end_line=3)
     assert result["path"] == "example.py"
     assert result["start_line"] == 2
     assert result["end_line"] == 3
@@ -56,19 +52,9 @@ def test_list_files_ignores_generated_directories(tmp_path, monkeypatch):
 def test_search_code(tmp_path, monkeypatch):
     monkeypatch.setattr(project_tools, "PROJECT_ROOT", tmp_path)
     file = tmp_path / "module.py"
-    file.write_text(
-        "def hello():\n"
-        "    return 'world'\n",
-        encoding="utf-8",
-    )
+    file.write_text("def hello():\n" "    return 'world'\n", encoding="utf-8")
     result = project_tools.search_code("hello")
-    assert result["matches"] == [
-        {
-            "file": "module.py",
-            "line": 1,
-            "text": "def hello():",
-        }
-    ]
+    assert result["matches"] == [{"file": "module.py", "line": 1, "text": "def hello():"}]
 
 
 @patch("app.tools.project_tools.subprocess.run")

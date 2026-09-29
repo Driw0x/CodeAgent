@@ -41,11 +41,7 @@ AUTO_QUESTIONS = [
 ]
 
 
-def print_rag_stats(
-    elapsed: float,
-    stats: dict | None,
-    title: str,
-):
+def print_rag_stats(elapsed: float, stats: dict | None, title: str):
     print("\n=================================")
     print(title)
     print("=================================")
@@ -58,20 +54,16 @@ def print_rag_stats(
     print(f"Response time    : " f"{elapsed:.2f} s")
 
 
-def print_tool_timings(
-    agent: ToolLoop,
-):
+def print_tool_timings(agent: ToolLoop):
     print("\nTool timings")
     print("---------------------------------")
+
     if not agent.last_trace:
         print("No tool calls")
         return
+
     for index, trace in enumerate(agent.last_trace, start=1):
-        arguments = json.dumps(
-            trace.get("arguments", {}),
-            ensure_ascii=False,
-            separators=(",", ":"),
-        )
+        arguments = json.dumps(trace.get("arguments", {}), ensure_ascii=False, separators=(",", ":"))
         print(
             f"{index}. "
             f"{trace.get('tool', 'unknown')} "
@@ -82,10 +74,7 @@ def print_tool_timings(
         print(f"   args={arguments}")
 
 
-def print_agent_stats(
-    agent: ToolLoop,
-    elapsed: float,
-):
+def print_agent_stats(agent: ToolLoop, elapsed: float):
     stats = agent.last_token_stats
     stages = agent.last_stage_stats
     times = agent.last_stage_times
@@ -126,100 +115,55 @@ def print_agent_stats(
     print_tool_timings(agent)
 
 
-def ask_question(
-    pipeline,
-    llm,
-    memory_dir,
-    question: str,
-    test_number: int | None = None,
-):
+def ask_question(pipeline, llm, memory_dir, question: str, test_number: int | None = None):
     print(f"\nQuestion : {question}")
     llm.last_stats = None
     start = perf_counter()
+
     try:
         answer = pipeline.ask(question)
     except RuntimeError as error:
         print(f"\nError: {error}")
         return
-    elapsed = (
-        perf_counter()
-        - start
-    )
-    save_analysis(
-        memory_dir,
-        question,
-        answer,
-    )
+
+    elapsed = perf_counter() - start
+    save_analysis(memory_dir, question, answer)
     print(f"\n{answer}")
-    title = (
-        f"Test {test_number} summary"
-        if test_number is not None
-        else "Question summary"
-    )
-    print_rag_stats(
-        elapsed=elapsed,
-        stats=llm.last_stats,
-        title=title,
-    )
+    title = f"Test {test_number} summary" if test_number is not None else "Question summary"
+    print_rag_stats(elapsed=elapsed, stats=llm.last_stats, title=title)
 
 
-def run_manual(
-    pipeline,
-    llm,
-    memory_dir,
-):
+def run_manual(pipeline, llm, memory_dir):
     print("\nManual RAG mode")
     print("Press Enter without a question to quit.")
     while True:
         question = input("\nQuestion : ").strip()
         if not question:
             break
-        ask_question(
-            pipeline,
-            llm,
-            memory_dir,
-            question,
-        )
+        ask_question(pipeline, llm, memory_dir, question)
 
 
-def run_auto(
-    pipeline,
-    llm,
-    memory_dir,
-):
+def run_auto(pipeline, llm, memory_dir):
     print("\nAutomatic RAG test")
     print(f"{len(AUTO_QUESTIONS)} " "questions will be tested.")
     print("Warming up model...")
     llm.preload()
     for number, question in enumerate(AUTO_QUESTIONS, start=1):
-        ask_question(
-            pipeline,
-            llm,
-            memory_dir,
-            question,
-            test_number=number,
-        )
+        ask_question(pipeline, llm, memory_dir, question, test_number=number)
 
 
-def find_runtime_error(
-    error: BaseException,
-) -> RuntimeError | None:
+def find_runtime_error(error: BaseException) -> RuntimeError | None:
     if isinstance(error, RuntimeError):
         return error
     if isinstance(error, BaseExceptionGroup):
         for child in error.exceptions:
-            runtime_error = (
-                find_runtime_error(child)
-            )
+            runtime_error = find_runtime_error(child)
             if runtime_error is not None:
                 return runtime_error
     return None
 
 
-def preload_model(
-    llm,
-    label: str,
-):
+def preload_model(llm, label: str):
     print(f"Warming up " f"{label} ({llm.model})...")
     start = perf_counter()
     try:
@@ -227,10 +171,7 @@ def preload_model(
     except RuntimeError as error:
         print(f"{label} warm-up failed: " f"{error}")
         return
-    elapsed = (
-        perf_counter()
-        - start
-    )
+    elapsed = perf_counter() - start
     print(f"{label} ready in " f"{elapsed:.2f} s")
 
 
@@ -239,100 +180,76 @@ def run_agent():
     agent = ToolLoop()
     print(f"Tool model      : " f"{agent.llm.model}")
     print(f"Grounding model : " f"{agent.grounding_llm.model}")
-    if (
-        agent.grounding_llm.model
-        != agent.llm.model
-    ):
+
+    if agent.grounding_llm.model != agent.llm.model:
         preload_model(agent.grounding_llm, "Grounding model")
+
     preload_model(agent.llm, "Tool model")
     print("Press Enter without a question to quit.")
+
     while True:
         question = input("\nQuestion : ").strip()
+
         if not question:
             break
+
         start = perf_counter()
+
         try:
-            answer = asyncio.run(
-                agent.ask(question)
-            )
+            answer = asyncio.run(agent.ask(question))
         except Exception as error:
-            elapsed = (
-                perf_counter()
-                - start
-            )
-            runtime_error = (
-                find_runtime_error(error)
-            )
+            elapsed = perf_counter() - start
+            runtime_error = find_runtime_error(error)
+
             if runtime_error is not None:
                 print(f"\nError: " f"{runtime_error}")
             else:
                 print(f"\nError: {error}")
+
             print_agent_stats(agent, elapsed)
             continue
-        elapsed = (
-            perf_counter()
-            - start
-        )
+
+        elapsed = perf_counter() - start
         print(f"\n{answer}")
         print_agent_stats(agent, elapsed)
 
 
 def build_rag_pipeline():
     model = SentenceTransformer(EMBEDDING_MODEL)
-    memory_dir = (
-        project_memory_dir(PROJECT_PATH, MEMORY_ROOT)
-    )
+    memory_dir = project_memory_dir(PROJECT_PATH, MEMORY_ROOT)
     files = read_dir(PROJECT_PATH)
-    current_manifest = (
-        build_manifest(files, PROJECT_PATH)
-    )
+    current_manifest = build_manifest(files, PROJECT_PATH)
+
     if index_exists(memory_dir):
         print("Loading index from memory...")
-        index, chunks = (
-            load_index(memory_dir)
-        )
+        index, chunks = load_index(memory_dir)
+
         if manifest_exists(memory_dir):
-            previous_manifest = (
-                load_manifest(memory_dir)
-            )
-            changes = (
-                compare_manifests(previous_manifest, current_manifest)
-            )
-            if (
-                changes["added"]
-                or changes["modified"]
-                or changes["deleted"]
-            ):
+            previous_manifest = load_manifest(memory_dir)
+            changes = compare_manifests(previous_manifest, current_manifest)
+
+            if changes["added"] or changes["modified"] or changes["deleted"]:
                 print("\nProject changes detected:")
-                for path in changes[
-                    "added"
-                ]:
+
+                for path in changes["added"]:
                     print(f"  + Added:    {path}")
-                for path in changes[
-                    "modified"
-                ]:
+
+                for path in changes["modified"]:
                     print(f"  ~ Modified: {path}")
-                for path in changes[
-                    "deleted"
-                ]:
+
+                for path in changes["deleted"]:
                     print(f"  - Deleted:  {path}")
-                changed_paths = (
-                    changes["added"]
-                    + changes["modified"]
-                    + changes["deleted"]
-                )
+
+                changed_paths = changes["added"] + changes["modified"] + changes["deleted"]
                 files_by_path = {
                     project_relative_path(file["path"], PROJECT_PATH): file
                     for file in files
                 }
                 new_chunks = []
-                for path in (
-                    changes["added"]
-                    + changes["modified"]
-                ):
-                    new_chunks.extend(
-                        chunking(files_by_path[path])
-                    )
+
+                for path in (changes["added"] + changes["modified"]):
+                    new_chunks.extend(chunking(files_by_path[path]))
+
                 index, chunks = (
                     update_index(
                         model=model,
@@ -343,11 +260,7 @@ def build_rag_pipeline():
                         project_path=PROJECT_PATH,
                     )
                 )
-                save_index(
-                    index,
-                    chunks,
-                    memory_dir,
-                )
+                save_index(index, chunks, memory_dir)
                 save_manifest(current_manifest, memory_dir)
                 print(
                     f"\nIndex updated: "
@@ -363,37 +276,19 @@ def build_rag_pipeline():
     else:
         print("Building index...")
         chunks = []
+
         for file in files:
-            chunks.extend(
-                chunking(file)
-            )
-        index = build_index(
-            model=model,
-            chunks=chunks,
-            dimension=EMBEDDING_DIMENSION,
-        )
-        save_index(
-            index,
-            chunks,
-            memory_dir,
-        )
+            chunks.extend(chunking(file))
+
+        index = build_index(model=model, chunks=chunks, dimension=EMBEDDING_DIMENSION)
+        save_index(index, chunks, memory_dir)
         save_manifest(current_manifest, memory_dir)
-    retriever = FaissRetriever(
-        model=model,
-        index=index,
-        chunks=chunks,
-    )
+
+    retriever = FaissRetriever(model=model, index=index, chunks=chunks)
     llm = LocalLLM()
-    pipeline = RAGPipeline(
-        retriever=retriever.retrieve,
-        llm=llm,
-        top_k=TOP_K,
-    )
-    return (
-        pipeline,
-        llm,
-        memory_dir,
-    )
+    pipeline = RAGPipeline(retriever=retriever.retrieve, llm=llm, top_k=TOP_K)
+
+    return pipeline, llm, memory_dir
 
 
 def main():
@@ -402,24 +297,17 @@ def main():
     print("[1] - Automatic RAG test")
     print("[2] - Agent")
     mode = input("\nChoice : ").strip()
+
     if mode == "2":
         run_agent()
         return
-    pipeline, llm, memory_dir = (
-        build_rag_pipeline()
-    )
+
+    pipeline, llm, memory_dir = build_rag_pipeline()
+
     if mode == "1":
-        run_auto(
-            pipeline,
-            llm,
-            memory_dir,
-        )
+        run_auto(pipeline, llm, memory_dir)
     else:
-        run_manual(
-            pipeline,
-            llm,
-            memory_dir,
-        )
+        run_manual(pipeline, llm, memory_dir)
 
 
 if __name__ == "__main__":

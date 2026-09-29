@@ -35,50 +35,43 @@ async def load_tools() -> list[dict]:
 
 def warm_up(llm: LocalLLM) -> None:
     print("Warming up Devstral...")
-    llm.chat(
-        messages=[{"role": "user", "content": "Réponds uniquement par OK."}],
-        tools=None,
-    )
+    llm.chat(messages=[{"role": "user", "content": "Réponds uniquement par OK."}], tools=None)
     print("Warm-up complete.\n")
 
 
 def run_task(llm: LocalLLM, tools: list[dict], task: dict) -> dict:
     start = perf_counter()
     error = None
+
     try:
-        message = llm.chat(
-            messages=[{"role": "user", "content": task["prompt"]}],
-            tools=tools,
-        )
+        message = llm.chat(messages=[{"role": "user", "content": task["prompt"]}], tools=tools)
     except Exception as exc:
         message = {}
         error = str(exc)
+
     latency = perf_counter() - start
     tool_calls = message.get("tool_calls") or []
     first_call = tool_calls[0] if tool_calls else None
     function = first_call.get("function", {}) if first_call else {}
     first_tool = function.get("name")
     arguments = function.get("arguments", {})
+
     if not isinstance(arguments, dict):
         arguments = {}
+
     valid_tools = expected_tools(task)
-    tool_selection_correct = (
-        first_tool in valid_tools
-        if valid_tools
-        else first_tool is None
-    )
+    tool_selection_correct = first_tool in valid_tools if valid_tools else first_tool is None
     expected_arguments = task.get("expected_arguments", {})
+
     if not valid_tools:
         arguments_correct = first_tool is None
     elif first_tool in valid_tools:
         arguments_correct = arguments_match(arguments, expected_arguments)
     else:
         arguments_correct = False
-    routing_success = (
-        error is None
-        and tool_selection_correct
-        and arguments_correct
-    )
+
+    routing_success = error is None and tool_selection_correct and arguments_correct
+
     return {
         "id": task["id"],
         "prompt": task["prompt"],
@@ -97,21 +90,14 @@ def run_task(llm: LocalLLM, tools: list[dict], task: dict) -> dict:
 
 def summarize(results: list[dict]) -> dict:
     count = len(results)
-    tool_tasks = [
-        result
-        for result in results
-        if result["expected_tools"]
-    ]
-    no_tool_tasks = [
-        result
-        for result in results
-        if not result["expected_tools"]
-    ]
+    tool_tasks = [result for result in results if result["expected_tools"]]
+    no_tool_tasks = [result for result in results if not result["expected_tools"]]
     successful_latencies = [
         result["latency_seconds"]
         for result in results
         if result["error"] is None
     ]
+
     return {
         "tasks": count,
         "routing_success_rate": (
@@ -160,6 +146,7 @@ async def main():
     llm = LocalLLM(model=MODEL)
     warm_up(llm)
     results = []
+
     for index, task in enumerate(tasks, start=1):
         print(f"[{index}/{len(tasks)}] {task['id']}")
         result = run_task(llm, tools, task)
@@ -170,6 +157,7 @@ async def main():
             f"arguments={result['arguments_correct']} "
             f"latency={result['latency_seconds']:.2f}s"
         )
+
     summary = summarize(results)
     output = {
         "model": MODEL,
@@ -179,10 +167,7 @@ async def main():
         "results": results,
     }
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    RESULT_PATH.write_text(
-        json.dumps(output, indent=2, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    RESULT_PATH.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
     print("\nSummary")
     print(json.dumps(summary, indent=2, ensure_ascii=False))
     print(f"\nSaved to {RESULT_PATH}")

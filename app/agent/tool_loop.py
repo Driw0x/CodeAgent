@@ -65,11 +65,7 @@ def mcp_tool_to_ollama(tool) -> dict:
 
 
 def tool_result_content(result) -> str:
-    texts = [
-        block.text
-        for block in result.content
-        if isinstance(block, TextContent)
-    ]
+    texts = [block.text for block in result.content if isinstance(block, TextContent)]
     if texts:
         return "\n".join(texts)
     if result.structured_content is not None:
@@ -94,21 +90,13 @@ def normalize_path(path: str) -> str:
 
 
 def tool_call_key(name: str, arguments: dict) -> str:
-    return json.dumps(
-        {"name": name, "arguments": arguments},
-        sort_keys=True,
-        ensure_ascii=False,
-    )
+    return json.dumps({"name": name, "arguments": arguments}, sort_keys=True, ensure_ascii=False)
 
 
 def _collect_json_search_hints(value, hints: list[tuple[str, int]]):
     if isinstance(value, dict):
         path = value.get("path") or value.get("file")
-        line = (
-            value.get("line")
-            or value.get("line_number")
-            or value.get("start_line")
-        )
+        line = value.get("line") or value.get("line_number") or value.get("start_line")
         if isinstance(path, str):
             try:
                 line_number = int(line)
@@ -125,26 +113,27 @@ def _collect_json_search_hints(value, hints: list[tuple[str, int]]):
 
 def extract_search_hints(content: str) -> list[tuple[str, int]]:
     hints = []
+
     try:
         parsed = json.loads(content)
         _collect_json_search_hints(parsed, hints)
     except (json.JSONDecodeError, TypeError):
         pass
+
     pattern = re.compile(r"(?P<path>[A-Za-z0-9_./\\-]+\.py):(?P<line>\d+)")
+
     for match in pattern.finditer(content):
-        hints.append(
-            (
-                normalize_path(match.group("path")),
-                int(match.group("line")),
-            )
-        )
+        hints.append((normalize_path(match.group("path")), int(match.group("line"))))
+
     unique = []
     seen = set()
+
     for hint in hints:
         if hint in seen:
             continue
         seen.add(hint)
         unique.append(hint)
+
     return unique
 
 
@@ -170,66 +159,78 @@ def optimize_tool_arguments(
     search_hints: dict[str, list[int]],
 ) -> dict:
     optimized = dict(arguments)
+
     if name == "search_code":
         optimized.setdefault("max_results", DEFAULT_SEARCH_RESULTS)
         return optimized
+
     if name != "read_file" or question_requests_full_file(question):
         return optimized
+
     if "start_line" in optimized and "end_line" not in optimized:
         try:
             start_line = int(optimized["start_line"])
-            optimized["end_line"] = (
-                start_line
-                + READ_WINDOW_BEFORE
-                + READ_WINDOW_AFTER
-            )
+            optimized["end_line"] = start_line + READ_WINDOW_BEFORE + READ_WINDOW_AFTER
         except (TypeError, ValueError):
             pass
         return optimized
+
     if "start_line" in optimized or "end_line" in optimized:
         return optimized
+
     path = optimized.get("path")
+
     if not isinstance(path, str):
         return optimized
+
     path = normalize_path(path)
     lines = search_hints.get(path)
+
     if not lines:
         return optimized
+
     line = lines[0]
     optimized["start_line"] = max(1, line - READ_WINDOW_BEFORE)
     optimized["end_line"] = line + READ_WINDOW_AFTER
+
     return optimized
 
 
 def build_tool_source(name: str, arguments: dict, content: str) -> dict:
     data = {}
+
     try:
         parsed = json.loads(content)
         if isinstance(parsed, dict):
             data = parsed
     except (json.JSONDecodeError, TypeError):
         pass
+
     hints = extract_search_hints(content) if name == "search_code" else []
+
     if name == "search_code" and hints:
         file = hints[0][0]
     else:
-        file = (
-            data.get("path")
-            or arguments.get("path")
-            or f"tool/{name}"
-        )
+        file = data.get("path") or arguments.get("path") or f"tool/{name}"
+
     if not isinstance(file, str):
         file = f"tool/{name}"
+
     file = normalize_path(file)
+
     if name == "search_code" and hints:
         start_line = hints[0][1]
     else:
         start_line = data.get("start_line", arguments.get("start_line", 1))
+
     if not isinstance(start_line, int) or start_line < 1:
         start_line = 1
+
     end_line = data.get("end_line", arguments.get("end_line"))
+
     if not isinstance(end_line, int) or end_line < start_line:
         end_line = start_line
+
     observation = (
         f"Tool: {name}\n"
         f"Arguments: {json.dumps(arguments, ensure_ascii=False)}\n"
@@ -243,6 +244,7 @@ def build_tool_source(name: str, arguments: dict, content: str) -> dict:
         "start_line": start_line,
         "end_line": end_line,
     }
+
     if hints:
         paths = sorted({path for path, _ in hints})
         lines_by_path = {}
@@ -250,30 +252,34 @@ def build_tool_source(name: str, arguments: dict, content: str) -> dict:
             lines_by_path.setdefault(path, []).append(line)
         source["search_paths"] = paths
         source["search_lines"] = lines_by_path
+
     return source
 
 
 def consolidate_sources(sources: list[dict]) -> list[dict]:
-    read_sources = [
-        source
-        for source in sources
-        if source.get("name") == "read_file"
-    ]
+    read_sources = [source for source in sources if source.get("name") == "read_file"]
     result = []
+
     for source in sources:
         if source.get("name") != "search_code":
             result.append(source)
             continue
+
         search_paths = source.get("search_paths", [])
+
         if len(search_paths) != 1:
             result.append(source)
             continue
+
         path = normalize_path(search_paths[0])
         lines = source.get("search_lines", {}).get(path, [])
+
         if not lines:
             result.append(source)
             continue
+
         covered = False
+
         for read_source in read_sources:
             read_path = normalize_path(str(read_source.get("file", "")))
             if read_path != path:
@@ -283,8 +289,10 @@ def consolidate_sources(sources: list[dict]) -> list[dict]:
             if all(start_line <= line <= end_line for line in lines):
                 covered = True
                 break
+
         if not covered:
             result.append(source)
+
     return result
 
 
@@ -308,11 +316,7 @@ Chaque affirmation factuelle doit être accompagnée de la source [Sx] qui la su
 
 
 def normalize_single_source_citations(answer: str, source_count: int) -> str:
-    if (
-        source_count != 1
-        or not answer.strip()
-        or is_abstention(answer)
-    ):
+    if source_count != 1 or not answer.strip() or is_abstention(answer):
         return answer
     paragraphs = [
         paragraph.strip()
@@ -348,15 +352,15 @@ class ToolLoop:
     ):
         if max_steps < 1:
             raise ValueError("max_steps must be greater than or equal to 1.")
+
         if max_retries < 0:
             raise ValueError("max_retries must be greater than or equal to 0.")
+
         if tool_timeout <= 0:
             raise ValueError("tool_timeout must be greater than 0.")
+
         self.llm = llm or LocalLLM(model=DEFAULT_TOOL_MODEL)
-        self.grounding_llm = (
-            grounding_llm
-            or LocalLLM(model=grounding_model)
-        )
+        self.grounding_llm = grounding_llm or LocalLLM(model=grounding_model)
         self.server = server or build_server_parameters()
         self.max_steps = max_steps
         self.max_retries = max_retries
@@ -371,11 +375,7 @@ class ToolLoop:
 
     @staticmethod
     def _usage_snapshot(llm) -> dict:
-        usage = getattr(
-            llm,
-            "usage_stats",
-            {},
-        ) or {}
+        usage = getattr(llm, "usage_stats", {}) or {}
         return {
             "prompt_tokens": usage.get("prompt_tokens", 0),
             "completion_tokens": usage.get("completion_tokens", 0),
@@ -384,8 +384,10 @@ class ToolLoop:
     def _reset_metrics(self):
         if hasattr(self.llm, "reset_usage_stats"):
             self.llm.reset_usage_stats()
+
         if hasattr(self.grounding_llm, "reset_usage_stats"):
             self.grounding_llm.reset_usage_stats()
+
         self.last_token_stats = {
             "devstral_prompt": 0,
             "devstral_completion": 0,
@@ -409,12 +411,11 @@ class ToolLoop:
     def _measure_llm(self, stage: str, llm, call):
         before = self._usage_snapshot(llm)
         start = perf_counter()
+
         try:
             return call()
         finally:
-            self.last_stage_times[stage] += (
-                perf_counter() - start
-            )
+            self.last_stage_times[stage] += (perf_counter() - start)
             after = self._usage_snapshot(llm)
             self.last_stage_stats[
                 stage
@@ -430,16 +431,8 @@ class ToolLoop:
             )
 
     def _refresh_token_stats(self):
-        devstral = getattr(
-            self.llm,
-            "usage_stats",
-            {},
-        ) or {}
-        grounding = getattr(
-            self.grounding_llm,
-            "usage_stats",
-            {},
-        ) or {}
+        devstral = getattr(self.llm, "usage_stats", {}) or {}
+        grounding = getattr(self.grounding_llm, "usage_stats", {}) or {}
         devstral_prompt = devstral.get("prompt_tokens", 0)
         devstral_completion = devstral.get("completion_tokens", 0)
         grounding_prompt = grounding.get("prompt_tokens", 0)
@@ -457,24 +450,17 @@ class ToolLoop:
             ),
         }
 
-    def _finalize_answer(
-        self,
-        answer: str,
-        source_chunks: list[dict],
-    ) -> str:
+    def _finalize_answer(self, answer: str, source_chunks: list[dict]) -> str:
         answer = normalize_single_source_citations(answer, len(source_chunks))
+
         if is_abstention(answer):
             self.last_grounding = "passed"
             return answer
-        if (
-            not validate_citations(answer, len(source_chunks))
-            or not claims_have_citations(answer)
-        ):
+
+        if not validate_citations(answer, len(source_chunks)) or not claims_have_citations(answer):
             self.last_grounding = "citation_error"
-            return (
-                "La réponse générée contient "
-                "des citations invalides ou manquantes."
-            )
+            return "La réponse générée contient " "des citations invalides ou manquantes."
+
         supported = self._measure_llm(
             "grounding",
             self.grounding_llm,
@@ -484,6 +470,7 @@ class ToolLoop:
                 self.grounding_llm,
             ),
         )
+
         if not supported:
             self.last_grounding = "unsupported"
             return (
@@ -491,14 +478,12 @@ class ToolLoop:
                 "des affirmations non supportées "
                 "par les sources."
             )
+
         self.last_grounding = "passed"
+
         return answer
 
-    def _generate_final_answer(
-        self,
-        question: str,
-        source_chunks: list[dict],
-    ) -> str:
+    def _generate_final_answer(self, question: str, source_chunks: list[dict]) -> str:
         final_sources = consolidate_sources(source_chunks)
         prompt = build_tool_answer_prompt(question, final_sources)
         answer = self._measure_llm(
@@ -511,6 +496,7 @@ class ToolLoop:
     async def ask(self, question: str) -> str:
         if not question.strip():
             raise ValueError("Question cannot be empty.")
+
         self.last_trace = []
         self.last_steps = 0
         self.last_grounding = "not_used"
@@ -523,20 +509,15 @@ class ToolLoop:
         retry_counts = {}
         source_chunks = []
         search_hints = {}
+
         try:
             mcp_start = perf_counter()
+
             async with Client(self.server) as client:
                 listed = await client.list_tools()
-                self.last_stage_times[
-                    "mcp_setup"
-                ] += (
-                    perf_counter()
-                    - mcp_start
-                )
-                tools = [
-                    mcp_tool_to_ollama(tool)
-                    for tool in listed.tools
-                ]
+                self.last_stage_times["mcp_setup"] += (perf_counter() - mcp_start)
+                tools = [mcp_tool_to_ollama(tool) for tool in listed.tools]
+
                 for _ in range(self.max_steps):
                     self.last_steps += 1
                     assistant_message = self._measure_llm(
@@ -545,37 +526,33 @@ class ToolLoop:
                         lambda: self.llm.chat(messages=messages, tools=tools),
                     )
                     messages.append(assistant_message)
-                    tool_calls = (
-                        assistant_message.get("tool_calls")
-                        or []
-                    )
+                    tool_calls = assistant_message.get("tool_calls") or []
+
                     if not tool_calls:
                         content = assistant_message.get("content", "",).strip()
+
                         if source_chunks:
                             return self._generate_final_answer(
                                 question=question,
                                 source_chunks=source_chunks,
                             )
+
                         if not content:
-                            raise RuntimeError(
-                                "LLM returned neither "
-                                "content nor tool calls."
-                            )
+                            raise RuntimeError("LLM returned neither " "content nor tool calls.")
+
                         return content
+
                     for tool_call in tool_calls:
                         function = tool_call.get("function", {})
                         name = function.get("name")
                         arguments = function.get("arguments", {})
+
                         if not name:
-                            raise RuntimeError(
-                                "LLM returned a tool call "
-                                "without a name."
-                            )
+                            raise RuntimeError("LLM returned a tool call " "without a name.")
+
                         if not isinstance(arguments, dict):
-                            raise RuntimeError(
-                                "LLM returned invalid "
-                                "tool arguments."
-                            )
+                            raise RuntimeError("LLM returned invalid " "tool arguments.")
+
                         arguments = optimize_tool_arguments(
                             name=name,
                             arguments=arguments,
@@ -590,6 +567,7 @@ class ToolLoop:
                         }
                         self.last_trace.append(trace)
                         call_key = tool_call_key(name, arguments)
+
                         if call_key in seen_calls:
                             trace["status"] = "duplicate"
                             messages.append(
@@ -610,10 +588,8 @@ class ToolLoop:
                                 }
                             )
                             continue
-                        if (
-                            retry_counts.get(name, 0)
-                            > self.max_retries
-                        ):
+
+                        if retry_counts.get(name, 0) > self.max_retries:
                             trace["status"] = "retry_limit"
                             messages.append(
                                 {
@@ -630,18 +606,17 @@ class ToolLoop:
                                 }
                             )
                             continue
+
                         seen_calls.add(call_key)
                         tool_start = perf_counter()
+
                         try:
                             result = await asyncio.wait_for(
                                 client.call_tool(name, arguments),
                                 timeout=self.tool_timeout,
                             )
                         except TimeoutError:
-                            retry_counts[name] = (
-                                retry_counts.get(name, 0)
-                                + 1
-                            )
+                            retry_counts[name] = retry_counts.get(name, 0) + 1
                             trace["status"] = "timeout"
                             messages.append(
                                 {
@@ -663,10 +638,7 @@ class ToolLoop:
                             )
                             continue
                         except Exception as error:
-                            retry_counts[name] = (
-                                retry_counts.get(name, 0)
-                                + 1
-                            )
+                            retry_counts[name] = retry_counts.get(name, 0) + 1
                             trace["status"] = "exception"
                             messages.append(
                                 {
@@ -685,21 +657,12 @@ class ToolLoop:
                             )
                             continue
                         finally:
-                            duration = (
-                                perf_counter()
-                                - tool_start
-                            )
-                            trace[
-                                "duration_seconds"
-                            ] = duration
-                            self.last_stage_times[
-                                "tools"
-                            ] += duration
+                            duration = perf_counter() - tool_start
+                            trace["duration_seconds"] = duration
+                            self.last_stage_times["tools"] += duration
+
                         if result.is_error:
-                            retry_counts[name] = (
-                                retry_counts.get(name, 0)
-                                + 1
-                            )
+                            retry_counts[name] = retry_counts.get(name, 0) + 1
                             trace["status"] = "error"
                             messages.append(
                                 {
@@ -717,13 +680,14 @@ class ToolLoop:
                                 }
                             )
                             continue
+
                         trace["status"] = "success"
                         content = tool_result_content(result)
+
                         if name == "search_code":
                             for path, line in extract_search_hints(content):
-                                search_hints.setdefault(path, []).append(
-                                    line
-                                )
+                                search_hints.setdefault(path, []).append(line)
+
                         source_chunks.append(
                             build_tool_source(
                                 name=name,
@@ -748,14 +712,10 @@ class ToolLoop:
                                 ),
                             }
                         )
+
             if source_chunks:
-                return self._generate_final_answer(
-                    question=question,
-                    source_chunks=source_chunks,
-                )
-            raise RuntimeError(
-                f"Maximum number of tool steps "
-                f"reached ({self.max_steps})."
-            )
+                return self._generate_final_answer(question=question, source_chunks=source_chunks)
+
+            raise RuntimeError(f"Maximum number of tool steps " f"reached ({self.max_steps}).")
         finally:
             self._refresh_token_stats()

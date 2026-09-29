@@ -109,6 +109,7 @@ def test_chat_returns_tool_call(mock_urlopen):
         ],
     )
     tool_call = result["tool_calls"][0]
+
     assert tool_call["function"]["name"] == "list_files"
     assert tool_call["function"]["arguments"]["path"] == "."
 
@@ -137,11 +138,10 @@ def test_chat_sends_tools_to_ollama(mock_urlopen):
     llm.chat([{"role": "user", "content": "Test"}], tools=tools)
     req = mock_urlopen.call_args.args[0]
     payload = json.loads(req.data.decode("utf-8"))
+
     assert req.full_url == "http://localhost:11434/api/chat"
     assert payload["model"] == "qwen2.5-coder:14b"
-    assert payload["messages"] == [
-        {"role": "user", "content": "Test"}
-    ]
+    assert payload["messages"] == [{"role": "user", "content": "Test"}]
     assert payload["tools"] == tools
     assert payload["stream"] is False
 
@@ -160,8 +160,4 @@ def test_chat_updates_stats(mock_urlopen):
     mock_urlopen.return_value = mock_response
     llm = LocalLLM()
     llm.chat([{"role": "user", "content": "Test"}])
-    assert llm.last_stats == {
-        "prompt_tokens": 10,
-        "completion_tokens": 4,
-        "total_tokens": 14,
-    }
+    assert llm.last_stats == {"prompt_tokens": 10, "completion_tokens": 4, "total_tokens": 14}

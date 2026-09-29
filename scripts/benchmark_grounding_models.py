@@ -44,24 +44,29 @@ def load_dataset(path: Path) -> list[dict]:
 def benchmark_model(model: str, cases: list[dict], keep_alive: str) -> dict:
     llm = LocalLLM(model=model, keep_alive=keep_alive)
     unload_error = None
+
     try:
         llm.unload()
     except RuntimeError as exc:
         unload_error = str(exc)
+
     cold_start = time.perf_counter()
     preload_stats = llm.preload()
     cold_load_wall_seconds = time.perf_counter() - cold_start
     rows = []
     total_start = time.perf_counter()
+
     for case in cases:
         llm.reset_usage_stats()
         start = time.perf_counter()
         error = None
+
         try:
             predicted = verify_grounding(case["answer"], case["sources"], llm)
         except Exception as exc:
             predicted = None
             error = f"{type(exc).__name__}: {exc}"
+
         elapsed = time.perf_counter() - start
         usage = dict(llm.usage_stats)
         expected = case["expected"]
@@ -78,6 +83,7 @@ def benchmark_model(model: str, cases: list[dict], keep_alive: str) -> dict:
             "total_tokens": usage.get("total_tokens", 0),
             "error": error,
         })
+
     total_seconds = time.perf_counter() - total_start
     valid = [row for row in rows if row["predicted"] is not None]
     latencies = [row["latency_seconds"] for row in valid]
@@ -115,10 +121,12 @@ def benchmark_model(model: str, cases: list[dict], keep_alive: str) -> dict:
         "total_tokens": sum(total_tokens),
         "initial_unload_error": unload_error,
     }
+
     try:
         llm.unload()
     except RuntimeError:
         pass
+
     return {"summary": summary, "cases": rows}
 
 
@@ -159,15 +167,19 @@ def main():
     print(f"Supported  : {positives}")
     print(f"Unsupported: {negatives}")
     results = []
+
     for model in args.models:
         print(f"\nBenchmarking {model}...")
         result = benchmark_model(model, cases, args.keep_alive)
         results.append(result)
         print_summary(result)
+
     output = args.output
+
     if output is None:
         timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         output = DEFAULT_RESULTS_DIR / f"grounding_models_{timestamp}.json"
+
     output.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "dataset": str(args.dataset),

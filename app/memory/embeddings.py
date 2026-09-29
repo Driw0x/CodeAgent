@@ -7,6 +7,7 @@ def embeddings(model, data):
     # print(embeddings.shape)
     # [3, 384]
 
+
 def chunk_embedding_text(chunk: dict) -> str:
     return (
         f"File: {chunk['file']}\n"

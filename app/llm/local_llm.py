@@ -27,18 +27,10 @@ class LocalLLM:
         self.keep_alive = keep_alive
         self.last_stats = None
         self.last_request_stats = None
-        self.usage_stats = {
-            "prompt_tokens": 0,
-            "completion_tokens": 0,
-            "total_tokens": 0,
-        }
+        self.usage_stats = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
     def reset_usage_stats(self):
-        self.usage_stats = {
-            "prompt_tokens": 0,
-            "completion_tokens": 0,
-            "total_tokens": 0,
-        }
+        self.usage_stats = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
     def _request(self, endpoint: str, payload: dict) -> dict:
         req = request.Request(
@@ -115,6 +107,7 @@ class LocalLLM:
     def generate(self, prompt: str, system_prompt: str | None = None) -> str:
         if not prompt.strip():
             raise ValueError("Prompt cannot be empty.")
+
         payload = {
             "model": self.model,
             "prompt": prompt,
@@ -126,22 +119,24 @@ class LocalLLM:
                 "num_predict": self.num_predict,
             },
         }
+
         if system_prompt:
             payload["system"] = system_prompt
+
         data = self._request("/api/generate", payload)
         generated_text = data.get("response")
+
         if not isinstance(generated_text, str) or not generated_text.strip():
             raise RuntimeError("Ollama returned an empty response.")
+
         self._record_stats(data)
+
         return generated_text.strip()
 
-    def chat(
-        self,
-        messages: list[dict],
-        tools: list[dict] | None = None,
-    ) -> dict:
+    def chat(self, messages: list[dict], tools: list[dict] | None = None) -> dict:
         if not messages:
             raise ValueError("Messages cannot be empty.")
+
         payload = {
             "model": self.model,
             "messages": messages,
@@ -153,18 +148,22 @@ class LocalLLM:
                 "num_predict": self.num_predict,
             },
         }
+
         if tools:
             payload["tools"] = tools
+
         data = self._request("/api/chat", payload)
         message = data.get("message")
+
         if not isinstance(message, dict):
             raise RuntimeError("Ollama returned an invalid chat response.")
+
         content = message.get("content")
         tool_calls = message.get("tool_calls", [])
-        if (
-            (not isinstance(content, str) or not content.strip())
-            and not tool_calls
-        ):
+
+        if (not isinstance(content, str) or not content.strip()) and not tool_calls:
             raise RuntimeError("Ollama returned an empty chat response.")
+
         self._record_stats(data)
+
         return message

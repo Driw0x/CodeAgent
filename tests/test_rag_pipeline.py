@@ -68,6 +68,7 @@ def test_ask_uses_only_chunks_selected_for_context():
     pipeline = RAGPipeline(retriever=retriever, llm=llm)
     result = pipeline.ask("Comment fonctionne le code ?")
     prompt = llm.generate.call_args_list[0].kwargs["prompt"]
+
     assert "app/large.py" not in prompt
     assert "app/small.py" in prompt
     assert "[S1]" in prompt

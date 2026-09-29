@@ -155,6 +155,7 @@ def test_fichier_complet():
                                 return None
                             """)}
     chunks = chunking(data)
+
     assert len(chunks) == 7
     assert [chunk["type"] for chunk in chunks] == [
         "import",
@@ -165,15 +166,7 @@ def test_fichier_complet():
         "class",
         "function",
     ]
-    assert [chunk["name"] for chunk in chunks] == [
-        "os",
-        "Path",
-        "x",
-        "name",
-        "add",
-        "User",
-        "main",
-    ]
+    assert [chunk["name"] for chunk in chunks] == ["os", "Path", "x", "name", "add", "User", "main"]
 
 
 def test_fichier_vide():

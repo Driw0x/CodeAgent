@@ -174,6 +174,7 @@ def devstral_predict(prompt: str) -> dict:
         method="POST",
     )
     start = perf_counter()
+
     try:
         with urllib.request.urlopen(request, timeout=300) as response:
             data = json.loads(response.read().decode("utf-8"))
@@ -182,25 +183,22 @@ def devstral_predict(prompt: str) -> dict:
         raise RuntimeError(f"Ollama HTTP {error.code}: {body}") from error
     except (urllib.error.URLError, TimeoutError) as error:
         raise RuntimeError("Unable to reach Ollama or request timed out.") from error
+
     latency = perf_counter() - start
     message = data.get("message", {})
     tool_calls = message.get("tool_calls") or []
+
     if not tool_calls:
         prediction = "no_tool"
     else:
-        prediction = (
-            tool_calls[0].get("function", {}).get("name")
-        )
+        prediction = tool_calls[0].get("function", {}).get("name")
+
     return {"prediction": prediction, "latency_seconds": latency}
 
 
 def warm_up(engine, query) -> None:
     print("Warming up Verdict...")
-    verdict_predict(
-        engine,
-        query,
-        "Réponds uniquement par OK.",
-    )
+    verdict_predict(engine, query, "Réponds uniquement par OK.")
     print("Warming up Devstral...")
     devstral_predict("Réponds uniquement par OK.")
     print("Warm-up complete.\n")
@@ -212,31 +210,28 @@ def run_task(engine, query, task: dict) -> dict:
     fallback = None
     cascade_prediction = None
     cascade_latency = 0.0
+
     try:
-        verdict = verdict_predict(
-            engine,
-            query,
-            task["prompt"],
-        )
+        verdict = verdict_predict(engine, query, task["prompt"])
         should_fallback = (
             verdict["is_abstention"]
             or verdict["confidence"] < VERDICT_THRESHOLD
             or verdict["prediction"] == "__insufficient_evidence__"
         )
+
         if should_fallback:
             fallback = devstral_predict(task["prompt"])
             cascade_prediction = fallback["prediction"]
-            cascade_latency = (
-                verdict["wall_latency_seconds"]
-                + fallback["latency_seconds"]
-            )
+            cascade_latency = verdict["wall_latency_seconds"] + fallback["latency_seconds"]
         else:
             cascade_prediction = verdict["prediction"]
             cascade_latency = verdict["wall_latency_seconds"]
+
         devstral = devstral_predict(task["prompt"])
     except Exception as exc:
         error = str(exc)
         devstral = None
+
     return {
         "id": task["id"],
         "prompt": task["prompt"],
@@ -304,30 +299,13 @@ def run_task(engine, query, task: dict) -> dict:
 
 
 def summarize(results: list[dict]) -> dict:
-    valid = [
-        result
-        for result in results
-        if result["error"] is None
-    ]
-    cascade_latencies = [
-        result["cascade_latency_seconds"]
-        for result in valid
-    ]
-    devstral_latencies = [
-        result["devstral_latency_seconds"]
-        for result in valid
-    ]
-    verdict_latencies = [
-        result["verdict_latency_seconds"]
-        for result in valid
-    ]
+    valid = [result for result in results if result["error"] is None]
+    cascade_latencies = [result["cascade_latency_seconds"] for result in valid]
+    devstral_latencies = [result["devstral_latency_seconds"] for result in valid]
+    verdict_latencies = [result["verdict_latency_seconds"] for result in valid]
     fallback_count = sum(result["fallback_used"] for result in valid)
     direct_count = len(valid) - fallback_count
-    direct_results = [
-        result
-        for result in valid
-        if not result["fallback_used"]
-    ]
+    direct_results = [result for result in valid if not result["fallback_used"]]
     cascade_accuracy = (
         sum(result["cascade_correct"] for result in valid)
         / len(valid)
@@ -373,6 +351,7 @@ def summarize(results: list[dict]) -> dict:
         if average_devstral_latency
         else 0.0
     )
+
     return {
         "tasks": len(results),
         "valid_tasks": len(valid),
@@ -420,19 +399,14 @@ def summarize(results: list[dict]) -> dict:
 
 
 def main():
-    tasks = json.loads(
-        DATASET_PATH.read_text(encoding="utf-8")
-    )
+    tasks = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
     engine, query = build_verdict()
     warm_up(engine, query)
     results = []
+
     for index, task in enumerate(tasks, start=1):
         print(f"[{index}/{len(tasks)}] " f"{task['id']}")
-        result = run_task(
-            engine,
-            query,
-            task,
-        )
+        result = run_task(engine, query, task)
         results.append(result)
         print(
             f"  cascade={result['cascade_correct']} "
@@ -442,8 +416,10 @@ def main():
             f"cascade_latency="
             f"{result['cascade_latency_seconds']:.3f}s"
         )
+
         if result["error"]:
             print(f"  error={result['error']}")
+
     summary = summarize(results)
     output = {
         "benchmark": "verdict_devstral_cascade_holdout",
@@ -455,22 +431,9 @@ def main():
         "results": results,
     }
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    RESULT_PATH.write_text(
-        json.dumps(
-            output,
-            indent=2,
-            ensure_ascii=False,
-        ),
-        encoding="utf-8",
-    )
+    RESULT_PATH.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
     print("\nSummary")
-    print(
-        json.dumps(
-            summary,
-            indent=2,
-            ensure_ascii=False,
-        )
-    )
+    print(json.dumps(summary, indent=2, ensure_ascii=False))
     print(f"\nSaved to {RESULT_PATH}")
 
 

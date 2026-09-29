@@ -31,57 +31,45 @@ def warm_up(agent: ToolLoop) -> None:
     print("Warming up grounding model...")
     agent.grounding_llm.generate("Réponds uniquement par OK.")
     print("Warming up Devstral...")
-    agent.llm.chat(
-        messages=[{"role": "user", "content": "Réponds uniquement par OK."}],
-        tools=None,
-    )
+    agent.llm.chat(messages=[{"role": "user", "content": "Réponds uniquement par OK."}], tools=None)
     print("Warm-up complete.\n")
 
 
 async def run_task(agent: ToolLoop, task: dict) -> dict:
     start = perf_counter()
     error = None
+
     try:
         answer = await agent.ask(task["prompt"])
     except Exception as exc:
         answer = ""
         error = str(exc)
+
     latency = perf_counter() - start
     trace = list(agent.last_trace)
     first_tool = trace[0]["tool"] if trace else None
     valid_tools = expected_tools(task)
-    tool_selection_correct = (
-        first_tool in valid_tools
-        if valid_tools
-        else first_tool is None
-    )
+    tool_selection_correct = first_tool in valid_tools if valid_tools else first_tool is None
     expected_arguments = task.get("expected_arguments", {})
+
     if not valid_tools:
         arguments_correct = len(trace) == 0
     elif trace:
-        arguments_correct = arguments_match(
-            trace[0].get("arguments", {}),
-            expected_arguments,
-        )
+        arguments_correct = arguments_match(trace[0].get("arguments", {}), expected_arguments)
     else:
         arguments_correct = False
+
     expected_answer = task.get("expected_answer_contains", [])
-    answer_correct = (
-        answer_matches(answer, expected_answer)
-        if expected_answer
-        else True
-    )
+    answer_correct = answer_matches(answer, expected_answer) if expected_answer else True
     routing_success = tool_selection_correct and arguments_correct
+
     if valid_tools:
         grounding_success = agent.last_grounding == "passed"
     else:
         grounding_success = agent.last_grounding == "not_used"
-    end_to_end_success = (
-        error is None
-        and routing_success
-        and answer_correct
-        and grounding_success
-    )
+
+    end_to_end_success = error is None and routing_success and answer_correct and grounding_success
+
     return {
         "id": task["id"],
         "prompt": task["prompt"],
@@ -111,16 +99,9 @@ async def run_task(agent: ToolLoop, task: dict) -> dict:
 
 def summarize(results: list[dict]) -> dict:
     count = len(results)
-    tool_tasks = [
-        result
-        for result in results
-        if result["expected_tools"]
-    ]
-    no_tool_tasks = [
-        result
-        for result in results
-        if not result["expected_tools"]
-    ]
+    tool_tasks = [result for result in results if result["expected_tools"]]
+    no_tool_tasks = [result for result in results if not result["expected_tools"]]
+
     return {
         "tasks": count,
         "routing_success_rate": (
@@ -176,6 +157,7 @@ async def main():
     agent = ToolLoop()
     warm_up(agent)
     results = []
+
     for index, task in enumerate(tasks, start=1):
         print(f"[{index}/{len(tasks)}] {task['id']}")
         result = await run_task(agent, task)
@@ -188,18 +170,11 @@ async def main():
             f"steps={result['steps']} "
             f"latency={result['latency_seconds']:.2f}s"
         )
+
     summary = summarize(results)
-    output = {
-        "model": MODEL,
-        "dataset": DATASET_PATH.name,
-        "summary": summary,
-        "results": results,
-    }
+    output = {"model": MODEL, "dataset": DATASET_PATH.name, "summary": summary, "results": results}
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    RESULT_PATH.write_text(
-        json.dumps(output, indent=2, ensure_ascii=False),
-        encoding="utf-8",
-    )
+    RESULT_PATH.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
     print("\nSummary")
     print(json.dumps(summary, indent=2, ensure_ascii=False))
     print(f"\nSaved to {RESULT_PATH}")

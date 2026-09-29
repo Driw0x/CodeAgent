@@ -30,10 +30,7 @@ def test_retrieve_returns_matching_chunks():
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
     index = MagicMock()
-    index.search.return_value = (
-        np.array([[0.1, 0.4]], dtype="float32"),
-        np.array([[0, 1]]),
-    )
+    index.search.return_value = np.array([[0.1, 0.4]], dtype="float32"), np.array([[0, 1]])
     retriever = FaissRetriever(model, index, CHUNKS)
     results = retriever.retrieve("function that reads files", k=2)
     assert len(results) == 2
@@ -46,26 +43,17 @@ def test_retrieve_encodes_question():
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
     index = MagicMock()
-    index.search.return_value = (
-        np.array([[0.1]], dtype="float32"),
-        np.array([[0]]),
-    )
+    index.search.return_value = np.array([[0.1]], dtype="float32"), np.array([[0]])
     retriever = FaissRetriever(model, index, CHUNKS)
     retriever.retrieve("Where is read_file defined?", k=1)
-    model.encode.assert_called_once_with(
-        ["Where is read_file defined?"],
-        show_progress_bar=False,
-    )
+    model.encode.assert_called_once_with(["Where is read_file defined?"], show_progress_bar=False)
 
 
 def test_retrieve_limits_k_to_chunk_count():
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
     index = MagicMock()
-    index.search.return_value = (
-        np.array([[0.1, 0.4]], dtype="float32"),
-        np.array([[0, 1]]),
-    )
+    index.search.return_value = np.array([[0.1, 0.4]], dtype="float32"), np.array([[0, 1]])
     retriever = FaissRetriever(model, index, CHUNKS)
     retriever.retrieve("Question", k=10)
     index.search.assert_called_once()
@@ -74,31 +62,19 @@ def test_retrieve_limits_k_to_chunk_count():
 
 
 def test_retrieve_rejects_empty_question():
-    retriever = FaissRetriever(
-        MagicMock(),
-        MagicMock(),
-        CHUNKS,
-    )
+    retriever = FaissRetriever(MagicMock(), MagicMock(), CHUNKS)
     with pytest.raises(ValueError, match="Question cannot be empty"):
         retriever.retrieve("")
 
 
 def test_retrieve_rejects_invalid_k():
-    retriever = FaissRetriever(
-        MagicMock(),
-        MagicMock(),
-        CHUNKS,
-    )
+    retriever = FaissRetriever(MagicMock(), MagicMock(), CHUNKS)
     with pytest.raises(ValueError, match="k must be greater than 0"):
         retriever.retrieve("Question", k=0)
 
 
 def test_retrieve_returns_empty_list_without_chunks():
-    retriever = FaissRetriever(
-        MagicMock(),
-        MagicMock(),
-        [],
-    )
+    retriever = FaissRetriever(MagicMock(), MagicMock(), [])
     assert retriever.retrieve("Question") == []
 
 
@@ -129,19 +105,10 @@ def test_retrieve_reranks_lexically_relevant_chunk():
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
     index = MagicMock()
-    index.search.return_value = (
-        np.array([[0.5, 1.0]], dtype="float32"),
-        np.array([[0, 1]]),
-    )
-    retriever = FaissRetriever(
-        model=model,
-        index=index,
-        chunks=chunks,
-    )
-    results = retriever.retrieve(
-        "Comment les embeddings sont-ils ajoutés dans FAISS ?",
-        k=2,
-    )
+    index.search.return_value = np.array([[0.5, 1.0]], dtype="float32"), np.array([[0, 1]])
+    retriever = FaissRetriever(model=model, index=index, chunks=chunks)
+    results = retriever.retrieve("Comment les embeddings sont-ils ajoutés dans FAISS ?", k=2)
+
     assert results[0]["name"] == "build_index"
     assert results[0]["rerank_score"] > results[1]["rerank_score"]
 
@@ -182,15 +149,10 @@ def test_retrieve_reranks_behavior_chunk_above_imports():
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
     index = MagicMock()
-    index.search.return_value = (
-        np.array([[0.8, 0.9, 1.2]], dtype="float32"),
-        np.array([[0, 1, 2]]),
-    )
+    index.search.return_value = np.array([[0.8, 0.9, 1.2]], dtype="float32"), np.array([[0, 1, 2]])
     retriever = FaissRetriever(model, index, chunks)
-    results = retriever.retrieve(
-        "Comment les embeddings sont-ils ajoutés dans FAISS ?",
-        k=3,
-    )
+    results = retriever.retrieve("Comment les embeddings sont-ils ajoutés dans FAISS ?", k=3)
+
     assert results[0]["name"] == "build_index"
     assert results[0]["type"] == "function"
     assert results[0]["rerank_score"] > results[1]["rerank_score"]
@@ -217,10 +179,8 @@ def test_lexical_retrieve_searches_all_chunks():
     ]
     model = MagicMock()
     retriever = FaissRetriever(model, MagicMock(), chunks)
-    results = retriever.lexical_retrieve(
-        "Comment save_analysis enregistre-t-il l'historique ?",
-        k=2,
-    )
+    results = retriever.lexical_retrieve("Comment save_analysis enregistre-t-il l'historique ?", k=2)
+
     assert results[0]["name"] == "save_analysis"
     assert results[0]["lexical_score"] > 0
     model.encode.assert_not_called()
@@ -256,15 +216,10 @@ def test_hybrid_retrieve_recovers_candidate_missing_from_dense():
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
     index = MagicMock()
-    index.search.return_value = (
-        np.array([[0.1, 0.2]], dtype="float32"),
-        np.array([[0, 1]]),
-    )
+    index.search.return_value = np.array([[0.1, 0.2]], dtype="float32"), np.array([[0, 1]])
     retriever = FaissRetriever(model, index, chunks)
-    results = retriever.hybrid_retrieve(
-        "Comment save_analysis enregistre-t-il l'historique ?",
-        k=3,
-    )
+    results = retriever.hybrid_retrieve("Comment save_analysis enregistre-t-il l'historique ?", k=3)
+
     assert results[0]["name"] == "save_analysis"
     assert results[0]["dense_rank"] is None
     assert results[0]["lexical_rank"] == 1
@@ -292,15 +247,10 @@ def test_retrieve_uses_hybrid_candidate_search():
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
     index = MagicMock()
-    index.search.return_value = (
-        np.array([[0.1]], dtype="float32"),
-        np.array([[0]]),
-    )
+    index.search.return_value = np.array([[0.1]], dtype="float32"), np.array([[0]])
     retriever = FaissRetriever(model, index, chunks)
-    results = retriever.retrieve(
-        "Comment save_analysis enregistre-t-il l'historique ?",
-        k=1,
-    )
+    results = retriever.retrieve("Comment save_analysis enregistre-t-il l'historique ?", k=1)
+
     assert results[0]["name"] == "save_analysis"
 
 

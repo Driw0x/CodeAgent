@@ -9,12 +9,7 @@ from app.utils.paths import project_memory_dir
 
 def test_save_and_load_index(tmp_path):
     index = faiss.IndexFlatL2(2)
-    index.add(
-        np.array(
-            [[1.0, 2.0], [3.0, 4.0]],
-            dtype="float32",
-        )
-    )
+    index.add(np.array([[1.0, 2.0], [3.0, 4.0]], dtype="float32"))
     chunks = [{"file": Path("a.py")}, {"file": Path("b.py")}]
     save_index(index, chunks, tmp_path)
     assert index_exists(tmp_path)
@@ -29,14 +24,8 @@ def test_save_and_load_index(tmp_path):
 
 def test_load_index_rejects_mismatched_chunks(tmp_path):
     index = faiss.IndexFlatL2(2)
-    index.add(
-        np.array([[1.0, 2.0]], dtype="float32")
-    )
-    save_index(
-        index,
-        [{"file": "a.py"}],
-        tmp_path,
-    )
+    index.add(np.array([[1.0, 2.0]], dtype="float32"))
+    save_index(index, [{"file": "a.py"}], tmp_path)
     (tmp_path / "chunks.json").write_text("[]", encoding="utf-8")
     with pytest.raises(ValueError, match="Index/chunks mismatch"):
         load_index(tmp_path)
