@@ -8,9 +8,5 @@ def project_memory_dir(
     memory_root: str | Path,
 ) -> Path:
     project_path = Path(project_path).resolve()
-
-    project_id = hashlib.sha256(
-        str(project_path).encode("utf-8")
-    ).hexdigest()[:8]
-
+    project_id = hashlib.sha256(str(project_path).encode("utf-8")).hexdigest()[:8]
     return Path(memory_root) / f"{project_path.name}-{project_id}"

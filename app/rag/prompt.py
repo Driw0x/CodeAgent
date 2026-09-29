@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 MAX_CONTEXT_CHARS = 12_000
@@ -35,7 +34,6 @@ Règles :
 
 def relative_file_path(file: str) -> str:
     path = Path(file)
-
     try:
         return path.resolve().relative_to(PROJECT_ROOT).as_posix()
     except ValueError:
@@ -45,17 +43,14 @@ def relative_file_path(file: str) -> str:
 def format_sources(chunks: list[dict]) -> str:
     sources = []
     seen = set()
-
     for chunk in chunks:
         source = (
             f"{relative_file_path(chunk['file'])}:"
             f"{chunk['start_line']}-{chunk['end_line']}"
         )
-
         if source not in seen:
             seen.add(source)
             sources.append(source)
-
     return "\n".join(f"- {source}" for source in sources)
 
 
@@ -81,16 +76,12 @@ def chunk_key(chunk: dict) -> tuple:
 def unique_chunks(chunks: list[dict]) -> list[dict]:
     seen = set()
     result = []
-
     for chunk in chunks:
         key = chunk_key(chunk)
-
         if key in seen:
             continue
-
         seen.add(key)
         result.append(chunk)
-
     return result
 
 
@@ -98,25 +89,20 @@ def select_context_chunks(chunks: list[dict], max_chars: int = MAX_CONTEXT_CHARS
     chunks = unique_chunks(chunks)
     selected = []
     current_size = 0
-
     for chunk in chunks:
         source_id = len(selected) + 1
         section = format_chunk(chunk, source_id)
         separator_size = len(CONTEXT_SEPARATOR) if selected else 0
         new_size = current_size + separator_size + len(section)
-
         if new_size > max_chars:
             continue
-
         selected.append(chunk)
         current_size = new_size
-
     return selected
 
 
 def build_context(chunks: list[dict], max_chars: int = MAX_CONTEXT_CHARS) -> str:
     selected = select_context_chunks(chunks, max_chars)
-
     return CONTEXT_SEPARATOR.join(
         format_chunk(chunk, source_id)
         for source_id, chunk in enumerate(selected, start=1)
@@ -125,12 +111,8 @@ def build_context(chunks: list[dict], max_chars: int = MAX_CONTEXT_CHARS) -> str
 
 def build_prompt(question: str, chunks: list[dict]) -> str:
     context = build_context(chunks)
-
     return f"""CONTEXTE:
-
     {context}
-
     QUESTION:
-
     {question}
     """

@@ -29,7 +29,6 @@ from app.retrieval.faiss_retriever import (
     TYPE_BONUS,
 )
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 FIXTURE = (
@@ -62,7 +61,6 @@ EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 TOP_K = 5
 M4_CANDIDATES = 25
 
-
 M4_SYSTEM_PROMPT = """Tu es un assistant spécialisé dans l'analyse de code source.
 
 Réponds uniquement à partir du contexte fourni.
@@ -74,12 +72,8 @@ Lorsque tu utilises un morceau de code, référence son fichier et ses lignes.
 
 def relative_path(path: str | Path) -> str:
     path = Path(path)
-
     try:
-        return path.resolve().relative_to(
-            PROJECT_ROOT
-        ).as_posix()
-
+        return path.resolve().relative_to(PROJECT_ROOT).as_posix()
     except ValueError:
         return path.as_posix()
 
@@ -104,65 +98,43 @@ def retrieval_metrics(
 ) -> dict | None:
     if not expected_sources:
         return None
-
     result = {}
-
     for k in (1, 3, 5):
         top = chunks[:k]
-
         matched = {
             i
             for i, expected
             in enumerate(expected_sources)
             if any(
-                source_matches(
-                    chunk,
-                    expected,
-                )
+                source_matches(chunk, expected)
                 for chunk in top
             )
         }
-
         relevant = sum(
             any(
-                source_matches(
-                    chunk,
-                    expected,
-                )
+                source_matches(chunk, expected)
                 for expected in expected_sources
             )
             for chunk in top
         )
-
         result[f"hit@{k}"] = (
             1.0 if matched else 0.0
         )
-
         result[f"recall@{k}"] = (
             len(matched)
             / len(expected_sources)
         )
-
         result[f"precision@{k}"] = (
             relevant / k
         )
-
     result["mrr@5"] = 0.0
-
-    for rank, chunk in enumerate(
-        chunks[:5],
-        start=1,
-    ):
+    for rank, chunk in enumerate(chunks[:5], start=1):
         if any(
-            source_matches(
-                chunk,
-                expected,
-            )
+            source_matches(chunk, expected)
             for expected in expected_sources
         ):
             result["mrr@5"] = 1.0 / rank
             break
-
     return result
 
 
@@ -172,17 +144,12 @@ def serialize_chunks(
     return [
         {
             "rank": rank,
-            "file": relative_path(
-                chunk["file"]
-            ),
+            "file": relative_path(chunk["file"]),
             "type": chunk.get("type"),
             "name": chunk.get("name"),
         }
         for rank, chunk
-        in enumerate(
-            chunks,
-            start=1,
-        )
+        in enumerate(chunks, start=1)
     ]
 
 
@@ -193,23 +160,15 @@ def serialize_chunks(
 def m4_tokenize(
     text: str,
 ) -> set[str]:
-    normalized = unicodedata.normalize(
-        "NFKD",
-        text.casefold(),
-    )
-
+    normalized = unicodedata.normalize("NFKD", text.casefold())
     normalized = "".join(
         char
         for char in normalized
         if not unicodedata.combining(char)
     )
-
     return {
         token
-        for token in re.findall(
-            r"[a-z0-9_]+",
-            normalized,
-        )
+        for token in re.findall(r"[a-z0-9_]+", normalized)
         if token not in STOPWORDS
     }
 
@@ -218,69 +177,36 @@ def m4_rerank_score(
     question: str,
     chunk: dict,
 ) -> float:
-    question_tokens = m4_tokenize(
-        question
-    )
-
+    question_tokens = m4_tokenize(question)
     if not question_tokens:
         return 0.0
-
     name_tokens = m4_tokenize(
         str(
-            chunk.get(
-                "name",
-                "",
-            )
+            chunk.get("name", "")
         )
     )
-
     file_tokens = m4_tokenize(
         relative_path(
-            chunk.get(
-                "file",
-                "",
-            )
+            chunk.get("file", "")
         )
     )
-
     content_tokens = m4_tokenize(
         str(
-            chunk.get(
-                "content",
-                "",
-            )
+            chunk.get("content", "")
         )
     )
-
     all_tokens = (
         name_tokens
         | file_tokens
         | content_tokens
     )
-
     coverage = (
-        len(
-            question_tokens
-            & all_tokens
-        )
+        len(question_tokens & all_tokens)
         / len(question_tokens)
     )
-
-    name_overlap = len(
-        question_tokens
-        & name_tokens
-    )
-
-    file_overlap = len(
-        question_tokens
-        & file_tokens
-    )
-
-    type_bonus = TYPE_BONUS.get(
-        chunk.get("type"),
-        0.0,
-    )
-
+    name_overlap = len(question_tokens & name_tokens)
+    file_overlap = len(question_tokens & file_tokens)
+    type_bonus = TYPE_BONUS.get(chunk.get("type"), 0.0)
     return (
         10.0 * coverage
         + 2.0 * name_overlap
@@ -294,51 +220,23 @@ def m4_dense_retrieve(
     question: str,
     k: int,
 ) -> list[dict]:
-    vector = retriever.model.encode(
-        [question],
-        show_progress_bar=False,
-    )
-
-    vector = np.asarray(
-        vector,
-        dtype="float32",
-    )
-
-    k = min(
-        k,
-        len(retriever.chunks),
-    )
-
+    vector = retriever.model.encode([question], show_progress_bar=False)
+    vector = np.asarray(vector, dtype="float32")
+    k = min(k, len(retriever.chunks))
     distances, indices = (
-        retriever.index.search(
-            vector,
-            k,
-        )
+        retriever.index.search(vector, k)
     )
-
     results = []
-
-    for distance, index in zip(
-        distances[0],
-        indices[0],
-    ):
+    for distance, index in zip(distances[0], indices[0]):
         if (
             index < 0
             or index
             >= len(retriever.chunks)
         ):
             continue
-
-        chunk = dict(
-            retriever.chunks[index]
-        )
-
-        chunk["distance"] = float(
-            distance
-        )
-
+        chunk = dict(retriever.chunks[index])
+        chunk["distance"] = float(distance)
         results.append(chunk)
-
     return results
 
 
@@ -351,22 +249,16 @@ def m4_retrieve(
         question,
         M4_CANDIDATES,
     )
-
     for chunk in candidates:
         chunk["rerank_score"] = (
-            m4_rerank_score(
-                question,
-                chunk,
-            )
+            m4_rerank_score(question, chunk)
         )
-
     candidates.sort(
         key=lambda chunk: (
             -chunk["rerank_score"],
             chunk["distance"],
         )
     )
-
     return candidates[:TOP_K]
 
 
@@ -407,25 +299,15 @@ def m4_prompt(
 def has_answer_content(
     answer: str,
 ) -> bool:
-    sentences = re.split(
-        r"(?<=[.!?])\s+",
-        answer,
-    )
-
+    sentences = re.split(r"(?<=[.!?])\s+", answer)
     for sentence in sentences:
         sentence = sentence.strip()
-
         if (
             sentence
-            and not is_abstention(
-                sentence
-            )
-            and not is_missing_information(
-                sentence
-            )
+            and not is_abstention(sentence)
+            and not is_missing_information(sentence)
         ):
             return True
-
     return False
 
 
@@ -433,28 +315,17 @@ def behavior_match(
     category: str,
     answer: str,
 ) -> bool:
-    abstention = is_abstention(
-        answer
-    )
-
+    abstention = is_abstention(answer)
     if category == "answerable":
         return not abstention
-
     if category == "partial":
         return (
             abstention
-            and has_answer_content(
-                answer
-            )
+            and has_answer_content(answer)
         )
-
     if category == "unanswerable":
         return abstention
-
-    raise ValueError(
-        f"Invalid category: "
-        f"{category}"
-    )
+    raise ValueError(f"Invalid category: " f"{category}")
 
 
 # ------------------------------------------------------------------
@@ -466,38 +337,20 @@ def evaluate_m4(
     retriever: FaissRetriever,
     llm: LocalLLM,
 ) -> dict:
-    chunks = m4_retrieve(
-        retriever,
-        item["question"],
-    )
-
-    metrics = retrieval_metrics(
-        chunks,
-        item["expected_sources"],
-    )
-
+    chunks = m4_retrieve(retriever, item["question"])
+    metrics = retrieval_metrics(chunks, item["expected_sources"])
     start = time.perf_counter()
-
     answer = llm.generate(
-        prompt=m4_prompt(
-            item["question"],
-            chunks,
-        ),
+        prompt=m4_prompt(item["question"], chunks),
         system_prompt=M4_SYSTEM_PROMPT,
     )
-
     generation_time = (
         time.perf_counter()
         - start
     )
-
     response_behavior_match = (
-        behavior_match(
-            item["category"],
-            answer,
-        )
+        behavior_match(item["category"], answer)
     )
-
     return {
         "id": item["id"],
         "category": item["category"],
@@ -531,45 +384,22 @@ def evaluate_m5(
     retriever: FaissRetriever,
     llm: LocalLLM,
 ) -> dict:
-    retrieved = retriever.retrieve(
-        item["question"],
-        k=TOP_K,
-    )
-
-    metrics = retrieval_metrics(
-        retrieved,
-        item["expected_sources"],
-    )
-
+    retrieved = retriever.retrieve(item["question"], k=TOP_K)
+    metrics = retrieval_metrics(retrieved, item["expected_sources"])
     context_chunks = (
-        select_context_chunks(
-            retrieved
-        )
+        select_context_chunks(retrieved)
     )
-
     start = time.perf_counter()
-
     answer = llm.generate(
-        prompt=build_prompt(
-            item["question"],
-            context_chunks,
-        ),
+        prompt=build_prompt(item["question"], context_chunks),
         system_prompt=SYSTEM_PROMPT,
     )
-
     generation_time = (
         time.perf_counter()
         - start
     )
-
-    citations = extract_citations(
-        answer
-    )
-
-    has_citations = bool(
-        citations
-    )
-
+    citations = extract_citations(answer)
+    has_citations = bool(citations)
     if has_citations:
         citations_in_range = all(
             1
@@ -579,34 +409,20 @@ def evaluate_m5(
         )
     else:
         citations_in_range = None
-
     citation_validation_passed = (
-        validate_citations(
-            answer,
-            len(context_chunks),
-        )
+        validate_citations(answer, len(context_chunks))
     )
-
-    abstention = is_abstention(
-        answer
-    )
-
+    abstention = is_abstention(answer)
     answer_has_content = (
-        has_answer_content(
-            answer
-        )
+        has_answer_content(answer)
     )
-
     grounding_checked = (
         citations_in_range is True
     )
-
     grounding_supported = None
     grounding_time = 0.0
-
     if grounding_checked:
         start = time.perf_counter()
-
         grounding_supported = (
             verify_grounding(
                 answer,
@@ -614,7 +430,6 @@ def evaluate_m5(
                 llm,
             )
         )
-
         grounding_time = (
             time.perf_counter()
             - start
@@ -641,27 +456,19 @@ def evaluate_m5(
         pipeline_accepted = (
             citation_validation_passed
         )
-
     response_behavior_match = (
-        behavior_match(
-            item["category"],
-            answer,
-        )
+        behavior_match(item["category"], answer)
     )
-
     final_acceptance_match = (
         response_behavior_match
         and pipeline_accepted
     )
-
     return {
         "id": item["id"],
         "category": item["category"],
         "question": item["question"],
         "retrieved_sources": (
-            serialize_chunks(
-                retrieved
-            )
+            serialize_chunks(retrieved)
         ),
         "retrieval": metrics,
         "answer": answer,
@@ -716,7 +523,6 @@ def mean(
 ) -> float:
     if not values:
         return 0.0
-
     return sum(values) / len(values)
 
 
@@ -729,10 +535,8 @@ def aggregate_retrieval(
         if result["retrieval"]
         is not None
     ]
-
     if not rows:
         return {}
-
     return {
         key: mean(
             [
@@ -755,9 +559,7 @@ def aggregate_m4(
             for result in results
         ),
         "retrieval": (
-            aggregate_retrieval(
-                results
-            )
+            aggregate_retrieval(results)
         ),
         "response_behavior_matches": sum(
             result[
@@ -796,39 +598,28 @@ def aggregate_m5(
             "grounding_checked"
         ]
     ]
-
     citation_expected = [
         result
         for result in results
         if result["category"]
-        in {
-            "answerable",
-            "partial",
-        }
+        in {"answerable", "partial"}
     ]
-
     return {
         "questions": len(results),
-
         "retrieval_questions": sum(
             result["retrieval"]
             is not None
             for result in results
         ),
-
         "retrieval": (
-            aggregate_retrieval(
-                results
-            )
+            aggregate_retrieval(results)
         ),
-
         "response_behavior_matches": sum(
             result[
                 "response_behavior_match"
             ]
             for result in results
         ),
-
         "response_behavior_match_rate": mean(
             [
                 float(
@@ -839,14 +630,12 @@ def aggregate_m5(
                 for result in results
             ]
         ),
-
         "final_acceptance_matches": sum(
             result[
                 "final_acceptance_match"
             ]
             for result in results
         ),
-
         "final_acceptance_match_rate": mean(
             [
                 float(
@@ -857,7 +646,6 @@ def aggregate_m5(
                 for result in results
             ]
         ),
-
         "citation_presence_rate": mean(
             [
                 float(
@@ -869,7 +657,6 @@ def aggregate_m5(
                 in citation_expected
             ]
         ),
-
         "invalid_citation_count": sum(
             result["has_citations"]
             and result[
@@ -878,7 +665,6 @@ def aggregate_m5(
             is False
             for result in results
         ),
-
         "citation_validation_pass_rate": mean(
             [
                 float(
@@ -889,7 +675,6 @@ def aggregate_m5(
                 for result in results
             ]
         ),
-
         "pipeline_accept_rate": mean(
             [
                 float(
@@ -900,11 +685,7 @@ def aggregate_m5(
                 for result in results
             ]
         ),
-
-        "grounding_checked": len(
-            grounding
-        ),
-
+        "grounding_checked": len(grounding),
         "grounding_supported": sum(
             result[
                 "grounding_supported"
@@ -912,7 +693,6 @@ def aggregate_m5(
             is True
             for result in grounding
         ),
-
         "grounding_rejected": sum(
             result[
                 "grounding_supported"
@@ -920,7 +700,6 @@ def aggregate_m5(
             is False
             for result in grounding
         ),
-
         "average_generation_time": mean(
             [
                 result[
@@ -929,7 +708,6 @@ def aggregate_m5(
                 for result in results
             ]
         ),
-
         "average_grounding_time": mean(
             [
                 result[
@@ -938,7 +716,6 @@ def aggregate_m5(
                 for result in grounding
             ]
         ),
-
         "average_total_time": mean(
             [
                 result[
@@ -970,7 +747,6 @@ def build_comparison(
                 for key
                 in m4["retrieval"]
             },
-
             "response_behavior_match_rate": (
                 m5[
                     "response_behavior_match_rate"
@@ -979,7 +755,6 @@ def build_comparison(
                     "response_behavior_match_rate"
                 ]
             ),
-
             "average_total_time": (
                 m5[
                     "average_total_time"
@@ -998,59 +773,30 @@ def build_comparison(
 
 def main() -> None:
     questions = json.loads(
-        QUESTIONS.read_text(
-            encoding="utf-8"
-        )
+        QUESTIONS.read_text(encoding="utf-8")
     )
-
-    print(
-        "Loading embedding model: "
-        f"{EMBEDDING_MODEL}"
-    )
-
-    model = SentenceTransformer(
-        EMBEDDING_MODEL
-    )
-
-    print(
-        "Loading frozen fixture..."
-    )
-
-    index, chunks = load_index(
-        FIXTURE
-    )
-
-    print(
-        f"Chunks: {len(chunks)}"
-    )
-
+    print("Loading embedding model: " f"{EMBEDDING_MODEL}")
+    model = SentenceTransformer(EMBEDDING_MODEL)
+    print("Loading frozen fixture...")
+    index, chunks = load_index(FIXTURE)
+    print(f"Chunks: {len(chunks)}")
     retriever = FaissRetriever(
         model=model,
         index=index,
         chunks=chunks,
     )
-
     llm = LocalLLM()
-
-    print(
-        "Warming up LLM..."
-    )
-
+    print("Warming up LLM...")
     llm.generate(
         prompt=(
             "Réponds uniquement "
             "par OK."
         )
     )
-
     m4_results = []
     m5_results = []
-
     for item in questions:
-        print(
-            f"\n{item['id']} | "
-            f"{item['category']}"
-        )
+        print(f"\n{item['id']} | " f"{item['category']}")
 
         # M4
         m4 = evaluate_m4(
@@ -1058,9 +804,7 @@ def main() -> None:
             retriever,
             llm,
         )
-
         m4_results.append(m4)
-
         print(
             "M4 | "
             f"behavior="
@@ -1075,9 +819,7 @@ def main() -> None:
             retriever,
             llm,
         )
-
         m5_results.append(m5)
-
         if (
             m5[
                 "grounding_supported"
@@ -1085,7 +827,6 @@ def main() -> None:
             is True
         ):
             grounding = "SUPPORTED"
-
         elif (
             m5[
                 "grounding_supported"
@@ -1093,10 +834,8 @@ def main() -> None:
             is False
         ):
             grounding = "UNSUPPORTED"
-
         else:
             grounding = "SKIPPED"
-
         print(
             "M5 | "
             f"behavior="
@@ -1114,48 +853,26 @@ def main() -> None:
         )
 
     # Aggregation
-    m4_summary = aggregate_m4(
-        m4_results
-    )
-
-    m5_summary = aggregate_m5(
-        m5_results
-    )
-
-    comparison = build_comparison(
-        m4_summary,
-        m5_summary,
-    )
-
-    RESULTS.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
+    m4_summary = aggregate_m4(m4_results)
+    m5_summary = aggregate_m5(m5_results)
+    comparison = build_comparison(m4_summary, m5_summary)
+    RESULTS.mkdir(parents=True, exist_ok=True)
     M4_OUTPUT.write_text(
         json.dumps(
-            {
-                "summary": m4_summary,
-                "results": m4_results,
-            },
+            {"summary": m4_summary, "results": m4_results},
             ensure_ascii=False,
             indent=2,
         ),
         encoding="utf-8",
     )
-
     M5_OUTPUT.write_text(
         json.dumps(
-            {
-                "summary": m5_summary,
-                "results": m5_results,
-            },
+            {"summary": m5_summary, "results": m5_results},
             ensure_ascii=False,
             indent=2,
         ),
         encoding="utf-8",
     )
-
     SUMMARY_OUTPUT.write_text(
         json.dumps(
             comparison,
@@ -1174,18 +891,12 @@ def main() -> None:
         "FINAL M4 VS M5 "
         "=========="
     )
-
-    print(
-        f"Questions             : "
-        f"{len(questions)}"
-    )
-
+    print(f"Questions             : " f"{len(questions)}")
     print(
         "\n---------- "
         "RETRIEVAL "
         "----------"
     )
-
     for key in m4_summary[
         "retrieval"
     ]:
@@ -1198,114 +909,54 @@ def main() -> None:
             f"delta="
             f"{comparison['delta']['retrieval'][key]:+.4f}"
         )
-
     print(
         "\n---------- "
         "BEHAVIOR "
         "----------"
     )
-
     print(
         "M4 response behavior  : "
         f"{m4_summary['response_behavior_match_rate']:.4f}"
     )
-
     print(
         "M5 response behavior  : "
         f"{m5_summary['response_behavior_match_rate']:.4f}"
     )
-
-    print(
-        "M5 final acceptance   : "
-        f"{m5_summary['final_acceptance_match_rate']:.4f}"
-    )
-
-    print(
-        "M5 citation presence  : "
-        f"{m5_summary['citation_presence_rate']:.4f}"
-    )
-
-    print(
-        "M5 invalid citations  : "
-        f"{m5_summary['invalid_citation_count']}"
-    )
-
+    print("M5 final acceptance   : " f"{m5_summary['final_acceptance_match_rate']:.4f}")
+    print("M5 citation presence  : " f"{m5_summary['citation_presence_rate']:.4f}")
+    print("M5 invalid citations  : " f"{m5_summary['invalid_citation_count']}")
     print(
         "M5 citation validation: "
         f"{m5_summary['citation_validation_pass_rate']:.4f}"
     )
-
-    print(
-        "M5 grounding checked  : "
-        f"{m5_summary['grounding_checked']}"
-    )
-
-    print(
-        "M5 grounding supported: "
-        f"{m5_summary['grounding_supported']}"
-    )
-
-    print(
-        "M5 grounding rejected : "
-        f"{m5_summary['grounding_rejected']}"
-    )
-
+    print("M5 grounding checked  : " f"{m5_summary['grounding_checked']}")
+    print("M5 grounding supported: " f"{m5_summary['grounding_supported']}")
+    print("M5 grounding rejected : " f"{m5_summary['grounding_rejected']}")
     print(
         "\n---------- "
         "LATENCY "
         "----------"
     )
-
-    print(
-        "M4 generation avg     : "
-        f"{m4_summary['average_generation_time']:.2f}s"
-    )
-
-    print(
-        "M5 generation avg     : "
-        f"{m5_summary['average_generation_time']:.2f}s"
-    )
-
-    print(
-        "M5 grounding avg      : "
-        f"{m5_summary['average_grounding_time']:.2f}s"
-    )
-
-    print(
-        "M5 total avg          : "
-        f"{m5_summary['average_total_time']:.2f}s"
-    )
-
+    print("M4 generation avg     : " f"{m4_summary['average_generation_time']:.2f}s")
+    print("M5 generation avg     : " f"{m5_summary['average_generation_time']:.2f}s")
+    print("M5 grounding avg      : " f"{m5_summary['average_grounding_time']:.2f}s")
+    print("M5 total avg          : " f"{m5_summary['average_total_time']:.2f}s")
     print(
         "\n---------- "
         "DELTA "
         "----------"
     )
-
     print(
         "Response behavior     : "
         f"{comparison['delta']['response_behavior_match_rate']:+.4f}"
     )
-
     print(
         "End-to-end latency    : "
         f"{comparison['delta']['average_total_time']:+.2f}s"
     )
-
-    print(
-        f"\nM4 results : "
-        f"{M4_OUTPUT}"
-    )
-
-    print(
-        f"M5 results : "
-        f"{M5_OUTPUT}"
-    )
-
-    print(
-        f"Comparison : "
-        f"{SUMMARY_OUTPUT}"
-    )
+    print(f"\nM4 results : " f"{M4_OUTPUT}")
+    print(f"M5 results : " f"{M5_OUTPUT}")
+    print(f"Comparison : " f"{SUMMARY_OUTPUT}")
 
 
 if __name__ == "__main__":

@@ -10,7 +10,6 @@ def extract_names(target):
         return names
     elif isinstance(target, ast.Attribute):
         return [ast.unparse(target)]
-
     return []
             
 
@@ -73,5 +72,4 @@ def chunking(data):
                           "content": ast.unparse(node),
                           "start_line": node.lineno,
                           "end_line": node.end_lineno})
-
     return chunk

@@ -6,7 +6,6 @@ import pytest
 from app.retrieval import FaissRetriever
 from app.retrieval.faiss_retriever import rerank_score, tokenize
 
-
 CHUNKS = [
     {
         "file": "app/parser/file_loader.py",
@@ -30,17 +29,13 @@ CHUNKS = [
 def test_retrieve_returns_matching_chunks():
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
-
     index = MagicMock()
     index.search.return_value = (
         np.array([[0.1, 0.4]], dtype="float32"),
         np.array([[0, 1]]),
     )
-
     retriever = FaissRetriever(model, index, CHUNKS)
-
     results = retriever.retrieve("function that reads files", k=2)
-
     assert len(results) == 2
     assert results[0]["name"] == "read_file"
     assert results[1]["name"] == "read_dir"
@@ -50,17 +45,13 @@ def test_retrieve_returns_matching_chunks():
 def test_retrieve_encodes_question():
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
-
     index = MagicMock()
     index.search.return_value = (
         np.array([[0.1]], dtype="float32"),
         np.array([[0]]),
     )
-
     retriever = FaissRetriever(model, index, CHUNKS)
-
     retriever.retrieve("Where is read_file defined?", k=1)
-
     model.encode.assert_called_once_with(
         ["Where is read_file defined?"],
         show_progress_bar=False,
@@ -70,21 +61,15 @@ def test_retrieve_encodes_question():
 def test_retrieve_limits_k_to_chunk_count():
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
-
     index = MagicMock()
     index.search.return_value = (
         np.array([[0.1, 0.4]], dtype="float32"),
         np.array([[0, 1]]),
     )
-
     retriever = FaissRetriever(model, index, CHUNKS)
-
     retriever.retrieve("Question", k=10)
-
     index.search.assert_called_once()
-
     _, k = index.search.call_args.args
-
     assert k == 2
 
 
@@ -94,7 +79,6 @@ def test_retrieve_rejects_empty_question():
         MagicMock(),
         CHUNKS,
     )
-
     with pytest.raises(ValueError, match="Question cannot be empty"):
         retriever.retrieve("")
 
@@ -105,7 +89,6 @@ def test_retrieve_rejects_invalid_k():
         MagicMock(),
         CHUNKS,
     )
-
     with pytest.raises(ValueError, match="k must be greater than 0"):
         retriever.retrieve("Question", k=0)
 
@@ -116,7 +99,6 @@ def test_retrieve_returns_empty_list_without_chunks():
         MagicMock(),
         [],
     )
-
     assert retriever.retrieve("Question") == []
 
 
@@ -144,30 +126,22 @@ def test_retrieve_reranks_lexically_relevant_chunk():
             "end_line": 14,
         },
     ]
-
     model = MagicMock()
-    model.encode.return_value = np.zeros(
-        (1, 384),
-        dtype="float32",
-    )
-
+    model.encode.return_value = np.zeros((1, 384), dtype="float32")
     index = MagicMock()
     index.search.return_value = (
         np.array([[0.5, 1.0]], dtype="float32"),
         np.array([[0, 1]]),
     )
-
     retriever = FaissRetriever(
         model=model,
         index=index,
         chunks=chunks,
     )
-
     results = retriever.retrieve(
         "Comment les embeddings sont-ils ajoutés dans FAISS ?",
         k=2,
     )
-
     assert results[0]["name"] == "build_index"
     assert results[0]["rerank_score"] > results[1]["rerank_score"]
 
@@ -205,23 +179,18 @@ def test_retrieve_reranks_behavior_chunk_above_imports():
             "end_line": 14,
         },
     ]
-
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
-
     index = MagicMock()
     index.search.return_value = (
         np.array([[0.8, 0.9, 1.2]], dtype="float32"),
         np.array([[0, 1, 2]]),
     )
-
     retriever = FaissRetriever(model, index, chunks)
-
     results = retriever.retrieve(
         "Comment les embeddings sont-ils ajoutés dans FAISS ?",
         k=3,
     )
-
     assert results[0]["name"] == "build_index"
     assert results[0]["type"] == "function"
     assert results[0]["rerank_score"] > results[1]["rerank_score"]
@@ -246,15 +215,12 @@ def test_lexical_retrieve_searches_all_chunks():
             "end_line": 25,
         },
     ]
-
     model = MagicMock()
     retriever = FaissRetriever(model, MagicMock(), chunks)
-
     results = retriever.lexical_retrieve(
         "Comment save_analysis enregistre-t-il l'historique ?",
         k=2,
     )
-
     assert results[0]["name"] == "save_analysis"
     assert results[0]["lexical_score"] > 0
     model.encode.assert_not_called()
@@ -287,23 +253,18 @@ def test_hybrid_retrieve_recovers_candidate_missing_from_dense():
             "end_line": 25,
         },
     ]
-
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
-
     index = MagicMock()
     index.search.return_value = (
         np.array([[0.1, 0.2]], dtype="float32"),
         np.array([[0, 1]]),
     )
-
     retriever = FaissRetriever(model, index, chunks)
-
     results = retriever.hybrid_retrieve(
         "Comment save_analysis enregistre-t-il l'historique ?",
         k=3,
     )
-
     assert results[0]["name"] == "save_analysis"
     assert results[0]["dense_rank"] is None
     assert results[0]["lexical_rank"] == 1
@@ -328,23 +289,18 @@ def test_retrieve_uses_hybrid_candidate_search():
             "end_line": 25,
         },
     ]
-
     model = MagicMock()
     model.encode.return_value = np.zeros((1, 384), dtype="float32")
-
     index = MagicMock()
     index.search.return_value = (
         np.array([[0.1]], dtype="float32"),
         np.array([[0]]),
     )
-
     retriever = FaissRetriever(model, index, chunks)
-
     results = retriever.retrieve(
         "Comment save_analysis enregistre-t-il l'historique ?",
         k=1,
     )
-
     assert results[0]["name"] == "save_analysis"
 
 
@@ -355,22 +311,16 @@ def test_tokenize_splits_code_identifiers():
 
 def test_rerank_prefers_matching_symbol_name():
     question = "Comment le manifest est-il construit ?"
-
     build_manifest = {
         "file": "app/memory/project_state.py",
         "type": "function",
         "name": "build_manifest",
         "content": "def build_manifest(files, project_path): ...",
     }
-
     unrelated = {
         "file": "app/main.py",
         "type": "function",
         "name": "main",
         "content": "manifest = build_manifest(files, PROJECT_PATH)",
     }
-
-    assert rerank_score(question, build_manifest) > rerank_score(
-        question,
-        unrelated,
-    )
+    assert rerank_score(question, build_manifest) > rerank_score(question, unrelated)

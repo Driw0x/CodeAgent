@@ -31,7 +31,4 @@ IGNORED_DIRS = {
     "tests"
 }
 
-IGNORED_FILES = {
-    ".DS_Store",
-    "main.py"
-}
+IGNORED_FILES = {".DS_Store", "main.py"}

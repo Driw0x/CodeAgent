@@ -8,9 +8,7 @@ def test_chunk_embedding_text_contains_metadata():
         "name": "read_dir",
         "content": "def read_dir(path): ...",
     }
-
     result = chunk_embedding_text(chunk)
-
     assert "app/parser/file_loader.py" in result
     assert "function" in result
     assert "read_dir" in result

@@ -12,11 +12,8 @@ def code(text):
 # =========================
 
 def test_variable_simple():
-    data = {"path": "test.py",
-            "content": "x = 42"}
-
+    data = {"path": "test.py", "content": "x = 42"}
     chunks = chunking(data)
-
     assert len(chunks) == 1
     assert chunks[0]["file"] == "test.py"
     assert chunks[0]["type"] == "variable"
@@ -33,42 +30,31 @@ def test_plusieurs_variables_separees():
                             y = 2
                             z = 3
                             """)}
-
     chunks = chunking(data)
-
     assert len(chunks) == 3
     assert [chunk["name"] for chunk in chunks] == ["x", "y", "z"]
     assert all(chunk["type"] == "variable" for chunk in chunks)
 
 
 def test_assignation_multiple_meme_ligne():
-    data = {"path": "test.py",
-            "content": "x = y = 0"}
-
+    data = {"path": "test.py", "content": "x = y = 0"}
     chunks = chunking(data)
-
     assert len(chunks) == 2
     assert [chunk["name"] for chunk in chunks] == ["x", "y"]
     assert all(chunk["content"] == "x = y = 0" for chunk in chunks)
 
 
 def test_tuple_assignment():
-    data = {"path": "test.py",
-            "content": "a, b = 1, 2"}
-
+    data = {"path": "test.py", "content": "a, b = 1, 2"}
     chunks = chunking(data)
-
     assert len(chunks) == 2
     assert [chunk["name"] for chunk in chunks] == ["a", "b"]
     assert all(chunk["type"] == "variable" for chunk in chunks)
 
 
 def test_annotation_variable():
-    data = {"path": "test.py",
-            "content": "age: int = 20"}
-
+    data = {"path": "test.py", "content": "age: int = 20"}
     chunks = chunking(data)
-
     assert len(chunks) == 1
     assert chunks[0]["type"] == "variable"
     assert chunks[0]["name"] == "age"
@@ -81,9 +67,7 @@ def test_function():
                             def hello():
                                 return "world"
                         """)}
-
     chunks = chunking(data)
-
     assert len(chunks) == 1
     assert chunks[0]["type"] == "function"
     assert chunks[0]["name"] == "hello"
@@ -96,9 +80,7 @@ def test_async_function():
                             async def fetch_data():
                                 return 1
                             """)}
-
     chunks = chunking(data)
-
     assert len(chunks) == 1
     assert chunks[0]["type"] == "function"
     assert chunks[0]["name"] == "fetch_data"
@@ -111,9 +93,7 @@ def test_class():
                             class User:
                                 pass
                             """)}
-
     chunks = chunking(data)
-
     assert len(chunks) == 1
     assert chunks[0]["type"] == "class"
     assert chunks[0]["name"] == "User"
@@ -121,11 +101,8 @@ def test_class():
 
 
 def test_import_simple():
-    data = {"path": "test.py",
-            "content": "import os"}
-
+    data = {"path": "test.py", "content": "import os"}
     chunks = chunking(data)
-
     assert len(chunks) == 1
     assert chunks[0]["type"] == "import"
     assert chunks[0]["name"] == "os"
@@ -133,22 +110,16 @@ def test_import_simple():
 
 
 def test_import_multiple():
-    data = {"path": "test.py",
-            "content": "import os, sys"}
-
+    data = {"path": "test.py", "content": "import os, sys"}
     chunks = chunking(data)
-
     assert len(chunks) == 2
     assert [chunk["name"] for chunk in chunks] == ["os", "sys"]
     assert all(chunk["type"] == "import" for chunk in chunks)
 
 
 def test_import_from():
-    data = {"path": "test.py",
-            "content": "from pathlib import Path"}
-
+    data = {"path": "test.py", "content": "from pathlib import Path"}
     chunks = chunking(data)
-
     assert len(chunks) == 1
     assert chunks[0]["type"] == "import_from"
     assert chunks[0]["module"] == "pathlib"
@@ -157,11 +128,8 @@ def test_import_from():
 
 
 def test_import_from_multiple():
-    data = {"path": "test.py",
-            "content": "from os import path, mkdir"}
-
+    data = {"path": "test.py", "content": "from os import path, mkdir"}
     chunks = chunking(data)
-
     assert len(chunks) == 2
     assert [chunk["type"] for chunk in chunks] == ["import_from", "import_from"]
     assert [chunk["module"] for chunk in chunks] == ["os", "os"]
@@ -186,11 +154,8 @@ def test_fichier_complet():
                             async def main():
                                 return None
                             """)}
-
     chunks = chunking(data)
-
     assert len(chunks) == 7
-
     assert [chunk["type"] for chunk in chunks] == [
         "import",
         "import_from",
@@ -200,7 +165,6 @@ def test_fichier_complet():
         "class",
         "function",
     ]
-
     assert [chunk["name"] for chunk in chunks] == [
         "os",
         "Path",
@@ -213,11 +177,8 @@ def test_fichier_complet():
 
 
 def test_fichier_vide():
-    data = {"path": "test.py",
-            "content": ""}
-
+    data = {"path": "test.py", "content": ""}
     chunks = chunking(data)
-
     assert chunks == []
 
 
@@ -228,9 +189,7 @@ def test_code_non_chunkable():
                             if True:
                                 x = 1
                             """)}
-
     chunks = chunking(data)
-
     assert chunks == []
 
 
@@ -241,26 +200,19 @@ def test_code_non_chunkable():
 def test_read_lit_le_contenu_du_fichier(tmp_path):
     fichier = tmp_path / "exemple.py"
     fichier.write_text("x = 42", encoding="utf-8")
-
     contenu = read(fichier)
-
     assert contenu == "x = 42"
 
 
 def test_read_dir_lit_les_fichiers_python(tmp_path):
     fichier1 = tmp_path / "a.py"
     fichier2 = tmp_path / "b.py"
-
     fichier1.write_text("x = 1", encoding="utf-8")
     fichier2.write_text("y = 2", encoding="utf-8")
-
     resultats = read_dir(tmp_path)
-
     assert len(resultats) == 2
-
     paths = [resultat["path"].name for resultat in resultats]
     contents = [resultat["content"] for resultat in resultats]
-
     assert "a.py" in paths
     assert "b.py" in paths
     assert "x = 1" in contents
@@ -270,12 +222,9 @@ def test_read_dir_lit_les_fichiers_python(tmp_path):
 def test_read_dir_ignore_les_fichiers_non_python(tmp_path):
     fichier_python = tmp_path / "module.py"
     fichier_txt = tmp_path / "notes.txt"
-
     fichier_python.write_text("x = 1", encoding="utf-8")
     fichier_txt.write_text("ceci ne doit pas être lu", encoding="utf-8")
-
     resultats = read_dir(tmp_path)
-
     assert len(resultats) == 1
     assert resultats[0]["path"].name == "module.py"
     assert resultats[0]["content"] == "x = 1"
@@ -284,15 +233,11 @@ def test_read_dir_ignore_les_fichiers_non_python(tmp_path):
 def test_read_dir_ignore_les_dossiers_ignores(tmp_path):
     dossier_cache = tmp_path / "__pycache__"
     dossier_cache.mkdir()
-
     fichier_ignore = dossier_cache / "cache.py"
     fichier_valide = tmp_path / "module.py"
-
     fichier_ignore.write_text("x = 1", encoding="utf-8")
     fichier_valide.write_text("y = 2", encoding="utf-8")
-
     resultats = read_dir(tmp_path)
-
     assert len(resultats) == 1
     assert resultats[0]["path"].name == "module.py"
     assert resultats[0]["content"] == "y = 2"
@@ -301,12 +246,9 @@ def test_read_dir_ignore_les_dossiers_ignores(tmp_path):
 def test_read_dir_lit_les_fichiers_dans_sous_dossiers(tmp_path):
     sous_dossier = tmp_path / "src"
     sous_dossier.mkdir()
-
     fichier = sous_dossier / "module.py"
     fichier.write_text("def hello():\n    pass", encoding="utf-8")
-
     resultats = read_dir(tmp_path)
-
     assert len(resultats) == 1
     assert resultats[0]["path"].name == "module.py"
     assert "def hello" in resultats[0]["content"]

@@ -7,7 +7,6 @@ from app.rag.citations import extract_citations, is_abstention, validate_citatio
 from app.rag.grounding import verify_grounding
 from app.rag.prompt import SYSTEM_PROMPT, build_prompt
 
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = PROJECT_ROOT / "benchmarks" / "rag" / "fixture" / "chunks.json"
 QUESTIONS = PROJECT_ROOT / "benchmarks" / "rag" / "grounding_questions.json"
@@ -24,33 +23,26 @@ def relative_path(path: str | Path) -> str:
 
 def find_chunks(chunks: list[dict], sources: list[dict]) -> list[dict]:
     result = []
-
     for source in sources:
         for chunk in chunks:
             if relative_path(chunk["file"]) == source["file"] and chunk.get("type") == source["type"] and chunk.get("name") == source["name"]:
                 result.append(chunk)
                 break
-
     return result
 
 
 def evaluate(item: dict, chunks: list[dict], llm: LocalLLM) -> dict:
     context_chunks = find_chunks(chunks, item["sources"])
-
     if len(context_chunks) != len(item["sources"]):
         raise ValueError(f"{item['id']}: source missing from fixture")
-
     prompt = build_prompt(item["question"], context_chunks)
-
     start = time.perf_counter()
     answer = llm.generate(prompt=prompt, system_prompt=SYSTEM_PROMPT)
     response_time = time.perf_counter() - start
-
     found_citations = extract_citations(answer)
     has_citations = bool(found_citations)
     valid_citations = validate_citations(answer, len(context_chunks))
     abstention = is_abstention(answer)
-
     if item["category"] == "answerable":
         success = has_citations and valid_citations and not abstention
     elif item["category"] == "partial":
@@ -59,18 +51,14 @@ def evaluate(item: dict, chunks: list[dict], llm: LocalLLM) -> dict:
         success = abstention and valid_citations
     else:
         raise ValueError(f"{item['id']}: invalid category")
-
     grounding_checked = has_citations and valid_citations
     grounding_time = 0.0
     grounding_supported = None
-
     if grounding_checked:
         start = time.perf_counter()
         grounding_supported = verify_grounding(answer, context_chunks, llm)
         grounding_time = time.perf_counter() - start
-
     verification_match = grounding_supported == success if grounding_checked else success
-
     return {
         "id": item["id"],
         "category": item["category"],
@@ -93,16 +81,12 @@ def main() -> None:
     chunks = json.loads(FIXTURE.read_text(encoding="utf-8"))
     questions = json.loads(QUESTIONS.read_text(encoding="utf-8"))
     llm = LocalLLM()
-
     results = []
     total_start = time.perf_counter()
-
     for item in questions:
         result = evaluate(item, chunks, llm)
         results.append(result)
-
         grounding = "SUPPORTED" if result["grounding_supported"] is True else "UNSUPPORTED" if result["grounding_supported"] is False else "SKIPPED"
-
         print(
             f"{result['id']} | {result['category']} | "
             f"success={result['success']} | "
@@ -112,7 +96,6 @@ def main() -> None:
             f"verification={result['grounding_time']:.2f}s"
         )
         print(f"Answer: {result['answer']}\n")
-
     total_time = time.perf_counter() - total_start
     success_count = sum(result["success"] for result in results)
     grounding_checked = sum(result["grounding_checked"] for result in results)
@@ -123,7 +106,6 @@ def main() -> None:
     invalid_citations = sum(bool(result["citations"]) and not result["valid_citations"] for result in results)
     average_response_time = sum(result["response_time"] for result in results) / len(results)
     average_grounding_time = sum(result["grounding_time"] for result in results if result["grounding_checked"]) / grounding_checked if grounding_checked else 0.0
-
     summary = {
         "questions": len(results),
         "prompt_success": success_count,
@@ -139,7 +121,6 @@ def main() -> None:
         "average_grounding_time": average_grounding_time,
         "total_time": total_time,
     }
-
     print("========== GROUNDING VERIFICATION BENCHMARK ==========")
     print(f"Questions                 : {summary['questions']}")
     print(f"Prompt success            : {summary['prompt_success']}")
@@ -154,10 +135,8 @@ def main() -> None:
     print(f"Average generation time   : {summary['average_response_time']:.2f}s")
     print(f"Average verification time : {summary['average_grounding_time']:.2f}s")
     print(f"Total time                : {summary['total_time']:.2f}s")
-
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps({"summary": summary, "results": results}, ensure_ascii=False, indent=2), encoding="utf-8")
-
     print(f"\nResults saved to: {OUTPUT}")
 
 
