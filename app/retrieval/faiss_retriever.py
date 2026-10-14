@@ -53,18 +53,9 @@ def lexical_score(question: str, chunk: dict) -> float:
 
 
 def rerank_score(question: str, chunk: dict) -> float:
-    query_tokens = tokenize(question)
-    if not query_tokens:
+    if not tokenize(question):
         return 0.0
-    name_tokens = tokenize(str(chunk.get("name", "")))
-    file_tokens = tokenize(str(chunk.get("file", "")))
-    content_tokens = tokenize(str(chunk.get("content", "")))
-    all_tokens = name_tokens | file_tokens | content_tokens
-    coverage = len(query_tokens & all_tokens) / len(query_tokens)
-    name_overlap = len(query_tokens & name_tokens)
-    file_overlap = len(query_tokens & file_tokens)
-    type_bonus = TYPE_BONUS.get(str(chunk.get("type", "")), 0)
-    return 10 * coverage + 2 * name_overlap + file_overlap + type_bonus
+    return lexical_score(question, chunk) + TYPE_BONUS.get(str(chunk.get("type", "")), 0)
 
 
 def chunk_key(chunk: dict) -> tuple:
@@ -192,32 +183,7 @@ class FaissRetriever:
 
         candidate_k = min(max(k * 5, 25), len(self.chunks))
         candidates = self.hybrid_retrieve(question, candidate_k)
-
-        for chunk in candidates:
-            chunk["rerank_score"] = rerank_score(question, chunk)
-
-        reranked = sorted(
-            candidates,
-            key=lambda chunk: (
-                -chunk["rerank_score"],
-                -chunk["hybrid_score"],
-            ),
-        )
-        rerank_ranks = {chunk_key(chunk): rank for rank, chunk in enumerate(reranked, start=1)}
-
-        for hybrid_rank, chunk in enumerate(candidates, start=1):
-            rerank_rank = rerank_ranks[chunk_key(chunk)]
-            chunk["final_score"] = 1.0 / (RRF_K + hybrid_rank) + 1.0 / (RRF_K + rerank_rank)
-
-        candidates.sort(
-            key=lambda chunk: (
-                -chunk["final_score"],
-                -chunk["rerank_score"],
-                -chunk["hybrid_score"],
-            )
-        )
-
-        return candidates[:k]
+        return self.rerank_candidates(question, candidates, k)
 
     def rerank_candidates(
         self,

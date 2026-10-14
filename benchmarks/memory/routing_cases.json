@@ -1,0 +1,22 @@
+[
+  {
+    "id": "conversation_empty_session",
+    "prompt": "Quel code de test et quelle priorité ai-je indiqués dans cette session ?",
+    "conversation": [],
+    "expected_tools": []
+  },
+  {
+    "id": "conversation_known_session",
+    "prompt": "Quel code de test et quelle priorité ai-je indiqués dans cette session ?",
+    "conversation": [
+      ["Dans cette conversation, mon code de test est ORCHIDEE-9274 et ma priorité est la couleur turquoise. Retiens ces deux informations.", "Informations retenues."]
+    ],
+    "expected_tools": []
+  },
+  {
+    "id": "conversation_and_git_request",
+    "prompt": "Rappelle ma priorité dans cette session et inspecte les modifications Git non indexées du projet avec get_git_diff.",
+    "conversation": [["Ma priorité est la couleur turquoise.", "Information retenue."]],
+    "expected_tools": ["get_git_diff"]
+  }
+]

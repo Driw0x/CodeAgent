@@ -139,7 +139,7 @@ def test_chat_sends_tools_to_ollama(mock_urlopen):
     req = mock_urlopen.call_args.args[0]
     payload = json.loads(req.data.decode("utf-8"))
 
-    assert req.full_url == "http://localhost:11434/api/chat"
+    assert req.full_url == "http://127.0.0.1:11434/api/chat"
     assert payload["model"] == "qwen2.5-coder:14b"
     assert payload["messages"] == [{"role": "user", "content": "Test"}]
     assert payload["tools"] == tools

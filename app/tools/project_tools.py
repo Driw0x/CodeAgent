@@ -3,7 +3,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(os.getenv("CODEAGENT_PROJECT_PATH", Path(__file__).resolve().parents[2])).resolve()
 
 IGNORED_DIRS = {
     ".git",
@@ -73,7 +73,7 @@ def read_file(path: str, start_line: int = 1, end_line: int | None = None) -> di
 
     lines = file_path.read_text(encoding="utf-8", errors="replace",).splitlines()
 
-    if lines and start_line > len(lines):
+    if start_line > max(1, len(lines)):
         raise ValueError(f"start_line exceeds file length ({len(lines)} lines).")
 
     actual_end = len(lines) if end_line is None else min(end_line, len(lines))

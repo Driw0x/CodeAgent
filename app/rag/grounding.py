@@ -58,6 +58,13 @@ def extract_claims(answer: str) -> list[tuple[str, list[int]]]:
     return claims
 
 
+def claims_have_citations(answer: str) -> bool:
+    claims = extract_claims(answer)
+    if not claims:
+        return is_abstention(answer) and not extract_citations(answer)
+    return all(source_ids for _, source_ids in claims)
+
+
 def build_claim_prompt(claim: str, source_ids: list[int], chunks: list[dict]) -> str:
     sources = "\n\n".join(format_chunk(chunks[source_id - 1], source_id) for source_id in source_ids)
     return (

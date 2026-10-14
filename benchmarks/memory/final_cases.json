@@ -1,0 +1,27 @@
+{
+  "protocol": "m7-final-v2",
+  "repetitions": 3,
+  "scenarios": [
+    {"id": "S1", "question": "Quel code et quelle contrainte ai-je mentionnés dans cette session ?", "expected": ["ASTER-8617", "aucune dépendance ajoutée"], "criteria": "Deux faits exacts après trois échanges intermédiaires ; zéro outil."},
+    {"id": "S2", "question": "Rappelle la cible actuellement décidée, le score SCORE_8617 et la contrainte sur les dépendances.", "expected": ["ORION", "0.545", "aucune dépendance ajoutée"], "criteria": "Compression déclenchée ; décision réaffirmée ORION, score corrigé exact ; zéro outil."},
+    {"id": "S3", "question": "Quel code et quelle contrainte ai-je mentionnés dans cette session ?", "expected": ["ASTER-8617", "aucune dépendance ajoutée"], "criteria": "Nouveau processus Python, même archive S1 ; deux faits exacts ; zéro outil."},
+    {"id": "S4", "question": "Quel code et quelle contrainte ai-je mentionnés dans cette session ?", "forbidden": ["ASTER-8617"], "criteria": "Autre session du même projet ; aucun secret, reconnaissance des faits absents ; zéro outil."},
+    {"id": "S5", "question": "Explique-moi brièvement le rôle de FAISS dans CodeAgent.", "expected": ["FAISS"], "reads": [{"path": "app/retrieval/faiss_retriever.py", "start_line": 70, "end_line": 115}, {"path": "app/memory/vector_store.py", "start_line": 1, "end_line": 90}], "criteria": "Inspection réellement exécutée, sources pertinentes, citations valides, grounding passed, faits exacts sans ajout non supporté."},
+    {"id": "S6", "question": "Lis app/retrieval/faiss_retriever.py des lignes 227 à 277. Si la plage est invalide, corrige-la.", "criteria": "Erreur de bornes puis vraie lecture valide ; finale citée décrit la plage corrigée réellement lue ; grounding passed, aucune abstention globale."},
+    {"id": "S7", "question": "Quel code de test et quelle priorité ai-je indiqués dans cette session ?", "expected": ["ORCHIDEE-9274", "turquoise"], "criteria": "Rappel exclusivement conversationnel ; zéro outil et grounding not_used."},
+    {"id": "S8", "candidate": "FAISS déploie CodeAgent sur Kubernetes en production [S1].", "criteria": "Claim absente des sources réellement lues rejetée par Qwen ; aucune citation attribuée pour contourner le rejet."}
+  ],
+  "memory_seed": "Dans cette session, retiens le code ASTER-8617 et la contrainte aucune dépendance ajoutée. Réponds brièvement.",
+  "intermediate_questions": ["Réponds seulement OK.", "Réponds seulement reçu.", "Réponds seulement compris."],
+  "compression_fixture": [
+    ["Décision cible ORION. SCORE_8617 vaut 0.544. Contrainte : aucune dépendance ajoutée.", "Informations enregistrées."],
+    ["Correction : décision cible VEGA, SCORE_8617 vaut 0.545.", "Correction enregistrée."],
+    ["Décision cible ORION.", "Décision réaffirmée."]
+  ],
+  "limitations": "S2 utilise des échanges terminés prédéfinis, puis une réponse Ollama réelle. Les rejeux S5/S6 fixent les observations MCP et isolent la génération ; ils ne valident pas le choix autonome des outils. Aucun résultat de ces modes ne doit être fusionné.",
+  "m9_regressions": [
+    {"id": "weighted_raw_scores", "source": "app/retrieval/faiss_retriever.py", "start_line": 200, "end_line": 226, "claim": "Les scores finaux sont une combinaison pondérée directe de hybrid_score et rerank_score.", "expected_supported": false, "cause": "Le calcul utilise hybrid_ranks et rerank_ranks, pas les scores bruts. Imprécision historiquement acceptée par Qwen, indépendante de M7."},
+    {"id": "exact_rrf_ranks", "source": "app/retrieval/faiss_retriever.py", "start_line": 200, "end_line": 226, "claim": "Le calcul de final_score utilise hybrid_ranks et rerank_ranks.", "expected_supported": true, "cause": "Contrôle positif sur les mêmes données ; pas de retuning du holdout historique."},
+    {"id": "historical_false_reject", "holdout_case": "grounding_output_supported_01", "dataset": "benchmarks/grounding/grounding_holdout.json", "expected_supported": true, "cause": "Faux rejet historique 39/40 ; sources et critères du holdout inchangés."}
+  ]
+}

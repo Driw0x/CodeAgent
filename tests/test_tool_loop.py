@@ -99,11 +99,6 @@ def tool_result(is_error=False, content=None):
     return SimpleNamespace(is_error=is_error, content=[], structured_content=content)
 
 
-@pytest.fixture
-def anyio_backend():
-    return "asyncio"
-
-
 @pytest.mark.anyio
 async def test_tool_loop_answers_without_tool():
     llm = FakeLLM([{"role": "assistant", "content": "OK"}])
@@ -341,7 +336,7 @@ async def test_tool_loop_recovers_after_tool_error(monkeypatch):
             },
             {"role": "assistant", "content": "Terminé."},
         ],
-        generated=["Le README contient le titre CodeAgent."],
+        generated=["Le README contient le titre CodeAgent. [S1]"],
     )
     agent = ToolLoop(llm=llm, grounding_llm=FakeGroundingLLM(), server=object())
     result = await agent.ask("Lis le README.")
@@ -359,6 +354,8 @@ async def test_tool_loop_recovers_after_tool_error(monkeypatch):
     ]
     assert agent.last_trace[0]["status"] == "error"
     assert agent.last_trace[1]["status"] == "success"
+    assert "File does not exist." in llm.generate_calls[0]["prompt"]
+    assert "missing.md" in llm.generate_calls[0]["prompt"]
 
 
 @pytest.mark.anyio
@@ -425,7 +422,7 @@ async def test_tool_loop_limits_retries(monkeypatch):
     agent = ToolLoop(llm=llm, grounding_llm=FakeGroundingLLM(), server=object(), max_retries=1)
     result = await agent.ask("Lis un fichier.")
 
-    assert result == ("Impossible de lire le fichier.")
+    assert result == "Je ne peux pas le déterminer à partir des sources disponibles."
     assert len(client.calls) == 2
     assert agent.last_trace[-1]["status"] == "retry_limit"
 
@@ -454,7 +451,7 @@ async def test_tool_loop_handles_timeout(monkeypatch):
     agent = ToolLoop(llm=llm, grounding_llm=FakeGroundingLLM(), server=object(), tool_timeout=0.01)
     result = await agent.ask("Liste les fichiers.")
 
-    assert result == "Le tool a expiré."
+    assert result == "Je ne peux pas le déterminer à partir des sources disponibles."
     assert agent.last_trace[-1]["status"] == "timeout"
 
 

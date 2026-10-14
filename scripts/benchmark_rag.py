@@ -354,6 +354,7 @@ def write_json(path: Path, payload: dict) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Benchmark CodeAgent RAG.")
     parser.add_argument("--questions", type=Path, default=DEFAULT_QUESTIONS)
+    parser.add_argument("--output-dir", type=Path, default=RESULTS_DIR)
     args = parser.parse_args()
 
     questions = load_questions(args.questions)
@@ -405,7 +406,7 @@ def main() -> None:
         total_dropped_relevant=total_dropped_relevant,
     )
 
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
     common = {
         "created_at": datetime.now(timezone.utc).isoformat(),
         "embedding_model": EMBEDDING_MODEL,
@@ -482,9 +483,9 @@ def main() -> None:
         ],
     }
 
-    write_json(RESULTS_DIR / "m4_baseline.json", m4_payload)
-    write_json(RESULTS_DIR / "m5_reranking.json", m5_reranking_payload)
-    write_json(RESULTS_DIR / "m5_context.json", m5_context_payload)
+    write_json(args.output_dir / "m4_baseline.json", m4_payload)
+    write_json(args.output_dir / "m5_reranking.json", m5_reranking_payload)
+    write_json(args.output_dir / "m5_context.json", m5_context_payload)
 
 
 if __name__ == "__main__":

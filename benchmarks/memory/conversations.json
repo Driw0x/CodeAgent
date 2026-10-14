@@ -1,0 +1,41 @@
+[
+  {
+    "id": "decisions_constraints",
+    "turns": [
+      ["Décision : nom de mission ORION.", "Décision enregistrée."],
+      ["Contrainte : ne pas ajouter de dépendance, utiliser uniquement stdlib.", "Contrainte enregistrée."],
+      ["Référence à conserver : app/target.py:600, identifiant ORION.", "Référence enregistrée."]
+    ],
+    "recall": [
+      {"question": "Rappelle le nom de mission décidé.", "expected": "ORION"},
+      {"question": "Rappelle la contrainte sur les dépendances.", "expected": "stdlib"},
+      {"question": "Rappelle la référence de ligne conservée.", "expected": "app/target.py:600"}
+    ]
+  },
+  {
+    "id": "errors_and_uncertainty",
+    "turns": [
+      ["Erreur non résolue : INDEX_LOCKED dans app/index.py:42.", "L'erreur reste non résolue."],
+      ["Hypothèse non validée : timeout causé par CACHE_COLD.", "Cette cause reste une hypothèse."],
+      ["Résultat validé : test persistence réussi, identifiant CHECK_17.", "Résultat enregistré."]
+    ],
+    "recall": [
+      {"question": "Rappelle l'erreur non résolue de l'index.", "expected": "INDEX_LOCKED"},
+      {"question": "Rappelle l'hypothèse non validée sur le timeout.", "expected": "Hypothèse non validée"},
+      {"question": "Rappelle l'identifiant du test persistence validé.", "expected": "CHECK_17"}
+    ]
+  },
+  {
+    "id": "updated_decisions",
+    "turns": [
+      ["Décision initiale : cible ORION.", "Choix enregistré."],
+      ["Décision mise à jour : cible VEGA ; ORION abandonné.", "La nouvelle décision remplace l'ancienne."],
+      ["Question ouverte : accès à app/target.py:600, statut ACCESS_PENDING.", "Cette question reste ouverte."]
+    ],
+    "recall": [
+      {"question": "Rappelle la décision initiale sur la cible.", "expected": "ORION"},
+      {"question": "Rappelle la décision mise à jour sur la cible.", "expected": "VEGA"},
+      {"question": "Rappelle le statut de la question ouverte sur l'accès.", "expected": "ACCESS_PENDING"}
+    ]
+  }
+]

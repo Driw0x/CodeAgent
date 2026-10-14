@@ -18,6 +18,26 @@ def test_read_file(tmp_path, monkeypatch):
     assert result["content"] == "line 2\nline 3"
 
 
+@pytest.mark.parametrize("start,end", [(0, None), (2, 1), (4, 9)])
+def test_read_file_invalid_bounds(tmp_path, monkeypatch, start, end):
+    monkeypatch.setattr(project_tools, "PROJECT_ROOT", tmp_path)
+    (tmp_path / "short.py").write_text("one\ntwo\nthree\n", encoding="utf-8")
+    with pytest.raises(ValueError):
+        project_tools.read_file("short.py", start, end)
+
+
+def test_read_file_eof_and_empty_bounds(tmp_path, monkeypatch):
+    monkeypatch.setattr(project_tools, "PROJECT_ROOT", tmp_path)
+    (tmp_path / "short.py").write_text("one\ntwo\n", encoding="utf-8")
+    assert project_tools.read_file("short.py", 2, 100) == {
+        "path": "short.py", "start_line": 2, "end_line": 2, "content": "two",
+    }
+    (tmp_path / "empty.py").write_text("", encoding="utf-8")
+    assert project_tools.read_file("empty.py")["content"] == ""
+    with pytest.raises(ValueError, match="file length"):
+        project_tools.read_file("empty.py", 227, 277)
+
+
 def test_read_file_rejects_path_outside_project(tmp_path, monkeypatch):
     monkeypatch.setattr(project_tools, "PROJECT_ROOT", tmp_path)
     outside = tmp_path.parent / "outside.txt"

@@ -1,0 +1,62 @@
+{
+  "model": "devstral:24b",
+  "dataset": "routing_cases.json",
+  "benchmark": "tool_routing",
+  "summary": {
+    "tasks": 3,
+    "routing_success_rate": 0.6666666666666666,
+    "tool_selection_accuracy": 0.0,
+    "no_tool_accuracy": 1.0,
+    "argument_accuracy": 0.0,
+    "average_routing_latency_seconds": 4.9511,
+    "min_routing_latency_seconds": 4.4314,
+    "max_routing_latency_seconds": 5.3976,
+    "errors": 0
+  },
+  "results": [
+    {
+      "id": "conversation_empty_session",
+      "prompt": "Quel code de test et quelle priorité ai-je indiqués dans cette session ?",
+      "expected_tools": [],
+      "expected_arguments": {},
+      "first_tool": null,
+      "arguments": {},
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 5.0243,
+      "content": "Je ne retrouve pas d'indication de code de test ou de priorité dans cette session.",
+      "error": null
+    },
+    {
+      "id": "conversation_known_session",
+      "prompt": "Quel code de test et quelle priorité ai-je indiqués dans cette session ?",
+      "expected_tools": [],
+      "expected_arguments": {},
+      "first_tool": null,
+      "arguments": {},
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 5.3976,
+      "content": "Dans cette session, tu as indiqué que ton code de test est ORCHIDEE-9274 et ta priorité est la couleur turquoise.",
+      "error": null
+    },
+    {
+      "id": "conversation_and_git_request",
+      "prompt": "Rappelle ma priorité dans cette session et inspecte les modifications Git non indexées du projet avec get_git_diff.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "expected_arguments": {},
+      "first_tool": null,
+      "arguments": {},
+      "tool_selection_correct": false,
+      "arguments_correct": false,
+      "routing_success": false,
+      "latency_seconds": 4.4314,
+      "content": "Ta priorité est la couleur turquoise.\n\nJe vais maintenant inspecter les modifications Git non indexées du projet.",
+      "error": null
+    }
+  ]
+}

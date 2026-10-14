@@ -2,8 +2,10 @@ import json
 import os
 from urllib import error, request
 
+from app.memory.context import ContextBudget, DEFAULT_CONTEXT_TOKENS
+
 DEFAULT_MODEL = "qwen2.5-coder:14b"
-DEFAULT_BASE_URL = "http://localhost:11434"
+DEFAULT_BASE_URL = "http://127.0.0.1:11434"
 DEFAULT_KEEP_ALIVE = os.getenv("CODEAGENT_OLLAMA_KEEP_ALIVE", "30m")
 
 
@@ -17,6 +19,7 @@ class LocalLLM:
         seed: int = 42,
         num_predict: int = 512,
         keep_alive: str | int = DEFAULT_KEEP_ALIVE,
+        context_tokens: int | None = None,
     ):
         self.model = model
         self.base_url = base_url.rstrip("/")
@@ -25,6 +28,10 @@ class LocalLLM:
         self.seed = seed
         self.num_predict = num_predict
         self.keep_alive = keep_alive
+        self.context_tokens = context_tokens if context_tokens is not None else int(
+            os.getenv("CODEAGENT_CONTEXT_TOKENS", DEFAULT_CONTEXT_TOKENS)
+        )
+        self.context_budget = ContextBudget(self.context_tokens, num_predict)
         self.last_stats = None
         self.last_request_stats = None
         self.usage_stats = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
@@ -85,6 +92,7 @@ class LocalLLM:
                 "messages": [],
                 "stream": False,
                 "keep_alive": self.keep_alive,
+                "options": {"num_ctx": self.context_tokens},
             },
         )
         self.last_request_stats = {
@@ -108,6 +116,11 @@ class LocalLLM:
         if not prompt.strip():
             raise ValueError("Prompt cannot be empty.")
 
+        self.context_budget.check([
+            {"role": "system", "content": system_prompt or ""},
+            {"role": "user", "content": prompt},
+        ])
+
         payload = {
             "model": self.model,
             "prompt": prompt,
@@ -117,6 +130,7 @@ class LocalLLM:
                 "temperature": self.temperature,
                 "seed": self.seed,
                 "num_predict": self.num_predict,
+                "num_ctx": self.context_tokens,
             },
         }
 
@@ -137,6 +151,8 @@ class LocalLLM:
         if not messages:
             raise ValueError("Messages cannot be empty.")
 
+        self.context_budget.check(messages, tools)
+
         payload = {
             "model": self.model,
             "messages": messages,
@@ -146,6 +162,7 @@ class LocalLLM:
                 "temperature": self.temperature,
                 "seed": self.seed,
                 "num_predict": self.num_predict,
+                "num_ctx": self.context_tokens,
             },
         }
 

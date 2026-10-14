@@ -1,11 +1,5 @@
 def embeddings(model, data):
-    # The sentences to encode
-    sentences = data
-
-    # 2. Calculate embeddings by calling model.encode()
-    return model.encode(sentences, show_progress_bar=False)
-    # print(embeddings.shape)
-    # [3, 384]
+    return model.encode(data, show_progress_bar=False)
 
 
 def chunk_embedding_text(chunk: dict) -> str:

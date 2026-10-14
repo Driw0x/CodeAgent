@@ -10,8 +10,11 @@ from mcp import Client, StdioServerParameters
 from mcp.types import TextContent
 
 from app.llm import LocalLLM
+from app.memory.context import ContextBudget, fit_sources
+from app.memory.conversation import ConversationMemory
+from app.memory.history import describe_error
 from app.rag.citations import extract_citations, is_abstention, validate_citations
-from app.rag.grounding import extract_claims, verify_grounding
+from app.rag.grounding import claims_have_citations, extract_claims, verify_claim
 from app.rag.prompt import SYSTEM_PROMPT, format_chunk
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -23,7 +26,6 @@ DEFAULT_TOOL_TIMEOUT = 60.0
 DEFAULT_SEARCH_RESULTS = 10
 READ_WINDOW_BEFORE = 15
 READ_WINDOW_AFTER = 35
-AGENT_TOOL_RESULT_MAX_CHARS = 2500
 
 TOOL_SYSTEM_PROMPT = """Tu es un agent spécialisé dans l'analyse de projets de code.
 
@@ -39,8 +41,15 @@ Règles :
 - Ne déduis pas une information qui n'est pas explicitement supportée par les observations.
 - Si les sources ne permettent pas de répondre, indique : "Je ne peux pas le déterminer à partir des sources disponibles."
 - Si aucun tool n'est nécessaire, réponds normalement sans citation.
+- Pour une question exclusivement sur les informations mentionnées dans cette conversation ou session, utilise uniquement son historique, sans tool projet.
+- Les décisions, contraintes, identifiants et valeurs fournis par l'utilisateur sont des faits conversationnels : rappelle-les sans citation [Sx], même après compression. Applique leur dernière correction. Les numéros de tours ne sont pas des identifiants de sources.
+- Pour expliquer le rôle d'un composant dans le projet ou décrire son code actuel, inspecte le projet avec les tools dans ce tour. Sans observation actuelle, ne présente pas de fait sur le projet.
+- Si ces informations sont absentes de l'historique, indique que tu ne les retrouves pas dans cette session. Ne les cherche pas dans les fichiers, Git ou une autre session.
+- Si la question combine un rappel conversationnel et une inspection explicite du projet, utilise les tools pour cette inspection.
+- N'annonce pas une inspection à venir : appelle le tool demandé dans ce même tour avant de conclure.
 - Utilise search_code pour localiser précisément un symbole avant de lire un gros fichier.
 - Dès que les observations disponibles suffisent pour répondre, arrête d'appeler des tools.
+- Après utilisation des tools, termine par un message bref : la réponse sourcée sera générée séparément à partir des observations.
 - N'appelle pas un tool uniquement pour reconfirmer une information déjà obtenue.
 """
 
@@ -50,6 +59,7 @@ def build_server_parameters() -> StdioServerParameters:
         command=sys.executable,
         args=["-m", "app.mcp_server"],
         cwd=PROJECT_ROOT,
+        env={key: os.environ[key] for key in ("CODEAGENT_PROJECT_PATH", "PYTHONPYCACHEPREFIX", "PYTHONDONTWRITEBYTECODE") if key in os.environ},
     )
 
 
@@ -71,18 +81,6 @@ def tool_result_content(result) -> str:
     if result.structured_content is not None:
         return json.dumps(result.structured_content, ensure_ascii=False)
     return ""
-
-
-def compact_text(text: str, max_chars: int = AGENT_TOOL_RESULT_MAX_CHARS) -> str:
-    if len(text) <= max_chars:
-        return text
-    head_size = int(max_chars * 0.75)
-    tail_size = max_chars - head_size
-    return (
-        text[:head_size]
-        + "\n...[tool result truncated in agent context]...\n"
-        + text[-tail_size:]
-    )
 
 
 def normalize_path(path: str) -> str:
@@ -297,13 +295,21 @@ def consolidate_sources(sources: list[dict]) -> list[dict]:
 
 
 def build_tool_answer_prompt(question: str, sources: list[dict]) -> str:
+    # Show failures before the recovered results, without changing citation IDs.
+    ordered = sorted(enumerate(sources, start=1), key=lambda item: item[1]["type"] != "tool_error")
     context = "\n\n---\n\n".join(
         format_chunk(source, source_id)
-        for source_id, source in enumerate(sources, start=1)
+        for source_id, source in ordered
     )
-    return f"""CONTEXTE:
+    successful = ", ".join(f"[S{index}]" for index, source in enumerate(sources, 1) if source["type"] != "tool_error") or "aucun"
+    failed = ", ".join(f"[S{index}]" for index, source in enumerate(sources, 1) if source["type"] == "tool_error") or "aucun"
+    return f"""CONTEXTE (observations d'appels déjà exécutés) :
 
 {context}
+
+BILAN DES APPELS EXÉCUTÉS :
+Appels réussis, données effectivement retournées : {successful}.
+Appels échoués, diagnostics uniquement : {failed}.
 
 QUESTION:
 
@@ -312,11 +318,15 @@ QUESTION:
 INSTRUCTION:
 Réponds à toutes les parties explicites de la question en utilisant uniquement les sources disponibles.
 Chaque affirmation factuelle doit être accompagnée de la source [Sx] qui la supporte.
+Une observation en erreur prouve seulement l'échec et son diagnostic.
+Après récupération, indique la correction exécutée et le résultat obtenu, sans proposer d'appel supplémentaire.
+Une plage initiale invalide n'annule pas les données d'une lecture réussie. Rapporte les bornes effectivement lues et cite aussi le paragraphe décrivant cette correction.
+Réponds brièvement : résume les données récupérées et cite chaque paragraphe.
 """
 
 
 def normalize_single_source_citations(answer: str, source_count: int) -> str:
-    if source_count != 1 or not answer.strip() or is_abstention(answer):
+    if source_count != 1 or not answer.strip() or not extract_claims(answer):
         return answer
     paragraphs = [
         paragraph.strip()
@@ -332,13 +342,6 @@ def normalize_single_source_citations(answer: str, source_count: int) -> str:
     return "\n\n".join(normalized)
 
 
-def claims_have_citations(answer: str) -> bool:
-    if is_abstention(answer):
-        return True
-    claims = extract_claims(answer)
-    return bool(claims) and all(source_ids for _, source_ids in claims)
-
-
 class ToolLoop:
     def __init__(
         self,
@@ -349,6 +352,7 @@ class ToolLoop:
         max_steps: int = DEFAULT_MAX_STEPS,
         max_retries: int = DEFAULT_MAX_RETRIES,
         tool_timeout: float = DEFAULT_TOOL_TIMEOUT,
+        memory=None,
     ):
         if max_steps < 1:
             raise ValueError("max_steps must be greater than or equal to 1.")
@@ -365,6 +369,10 @@ class ToolLoop:
         self.max_steps = max_steps
         self.max_retries = max_retries
         self.tool_timeout = tool_timeout
+        self.budget = ContextBudget.for_llm(self.llm)
+        self.memory = memory if memory is not None else ConversationMemory(max_tokens=max(512, self.budget.input_limit // 3))
+        self.debug = os.getenv("CODEAGENT_DEBUG") == "1"
+        self.last_debug = {}
         self.last_trace = []
         self.last_steps = 0
         self.last_grounding = "not_used"
@@ -415,8 +423,15 @@ class ToolLoop:
         try:
             return call()
         finally:
-            self.last_stage_times[stage] += (perf_counter() - start)
+            seconds = perf_counter() - start
+            self.last_stage_times[stage] += seconds
             after = self._usage_snapshot(llm)
+            if self.debug:
+                self.last_debug.setdefault("requests", []).append({
+                    "stage": stage, "model": getattr(llm, "model", None), "seconds": seconds,
+                    "tokens": {key: after[key] - before[key] for key in before},
+                    "ollama": getattr(llm, "last_request_stats", None) if after != before else None,
+                })
             self.last_stage_stats[
                 stage
             ]["prompt_tokens"] += (
@@ -451,28 +466,57 @@ class ToolLoop:
         }
 
     def _finalize_answer(self, answer: str, source_chunks: list[dict]) -> str:
-        answer = normalize_single_source_citations(answer, len(source_chunks))
+        claims = extract_claims(answer)
+        citations = extract_citations(answer)
+        # Missing references can be resolved deterministically only with one source,
+        # and only after every claim has actually passed the existing verifier.
+        repair = bool(claims) and any(not ids for _, ids in claims) and len(source_chunks) == 1
+        if self.debug:
+            self.last_debug.pop("reason", None)
+            self.last_debug.update(candidate=answer, sources=source_chunks, claims=[])
 
-        if is_abstention(answer):
+        if is_abstention(answer) and not claims and not citations:
             self.last_grounding = "passed"
+            if self.debug:
+                self.last_debug["outcome"] = "abstention"
             return answer
 
-        if not validate_citations(answer, len(source_chunks)) or not claims_have_citations(answer):
+        invalid = bool(citations) and not validate_citations(answer, len(source_chunks))
+        if invalid or (not claims_have_citations(answer) and not repair):
             self.last_grounding = "citation_error"
+            if self.debug:
+                self.last_debug["reason"] = "invalid_references" if invalid else "missing_references"
             return "La réponse générée contient " "des citations invalides ou manquantes."
 
-        supported = self._measure_llm(
-            "grounding",
-            self.grounding_llm,
-            lambda: verify_grounding(
-                answer,
-                source_chunks,
-                self.grounding_llm,
-            ),
-        )
+        supported = bool(claims)
+        for claim, source_ids in claims:
+            source_ids = source_ids or [1]
+            before = self._usage_snapshot(self.grounding_llm)
+            start = perf_counter()
+            supported = None
+            try:
+                supported = self._measure_llm(
+                    "grounding", self.grounding_llm,
+                    lambda: verify_claim(claim, source_ids, source_chunks, self.grounding_llm),
+                )
+            finally:
+                if self.debug:
+                    after = self._usage_snapshot(self.grounding_llm)
+                    self.last_debug["claims"].append({
+                        "claim": claim, "source_ids": source_ids, "supported": supported,
+                        "seconds": perf_counter() - start,
+                        "tokens": {key: after[key] - before[key] for key in before},
+                        "ollama": getattr(self.grounding_llm, "last_request_stats", None) if after != before else None,
+                    })
+            if not supported:
+                break
 
         if not supported:
             self.last_grounding = "unsupported"
+            if self.debug:
+                self.last_debug["reason"] = "verifier_rejected_claim" if claims else "no_verifiable_claims"
+                if repair:
+                    self.last_debug["citation_repair"] = "rejected"
             return (
                 "La réponse générée contient "
                 "des affirmations non supportées "
@@ -480,12 +524,45 @@ class ToolLoop:
             )
 
         self.last_grounding = "passed"
-
+        if repair:
+            answer = normalize_single_source_citations(answer, len(source_chunks))
+        if self.debug:
+            self.last_debug["outcome"] = "valid_sources"
+            self.last_debug["accepted_answer"] = answer
+            if repair:
+                self.last_debug["citation_repair"] = "verified"
         return answer
 
-    def _generate_final_answer(self, question: str, source_chunks: list[dict]) -> str:
+    def _generate_final_answer(self, question: str, source_chunks: list[dict], observations: list[dict]) -> str:
         final_sources = consolidate_sources(source_chunks)
-        prompt = build_tool_answer_prompt(question, final_sources)
+        # Preserve execution failures as evidence, after successful source IDs.
+        tool_observations = [message for message in observations if message["role"] == "tool"]
+        for trace, observation in zip(self.last_trace, tool_observations):
+            if trace["status"] in {"error", "exception", "timeout"}:
+                failure = build_tool_source(
+                    trace["tool"], trace["arguments"], observation["content"],
+                )
+                failure["type"] = "tool_error"
+                final_sources.append(failure)
+        if self.debug:
+            self.last_debug["sources_before_selection"] = final_sources
+        history = self.memory.recall(question, self.budget.input_limit // 4)
+        final_sources, prompt = fit_sources(
+            question, final_sources, build_tool_answer_prompt, SYSTEM_PROMPT, self.budget, history, reduce_tools=True
+        )
+        if self.debug:
+            self.last_debug.update(final_prompt=prompt, sources=final_sources,
+                                   source_mapping={f"S{index}": source.get("observation_id")
+                                                   for index, source in enumerate(final_sources, 1)})
+            self.last_debug["final_context"] = {
+                "estimated_tokens": self.budget.measure([
+                    {"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": prompt}
+                ]), "input_limit": self.budget.input_limit,
+                "history_included": bool(history and prompt.startswith(history)),
+            }
+        if not final_sources:
+            self.last_grounding = "passed"
+            return "Je ne peux pas le déterminer à partir des sources disponibles."
         answer = self._measure_llm(
             "final",
             self.llm,
@@ -497,14 +574,23 @@ class ToolLoop:
         if not question.strip():
             raise ValueError("Question cannot be empty.")
 
+        observations = []
+        self.last_debug = {}
+        try:
+            answer = await self._ask(question, observations)
+        except Exception as error:
+            self.memory.record(question, f"Erreur non résolue : {describe_error(error)}", observations, diagnostics=self.last_debug)
+            raise
+        self.memory.record(question, answer, observations, diagnostics=self.last_debug)
+        return answer
+
+    async def _ask(self, question: str, observations: list[dict]) -> str:
+
         self.last_trace = []
         self.last_steps = 0
         self.last_grounding = "not_used"
         self._reset_metrics()
-        messages = [
-            {"role": "system", "content": TOOL_SYSTEM_PROMPT},
-            {"role": "user", "content": question},
-        ]
+        messages = observations
         seen_calls = set()
         retry_counts = {}
         source_chunks = []
@@ -520,12 +606,16 @@ class ToolLoop:
 
                 for _ in range(self.max_steps):
                     self.last_steps += 1
+                    context = self.memory.prepare(question, TOOL_SYSTEM_PROMPT, self.budget, tools, messages)
+                    if self.debug:
+                        self.last_debug.setdefault("agent_contexts", []).append(context)
                     assistant_message = self._measure_llm(
                         "agent",
                         self.llm,
-                        lambda: self.llm.chat(messages=messages, tools=tools),
+                        lambda: self.llm.chat(messages=context, tools=tools),
                     )
-                    messages.append(assistant_message)
+                    if self.debug:
+                        self.last_debug.setdefault("agent_responses", []).append(assistant_message)
                     tool_calls = assistant_message.get("tool_calls") or []
 
                     if not tool_calls:
@@ -535,13 +625,43 @@ class ToolLoop:
                             return self._generate_final_answer(
                                 question=question,
                                 source_chunks=source_chunks,
+                                observations=messages,
                             )
 
                         if not content:
                             raise RuntimeError("LLM returned neither " "content nor tool calls.")
 
+                        if self.last_trace:
+                            # No successful observation: never trust a generated claim of recovery.
+                            self.last_grounding = "passed"
+                            if self.debug:
+                                self.last_debug["outcome"] = "abstention_tool_failure"
+                            return "Je ne peux pas le déterminer à partir des sources disponibles."
+                        if extract_citations(content):
+                            self.last_grounding = "citation_error"
+                            if self.debug:
+                                self.last_debug.update(conversation_candidate=content, reason="invalid_conversation_references")
+                            return "La réponse générée contient des citations invalides ou manquantes."
+                        # ponytail: explicit project/inspection cues; indirect references still rely on the tool router.
+                        project_name = Path(os.getenv("CODEAGENT_PROJECT_PATH") or PROJECT_ROOT).name
+                        project_pattern = r"\b(?:projet|project)\b"
+                        if project_name:
+                            project_pattern += "|" + re.escape(project_name)
+                        project = re.search(project_pattern, question, re.IGNORECASE)
+                        conversation = re.search(r"\b(?:session|conversation|ai-je|avais-je|did I|have I)\b", question, re.IGNORECASE)
+                        inspection = re.search(r"\b(?:lis|read|inspecte|inspect)\b", question, re.IGNORECASE)
+                        target = project or re.search(r"[\w./\\-]+\.(?:py|md|json)\b|\b(?:read_file|search_code|get_git_diff|run_tests|list_files)\b", question, re.IGNORECASE)
+                        technical = re.search(r"\b(?:rôle|role|composant|component|fonction|function|classe|class|code|implémentation|implementation)\b", question, re.IGNORECASE)
+                        if (inspection and target) or (project and technical and not conversation):
+                            self.last_grounding = "passed"
+                            if self.debug:
+                                self.last_debug.update(conversation_candidate=content, outcome="abstention_no_current_project_source")
+                            return "Je ne peux pas le déterminer à partir des sources disponibles."
+                        if self.debug:
+                            self.last_debug["outcome"] = "conversation_without_documentary_citation"
                         return content
 
+                    messages.append(assistant_message)
                     for tool_call in tool_calls:
                         function = tool_call.get("function", {})
                         name = function.get("name")
@@ -696,7 +816,7 @@ class ToolLoop:
                             )
                         )
                         source_id = len(source_chunks)
-                        compact_content = compact_text(content)
+                        source_chunks[-1]["observation_id"] = f"S{source_id}"
                         messages.append(
                             {
                                 "role": "tool",
@@ -706,7 +826,7 @@ class ToolLoop:
                                         "ok": True,
                                         "tool": name,
                                         "source": f"[S{source_id}]",
-                                        "result": compact_content,
+                                        "result": content,
                                     },
                                     ensure_ascii=False,
                                 ),
@@ -714,7 +834,7 @@ class ToolLoop:
                         )
 
             if source_chunks:
-                return self._generate_final_answer(question=question, source_chunks=source_chunks)
+                return self._generate_final_answer(question=question, source_chunks=source_chunks, observations=messages)
 
             raise RuntimeError(f"Maximum number of tool steps " f"reached ({self.max_steps}).")
         finally:

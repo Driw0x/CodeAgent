@@ -1,9 +1,10 @@
+import argparse
 import asyncio
 import json
+import os
+import traceback
 from pathlib import Path
 from time import perf_counter
-
-from sentence_transformers import SentenceTransformer
 
 from app.agent import ToolLoop
 from app.llm import LocalLLM
@@ -16,12 +17,14 @@ from app.memory import (
     load_manifest,
     manifest_exists,
     project_relative_path,
-    save_analysis,
     save_index,
     save_manifest,
     update_index,
 )
 from app.parser import chunking, read_dir
+from app.memory.context import ContextBudget
+from app.memory.conversation import ConversationMemory
+from app.memory.history import describe_error
 from app.rag import RAGPipeline
 from app.retrieval import FaissRetriever
 from app.utils.paths import project_memory_dir
@@ -127,10 +130,10 @@ def ask_question(pipeline, llm, memory_dir, question: str, test_number: int | No
         return
 
     elapsed = perf_counter() - start
-    save_analysis(memory_dir, question, answer)
     print(f"\n{answer}")
     title = f"Test {test_number} summary" if test_number is not None else "Question summary"
     print_rag_stats(elapsed=elapsed, stats=llm.last_stats, title=title)
+    print(f"Context: {getattr(pipeline, 'last_context_stats', {})}")
 
 
 def run_manual(pipeline, llm, memory_dir):
@@ -152,17 +155,6 @@ def run_auto(pipeline, llm, memory_dir):
         ask_question(pipeline, llm, memory_dir, question, test_number=number)
 
 
-def find_runtime_error(error: BaseException) -> RuntimeError | None:
-    if isinstance(error, RuntimeError):
-        return error
-    if isinstance(error, BaseExceptionGroup):
-        for child in error.exceptions:
-            runtime_error = find_runtime_error(child)
-            if runtime_error is not None:
-                return runtime_error
-    return None
-
-
 def preload_model(llm, label: str):
     print(f"Warming up " f"{label} ({llm.model})...")
     start = perf_counter()
@@ -175,9 +167,15 @@ def preload_model(llm, label: str):
     print(f"{label} ready in " f"{elapsed:.2f} s")
 
 
-def run_agent():
+def run_agent(session_id="default", context_tokens=None):
     print("\nAgent mode")
-    agent = ToolLoop()
+    llm = LocalLLM(model="devstral:24b", context_tokens=context_tokens)
+    memory_dir = project_memory_dir(PROJECT_PATH, MEMORY_ROOT)
+    memory = ConversationMemory(memory_dir, session_id, max_tokens=max(512, ContextBudget.for_llm(llm).input_limit // 3))
+    agent = ToolLoop(llm=llm, memory=memory)
+    if context_tokens is not None:
+        agent.grounding_llm = LocalLLM(model=agent.grounding_llm.model, context_tokens=context_tokens)
+    print(f"Session: {session_id} | checkpoint: {memory.state_path}")
     print(f"Tool model      : " f"{agent.llm.model}")
     print(f"Grounding model : " f"{agent.grounding_llm.model}")
 
@@ -199,12 +197,11 @@ def run_agent():
             answer = asyncio.run(agent.ask(question))
         except Exception as error:
             elapsed = perf_counter() - start
-            runtime_error = find_runtime_error(error)
-
-            if runtime_error is not None:
-                print(f"\nError: " f"{runtime_error}")
-            else:
-                print(f"\nError: {error}")
+            print(f"\nError: {describe_error(error)}")
+            if agent.debug:
+                traceback.print_exception(error)
+                if agent.last_debug:
+                    print("Debug: " + json.dumps(agent.last_debug, ensure_ascii=False))
 
             print_agent_stats(agent, elapsed)
             continue
@@ -212,9 +209,14 @@ def run_agent():
         elapsed = perf_counter() - start
         print(f"\n{answer}")
         print_agent_stats(agent, elapsed)
+        print(f"Context: {getattr(memory, 'last_stats', {})}")
+        if agent.debug and agent.last_debug:
+            print("Debug: " + json.dumps(agent.last_debug, ensure_ascii=False))
 
 
-def build_rag_pipeline():
+def build_rag_pipeline(session_id="default", context_tokens=None):
+    from sentence_transformers import SentenceTransformer
+
     model = SentenceTransformer(EMBEDDING_MODEL)
     memory_dir = project_memory_dir(PROJECT_PATH, MEMORY_ROOT)
     files = read_dir(PROJECT_PATH)
@@ -285,13 +287,28 @@ def build_rag_pipeline():
         save_manifest(current_manifest, memory_dir)
 
     retriever = FaissRetriever(model=model, index=index, chunks=chunks)
-    llm = LocalLLM()
-    pipeline = RAGPipeline(retriever=retriever.retrieve, llm=llm, top_k=TOP_K)
+    llm = LocalLLM(context_tokens=context_tokens)
+    memory = ConversationMemory(memory_dir, session_id, max_tokens=max(512, ContextBudget.for_llm(llm).input_limit // 3))
+    pipeline = RAGPipeline(retriever=retriever.retrieve, llm=llm, top_k=TOP_K, memory=memory)
+    print(f"Session: {session_id} | checkpoint: {memory.state_path}")
 
     return pipeline, llm, memory_dir
 
 
 def main():
+    global PROJECT_PATH
+    parser = argparse.ArgumentParser(description="CodeAgent: local RAG and MCP conversations.")
+    parser.add_argument("--session", default="default", help="Persistent session ID; choose a new ID for a separate conversation.")
+    parser.add_argument("--project", type=Path, default=PROJECT_PATH, help="Python project to inspect.")
+    parser.add_argument("--context-tokens", type=int, help="Ollama num_ctx and shared context budget.")
+    parser.add_argument("--debug", action="store_true", help="Agent diagnostics: full exception traceback and grounding candidate/sources in terminal and local history.")
+    args = parser.parse_args()
+    if args.debug:
+        os.environ["CODEAGENT_DEBUG"] = "1"
+    PROJECT_PATH = args.project.resolve()
+    if not PROJECT_PATH.is_dir():
+        parser.error("Project must be an existing directory.")
+    os.environ["CODEAGENT_PROJECT_PATH"] = str(PROJECT_PATH)
     print("\nChoose mode:")
     print("[0] - Manual RAG")
     print("[1] - Automatic RAG test")
@@ -299,10 +316,10 @@ def main():
     mode = input("\nChoice : ").strip()
 
     if mode == "2":
-        run_agent()
+        run_agent(args.session, args.context_tokens)
         return
 
-    pipeline, llm, memory_dir = build_rag_pipeline()
+    pipeline, llm, memory_dir = build_rag_pipeline(args.session, args.context_tokens)
 
     if mode == "1":
         run_auto(pipeline, llm, memory_dir)

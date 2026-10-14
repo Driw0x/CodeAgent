@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import json
 from pathlib import Path
@@ -5,8 +6,10 @@ from time import perf_counter
 
 from mcp import Client
 
-from app.agent.tool_loop import mcp_tool_to_ollama
+from app.agent.tool_loop import TOOL_SYSTEM_PROMPT, mcp_tool_to_ollama
 from app.llm import LocalLLM
+from app.memory.context import ContextBudget
+from app.memory.conversation import ConversationMemory
 from app.mcp_server import mcp
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -44,7 +47,13 @@ def run_task(llm: LocalLLM, tools: list[dict], task: dict) -> dict:
     error = None
 
     try:
-        message = llm.chat(messages=[{"role": "user", "content": task["prompt"]}], tools=tools)
+        messages = [{"role": "user", "content": task["prompt"]}]
+        if "conversation" in task:
+            memory = ConversationMemory()
+            for question, answer in task["conversation"]:
+                memory.record(question, answer)
+            messages = memory.prepare(task["prompt"], TOOL_SYSTEM_PROMPT, ContextBudget.for_llm(llm), tools)
+        message = llm.chat(messages=messages, tools=tools)
     except Exception as exc:
         message = {}
         error = str(exc)
@@ -141,7 +150,11 @@ def summarize(results: list[dict]) -> dict:
 
 
 async def main():
-    tasks = json.loads(DATASET_PATH.read_text(encoding="utf-8"))
+    parser = argparse.ArgumentParser(description="Measure first-call tool routing; optional conversation fixtures use the agent context.")
+    parser.add_argument("--dataset", type=Path, default=DATASET_PATH)
+    parser.add_argument("--output", type=Path, default=RESULT_PATH)
+    args = parser.parse_args()
+    tasks = json.loads(args.dataset.read_text(encoding="utf-8"))
     tools = await load_tools()
     llm = LocalLLM(model=MODEL)
     warm_up(llm)
@@ -161,16 +174,16 @@ async def main():
     summary = summarize(results)
     output = {
         "model": MODEL,
-        "dataset": DATASET_PATH.name,
+        "dataset": args.dataset.name,
         "benchmark": "tool_routing",
         "summary": summary,
         "results": results,
     }
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    RESULT_PATH.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")
     print("\nSummary")
     print(json.dumps(summary, indent=2, ensure_ascii=False))
-    print(f"\nSaved to {RESULT_PATH}")
+    print(f"\nSaved to {args.output}")
 
 
 if __name__ == "__main__":

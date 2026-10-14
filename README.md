@@ -19,11 +19,12 @@ Le projet fonctionne entièrement en local grâce à un LLM local et une base ve
 
 ### Statut du projet
 
-**Core RAG + Tool Use completed — M6 · M7/M8 planned**
+**M1–M7 terminés · Limites des réponses autonomes Devstral documentées · M8/M9 planifiés**
 
 Le socle principal de CodeAgent est terminé et fonctionnel : analyse de code, recherche hybride, pipeline RAG, réponses sourcées, persistance de l'index, mise à jour incrémentale, grounding et utilisation contrôlée de tools via MCP.
 
-Les Milestones 1 à 6 sont terminés. Le prochain milestone ajoute la gestion de la mémoire conversationnelle et du contexte, avant la planification multi-étapes contrôlée.
+Les Milestones 1 à 7 sont terminés. La mémoire et le budget de contexte sont vérifiés ; les limites
+des finales autonomes Ollama restent documentées dans la [mémoire consolidée](docs/memory.md#limites-connues). M8 ajoutera la planification multi-étapes contrôlée.
 
 ---
 
@@ -188,11 +189,36 @@ Question : Comment les embeddings sont-ils ajoutés dans FAISS ?
 
 CodeAgent propose un mode RAG et un mode Agent. Le mode Agent utilise la boucle MCP M6, précharge les modèles locaux et affiche par question les tokens Devstral / grounding, les temps par étape, les appels de tools, leur durée, le statut du grounding et le temps de réponse.
 
+Pour reprendre une conversation, utilisez le même identifiant de session et le même projet :
+
+```bash
+python -m app.main --session analyse-1
+python -m app.main --project /chemin/vers/projet-python --session analyse-1 --context-tokens 16384
+```
+
+Choisissez un autre `--session` pour une conversation indépendante. Le budget conserve les échanges récents,
+compresse automatiquement les anciens en extraits déterministes et récupère sélectivement l'archive JSONL.
+Les observations originales restent disponibles ; les anciens identifiants de citation ne sont pas réutilisés
+comme sources actuelles. L'estimation conservatrice utilise les octets UTF-8, pas un tokenizer de modèle.
+
+### Vérifications sans LLM réel
+
+```powershell
+python -m pytest -q
+python -m scripts.benchmark_memory
+$env:HF_HUB_OFFLINE = '1'
+python -m scripts.benchmark_rag --output-dir (Join-Path $env:TEMP 'codeagent-m7-rag-final')
+```
+
+Le benchmark mémoire ne télécharge rien. Le benchmark RAG nécessite MiniLM déjà disponible localement
+(utiliser `HF_HUB_OFFLINE=1` pour interdire le réseau). `pytest.ini` et `conftest.py` placent cache pytest
+et fichiers `tmp_path` dans les temporaires système, avec nettoyage des fixtures après leur utilisation.
+
 ---
 
 ## Documentation
 
-- [Project memory](docs/memory.md)
+- [Mémoire projet et gestion du contexte — M1–M7, résultats et validation](docs/memory.md)
 - [M5 — RAG Quality & Grounding](docs/rag_quality.md)
 
 # Roadmap
@@ -341,16 +367,36 @@ Sur le benchmark de gating de 20 tâches, Devstral atteint `100 %` de précision
 
 ### Objectifs
 
-- [ ] Conserver une mémoire court terme des derniers tours de conversation
-- [ ] Résumer et compresser les anciens tours
-- [ ] Définir un budget de tokens pour le contexte
-- [ ] Déclencher automatiquement la compression lorsque le seuil est dépassé
-- [ ] Persister le résumé entre deux exécutions
+- [x] Conserver une mémoire court terme des derniers tours de conversation
+- [x] Résumer et compresser les anciens tours
+- [x] Définir un budget de tokens pour le contexte
+- [x] Déclencher automatiquement la compression lorsque le seuil est dépassé
+- [x] Persister le résumé entre deux exécutions
 - [ ] Optionnel : récupérer d'anciens échanges pertinents par recherche sémantique
+- [x] Séparer sessions et projets, conserver décisions, contraintes, erreurs et provenance
+- [x] Sélectionner les observations structurées avant compression, conserver les originaux pour vérification
+- [x] Mesurer continuité, fidélité extractive et taille du contexte sur des fixtures sans LLM
 
-### Résultat attendu
+### Résultat
 
 CodeAgent conserve le contexte récent, compresse automatiquement l'historique ancien lorsque le budget est dépassé et peut reprendre une conversation avec un résumé persistant.
+
+### Résultat automatisé
+
+Sur trois conversations déterministes de 63 échanges, M7 retrouve les 9 informations attendues après
+compaction et reprise, contre 0/9 avec historique réinitialisé à chaque tour. Le contexte maximal estimé
+est de 6 271 pour une limite d'entrée de 6 444 ; le replay complet atteindrait 48 957.
+Fidélité extractive, sources et récupération d'erreurs passent les critères du benchmark, sans appel LLM
+de résumé. Ces fixtures ne mesurent ni la qualité d'un vrai modèle ni sa latence.
+La finalisation reproduit **220 tests réussis** : compteur inchangé par rapport à la campagne de référence.
+Avec Ollama, le routage conversationnel de référence passe **3/3** et les finales FAISS à sources MCP
+fixées passent **3/3**. Les récupérations techniques `read_file` réussissent **7/7**, mais les finales
+autonomes complètes restent à **0/7**. FAISS sans inspection peut conduire à une abstention.
+**M7 TERMINÉ** pour la mémoire et le contexte ; qualité de génération autonome, limites du grounding
+et pression mémoire Ollama restent documentées dans les [résultats et limites](docs/memory.md#tests-et-benchmarks).
+Les [commandes de reproduction](docs/memory.md#commandes-de-reproduction) distinguent fixtures et modèles réels.
+Le routage 3/3 reproduit ne garantit pas la fidélité du contenu : un rappel en session vide invente des faits.
+La recherche sémantique historique reste optionnelle ; la récupération lexicale réutilise le tokenizer existant.
 
 ---
 
@@ -373,9 +419,31 @@ La boucle cible reste simple : `Goal -> Plan optionnel -> Step -> Tool -> Observ
 
 La planification n'est pas utilisée pour les requêtes simples : elles continuent d'utiliser directement la boucle M6.
 
+L'externalisation avancée des observations et leur récupération à la demande restent conditionnelles à un besoin mesuré.
+
 ### Résultat attendu
 
 CodeAgent est capable d'exécuter de manière contrôlée des tâches de développement multi-étapes, de suivre leur progression et de récupérer d'échecs simples sans recommencer inutilement le travail déjà accompli.
+
+---
+
+## Milestone 9 — Advanced RAG & Reliability
+
+### Objectifs proposés
+
+- [ ] Renforcer les métadonnées, identifiants stables, versions, filtres et cohérence index/chunks
+- [ ] Comparer BM25 et rerankers spécialisés au lexical/RRF existant, avec Hit@K, Recall@K, MRR et nDCG
+- [ ] Évaluer recherche itérative et reformulation uniquement lorsque le retrieval initial échoue
+- [ ] Détecter sources obsolètes ou contradictoires et évaluer une correction ciblée
+- [ ] Comparer un vérificateur indépendant/NLI au grounding existant : false accepts, false rejects, P50/P95 et latence
+
+### Future improvements / Research ideas
+
+AST reste prioritaire pour Python. Chunking récursif, TreeRAG, GraphRAG, OCR et multimodal demandent un corpus concret
+et un protocole comparatif avant intégration. Aucun M10 n'est justifié actuellement.
+Multi-agent, Critic Agent indépendant, Reflexion sophistiquée et fine-tuning anti-hallucination restent reportés.
+FAISS et la boucle MCP actuelle sont conservés. LangChain n'est pas nécessaire ; LangGraph ne sera réévalué
+que si reprises et embranchements rendent les workflows actuels insuffisants. Aucun système distribué ou cloud n'est prévu.
 
 ---
 
@@ -383,4 +451,7 @@ CodeAgent est capable d'exécuter de manière contrôlée des tâches de dévelo
 
 CodeAgent dispose désormais d'un pipeline complet permettant d'analyser un projet Python, d'indexer son code, de retrouver les portions pertinentes, de générer des réponses contextualisées avec un LLM local et de maintenir l'index à jour lorsque le projet évolue.
 
-Le socle RAG est terminé à M5 et le tool use contrôlé via MCP est terminé à M6. M7 ajoute la gestion de la mémoire conversationnelle et du contexte ; M8 ajoutera ensuite la planification multi-étapes contrôlée.
+Le socle RAG est terminé à M5 et le tool use contrôlé via MCP est terminé à M6. **M7 est terminé** pour
+la gestion de mémoire et de contexte. Les limites réelles de routage et de génération finale sont documentées ;
+elles ne prouvent pas une corruption de mémoire ou de sources M7. M8 ajoutera la planification conditionnelle ;
+M9 regroupera les améliorations mesurées du RAG et de sa fiabilité.

@@ -1,0 +1,62 @@
+{
+  "model": "devstral:24b",
+  "dataset": "routing_cases.json",
+  "benchmark": "tool_routing",
+  "summary": {
+    "tasks": 3,
+    "routing_success_rate": 1.0,
+    "tool_selection_accuracy": 1.0,
+    "no_tool_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "average_routing_latency_seconds": 4.396166666666667,
+    "min_routing_latency_seconds": 3.6654,
+    "max_routing_latency_seconds": 5.1792,
+    "errors": 0
+  },
+  "results": [
+    {
+      "id": "conversation_empty_session",
+      "prompt": "Quel code de test et quelle priorité ai-je indiqués dans cette session ?",
+      "expected_tools": [],
+      "expected_arguments": {},
+      "first_tool": null,
+      "arguments": {},
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 4.3439,
+      "content": "Je ne retrouve pas d'indication de code de test ou de priorité dans cette session.",
+      "error": null
+    },
+    {
+      "id": "conversation_known_session",
+      "prompt": "Quel code de test et quelle priorité ai-je indiqués dans cette session ?",
+      "expected_tools": [],
+      "expected_arguments": {},
+      "first_tool": null,
+      "arguments": {},
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 5.1792,
+      "content": "Dans cette session, tu as indiqué que ton code de test est ORCHIDEE-9274 et ta priorité est la couleur turquoise.",
+      "error": null
+    },
+    {
+      "id": "conversation_and_git_request",
+      "prompt": "Rappelle ma priorité dans cette session et inspecte les modifications Git non indexées du projet avec get_git_diff.",
+      "expected_tools": [
+        "get_git_diff"
+      ],
+      "expected_arguments": {},
+      "first_tool": "get_git_diff",
+      "arguments": {},
+      "tool_selection_correct": true,
+      "arguments_correct": true,
+      "routing_success": true,
+      "latency_seconds": 3.6654,
+      "content": "",
+      "error": null
+    }
+  ]
+}

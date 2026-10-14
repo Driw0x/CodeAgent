@@ -1,4 +1,7 @@
+from functools import wraps
+
 from mcp.server import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
 
 from app.tools import (
     get_git_diff,
@@ -10,11 +13,19 @@ from app.tools import (
 
 mcp = MCPServer("CodeAgent")
 
-mcp.tool()(read_file)
-mcp.tool()(search_code)
-mcp.tool()(list_files)
-mcp.tool()(get_git_diff)
-mcp.tool()(run_tests)
+def tool_with_diagnostics(tool):
+    @wraps(tool)
+    def wrapped(*args, **kwargs):
+        try:
+            return tool(*args, **kwargs)
+        except ValueError as error:
+            # Expected validation failures must reach the model so it can correct its arguments.
+            raise ToolError(str(error)) from error
+    return wrapped
+
+
+for tool in (read_file, search_code, list_files, get_git_diff, run_tests):
+    mcp.tool()(tool_with_diagnostics(tool))
 
 
 if __name__ == "__main__":
