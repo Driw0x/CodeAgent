@@ -161,3 +161,18 @@ def test_chat_updates_stats(mock_urlopen):
     llm = LocalLLM()
     llm.chat([{"role": "user", "content": "Test"}])
     assert llm.last_stats == {"prompt_tokens": 10, "completion_tokens": 4, "total_tokens": 14}
+
+
+@pytest.mark.parametrize("chat", [False, True])
+@pytest.mark.parametrize("reason", ["stop", "length"])
+def test_empty_output_keeps_generation_metrics_without_retry(chat, reason):
+    llm = LocalLLM()
+    data = {"message": {"role": "assistant", "content": ""}} if chat else {"response": ""}
+    data.update(prompt_eval_count=1107, eval_count=31, done_reason=reason)
+    with patch.object(llm, "_request", return_value=data) as request:
+        with pytest.raises(RuntimeError, match="empty"):
+            llm.chat([{"role": "user", "content": "suite"}]) if chat else llm.generate("suite")
+    assert request.call_count == 1
+    assert llm.last_stats["completion_tokens"] == 31
+    assert llm.usage_stats["total_tokens"] == 1138
+    assert llm.last_request_stats["done_reason"] == reason

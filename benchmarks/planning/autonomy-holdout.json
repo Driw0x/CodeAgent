@@ -1,0 +1,22 @@
+{
+  "protocol": "m8-autonomy-holdout-20261017",
+  "criteria": "Frozen before pilot inspection. Never use for prompt tuning or strategy selection. Literal checks are necessary only; independent semantic review required. Negative case success requires explicit scoped absence backed by an untruncated current search, not a missing-file error. Not executed unless pilot shows credible benefit.",
+  "files": {
+    "src/calculation.py": "def increment(value):\n    return value + 1\n\nclass Accumulator:\n    def __init__(self):\n        self.total = 0\n\n    def add(self, value):\n        self.total += value\n",
+    "src/client.py": "from src.calculation import Accumulator\n\ndef compute():\n    counter = Accumulator()\n    counter.add(7)\n    return counter.total\n",
+    "left.py": "LIMIT = 11\n",
+    "right.py": "LIMIT = 19\n",
+    "test_calculation.py": "from src.calculation import increment\n\ndef test_increment():\n    assert increment(4) == 5\n",
+    "src/errors.py": "def divide(numerator, denominator):\n    if denominator == 0:\n        raise ValueError('zero denominator')\n    return numerator / denominator\n"
+  },
+  "cases": [
+    {"id": "locate-explain", "question": "Localise increment, puis lis son implémentation et explique le résultat avec ses sources.", "needs_plan": true, "expected_success": true, "options": {}, "required_reads": ["src/calculation.py"], "read_contains": {"src/calculation.py": ["return value + 1"]}, "answer_contains": ["increment", "1"]},
+    {"id": "class-uses", "question": "Identifie la classe Accumulator, puis lis sa définition, puis inspecte ses utilisations dans src/client.py.", "needs_plan": true, "expected_success": true, "options": {}, "required_reads": ["src/calculation.py", "src/client.py"], "answer_contains": ["Accumulator", "add", "7"]},
+    {"id": "compare", "question": "Lis left.py, puis compare LIMIT dans left.py et right.py.", "needs_plan": true, "expected_success": true, "options": {}, "required_reads": ["left.py", "right.py"], "answer_contains": ["LIMIT", "11", "19"]},
+    {"id": "find-tests", "question": "Localise increment, puis lis son implémentation, puis localise les tests associés, puis lis ces tests.", "needs_plan": true, "expected_success": true, "options": {}, "required_reads": ["src/calculation.py", "test_calculation.py"], "answer_contains": ["increment", "4", "5", "test"]},
+    {"id": "property", "question": "Lis src/errors.py, puis vérifie le traitement du dénominateur nul.", "needs_plan": true, "expected_success": true, "options": {}, "required_reads": ["src/errors.py"], "answer_contains": ["ValueError", "zero denominator"]},
+    {"id": "error-analysis", "question": "Localise divide, puis lis son implémentation et analyse la cause de ValueError pour divide(5, 0).", "needs_plan": true, "expected_success": true, "options": {}, "required_reads": ["src/errors.py"], "answer_contains": ["ValueError", "0"]},
+    {"id": "exact-code", "question": "Montre le code exact. Localise increment, puis lis son implémentation.", "needs_plan": true, "expected_success": true, "options": {}, "required_reads": ["src/calculation.py"], "answer_contains": ["def increment(value):", "return value + 1", "```"]},
+    {"id": "negative", "question": "Recherche missing_protocol dans tous les fichiers Python de ce projet, puis vérifie si cette chaîne est présente dans les résultats complets.", "needs_plan": true, "expected_success": true, "options": {}, "required_reads": [], "answer_contains": ["missing_protocol"], "answer_excludes": ["implémenté", "implemented"]}
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "protocol": "m8-autonomy-pilot-20261017",
+  "criteria": "One trial per mode, identical fixtures and budgets. Strict success additionally needs independent review of every factual claim, sources, complete deliverables and absence of invented code. Stop without success on failed grounding or missing evidence. Repeat only after credible strict benefit; adoption requires at least 2/3 warm strict successes for every B/E/F/H category and no critical regression. These are predefined equivalents, not recovered historical replay questions.",
+  "files": {},
+  "cases": [
+    {
+      "id": "E-window", "needs_plan": true, "expected_success": true, "options": {},
+      "question": "Localise marker, puis lis son implémentation avec un premier read_file(path=\"target.py\", start_line=1, end_line=1) ; si cet extrait est insuffisant, élargis les bornes. Explique le résultat avec ses sources.",
+      "required_reads": ["target.py"], "read_contains": {"target.py": ["def marker():", "return 42"]},
+      "answer_contains": ["marker", "42"], "first_read_arguments": {"path": "target.py", "start_line": 1, "end_line": 1}
+    },
+    {
+      "id": "F-missing", "needs_plan": true, "expected_success": true, "options": {},
+      "question": "Localise marker avec un premier appel search_code(query=\"marker\", path=\"absent.py\"), puis lis son implémentation ; si cet appel échoue, corrige seulement son paramètre path.",
+      "required_reads": ["target.py"], "read_contains": {"target.py": ["def marker():", "return 42"]},
+      "answer_contains": ["marker", "42"], "require_error_recovery": true,
+      "required_first_call": {"tool": "search_code", "arguments": {"query": "marker", "path": "absent.py"}}
+    },
+    {
+      "id": "H-tests", "needs_plan": true, "expected_success": true, "options": {},
+      "question": "Localise marker, puis lis son implémentation, puis localise les tests associés, puis lis ces tests.",
+      "required_reads": ["target.py", "test_target.py"],
+      "read_contains": {"target.py": ["def marker():", "return 42"], "test_target.py": ["def test_marker():", "assert marker() == 42"]},
+      "answer_contains": ["marker", "42", "test"]
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "protocol": "m8-structured-20261017",
+  "decision": "KEEP CURRENT",
+  "m8_status": "VALIDÉ PARTIELLEMENT",
+  "prototype": "archived_and_removed",
+  "review_method": "Static independent review against fixture source, executed calls, observations and local citation mappings; no second model or additional human reviewer.",
+  "pair_checks": {
+    "H": {
+      "initial_payloads_equal_except_format": true,
+      "initial_prompts_equal": true
+    },
+    "E": {
+      "initial_payloads_equal_except_format": true,
+      "initial_prompts_equal": true
+    },
+    "B": {
+      "initial_payloads_equal_except_format": true,
+      "initial_prompts_equal": true
+    },
+    "F": {
+      "initial_payloads_equal_except_format": true,
+      "initial_prompts_equal": true
+    }
+  },
+  "summary": {
+    "current": {
+      "trials": 4,
+      "planner_responses": 7,
+      "plan_candidates": 6,
+      "raw_json_valid": 3,
+      "parseable_with_existing_unwrap": 7,
+      "schema_valid_responses_including_stop": 7,
+      "schema_valid_plan_candidates": 6,
+      "business_accepted_plan_candidates": 2,
+      "initial_plan_accepted_tasks": 2,
+      "static_dependencies_valid_candidates": 6,
+      "static_provenance_links_valid_candidates": 4,
+      "required_actions_represented_candidates": 4,
+      "validation_repairs": 2,
+      "total_replans_including_validation_repairs": 3,
+      "tasks_with_mcp_calls": 2,
+      "mcp_calls": 4,
+      "complete_executions": 1,
+      "strict_successes": 1,
+      "false_successes": 0,
+      "invented_recovery_paths": 1,
+      "real_tokens": 14836,
+      "application_tokens": 14836,
+      "total_seconds": 334.30006649999996,
+      "holdout": {
+        "status": "not_run",
+        "reason": "No independent end-to-end benefit in the pilot."
+      }
+    },
+    "schema": {
+      "trials": 4,
+      "planner_responses": 6,
+      "plan_candidates": 5,
+      "raw_json_valid": 6,
+      "parseable_with_existing_unwrap": 6,
+      "schema_valid_responses_including_stop": 6,
+      "schema_valid_plan_candidates": 5,
+      "business_accepted_plan_candidates": 3,
+      "initial_plan_accepted_tasks": 3,
+      "static_dependencies_valid_candidates": 5,
+      "static_provenance_links_valid_candidates": 3,
+      "required_actions_represented_candidates": 5,
+      "validation_repairs": 1,
+      "total_replans_including_validation_repairs": 2,
+      "tasks_with_mcp_calls": 3,
+      "mcp_calls": 6,
+      "complete_executions": 1,
+      "strict_successes": 1,
+      "false_successes": 0,
+      "invented_recovery_paths": 1,
+      "real_tokens": 16012,
+      "application_tokens": 14872,
+      "total_seconds": 228.6288999999815,
+      "holdout": {
+        "status": "not_run",
+        "reason": "No independent end-to-end benefit in the pilot."
+      }
+    }
+  },
+  "probe_tokens_excluded_from_paired_totals": 1239,
+  "limitations": [
+    "One trial per task and mode; no statistical superiority claim.",
+    "No holdout run, repetitions, structured finalizer or model comparison: primary benefit absent.",
+    "Schema validity checked offline with already-installed jsonschema, not added as a production dependency.",
+    "Static dependency/provenance and lexical coverage metrics do not prove runtime evidence or semantic completeness.",
+    "Latency includes uncontrolled load/cache/residency effects.",
+    "Application counters omit the rejected empty H-schema response; raw server counters add 1140 tokens."
+  ],
+  "reviews": [
+    {
+      "case": "H",
+      "format": "current",
+      "trace": "H-current.json",
+      "strict_success": false,
+      "benchmark_success": false,
+      "false_success": false,
+      "plan_accepted": false,
+      "execution_complete": false,
+      "grounding": "not_used",
+      "stop_reason": "invalid_plan",
+      "failure_stage": "planning",
+      "reason": "Two rejected plans: lowercase 'localise marker' is not an exact objective excerpt. No MCP action or final."
+    },
+    {
+      "case": "H",
+      "format": "schema",
+      "trace": "H-schema.json",
+      "strict_success": false,
+      "benchmark_success": false,
+      "false_success": false,
+      "plan_accepted": true,
+      "execution_complete": false,
+      "grounding": "not_used",
+      "stop_reason": "execution_error",
+      "failure_stage": "tool_execution",
+      "reason": "Valid four-step plan. Search and full implementation read executed. Third tool response is empty without tool_calls; tests not read, no final."
+    },
+    {
+      "case": "E",
+      "format": "current",
+      "trace": "E-current.json",
+      "strict_success": false,
+      "benchmark_success": false,
+      "false_success": false,
+      "plan_accepted": false,
+      "execution_complete": false,
+      "grounding": "not_used",
+      "stop_reason": "invalid_plan",
+      "failure_stage": "planning",
+      "reason": "Two rejected plans: extra 'élargis les bornes' action; its from_step=1 is not in depends_on=[2]. No first/corrected read or final."
+    },
+    {
+      "case": "E",
+      "format": "schema",
+      "trace": "E-schema.json",
+      "strict_success": false,
+      "benchmark_success": false,
+      "false_success": false,
+      "plan_accepted": false,
+      "execution_complete": false,
+      "grounding": "not_used",
+      "stop_reason": "invalid_plan",
+      "failure_stage": "planning",
+      "reason": "Same invalid extra action and provenance as baseline; no observation or real replanning after an insufficient read."
+    },
+    {
+      "case": "B",
+      "format": "current",
+      "trace": "B-current.json",
+      "strict_success": true,
+      "benchmark_success": true,
+      "false_success": false,
+      "plan_accepted": true,
+      "execution_complete": true,
+      "grounding": "passed",
+      "stop_reason": "goal_achieved",
+      "failure_stage": null,
+      "reason": "Search locates marker at target.py:1; actual read contains complete two-line body returning 42. Final identifies path, line and exact implementation, supported by S1/S2. No extra factual claim or missing requested action."
+    },
+    {
+      "case": "B",
+      "format": "schema",
+      "trace": "B-schema.json",
+      "strict_success": true,
+      "benchmark_success": true,
+      "false_success": false,
+      "plan_accepted": true,
+      "execution_complete": true,
+      "grounding": "passed",
+      "stop_reason": "goal_achieved",
+      "failure_stage": null,
+      "reason": "Same executed observations, source mapping, final candidate and supported claims as current; strict pass without new benefit."
+    },
+    {
+      "case": "F",
+      "format": "current",
+      "trace": "F-current.json",
+      "strict_success": false,
+      "benchmark_success": false,
+      "false_success": false,
+      "plan_accepted": true,
+      "execution_complete": false,
+      "grounding": "not_used",
+      "stop_reason": "user_decision",
+      "failure_stage": "tool_execution",
+      "reason": "Actual missing absent.py error, then invented present.py error. No path discovery, corrected successful search, implementation read or final. Stops user_decision."
+    },
+    {
+      "case": "F",
+      "format": "schema",
+      "trace": "F-schema.json",
+      "strict_success": false,
+      "benchmark_success": false,
+      "false_success": false,
+      "plan_accepted": true,
+      "execution_complete": false,
+      "grounding": "not_used",
+      "stop_reason": "user_decision",
+      "failure_stage": "tool_execution",
+      "reason": "Same two errors and invented present.py; stop user_decision. Native tool calling receives no format, and the planner schema does not fix recovery."
+    }
+  ],
+  "evidence_directory": "data/memory/m8-structured-20261017",
+  "prototype_sha256": "59e14088b211e97f96f2c3a0705e850fe31230ea33c2a393d54322f77efcda53",
+  "verification": {
+    "initial_tests": 684,
+    "prototype_tests": 699,
+    "archived_prototype_tests": 699,
+    "final_tests": 684,
+    "memory_checks_passed": 6,
+    "planning_checks_passed": 6,
+    "planning_executions": 32,
+    "git_diff_check": true,
+    "original_source_files_preserved_exactly": 76,
+    "no_staging_commit_push": true
+  }
+}

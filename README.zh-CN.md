@@ -1,12 +1,10 @@
+[English](README.md) | [Français](README.fr.md) | [简体中文](README.zh-CN.md)
+
 <a id="codeagent"></a>
-
 # CodeAgent
-
-[Français](README.md) | [简体中文](README.zh-CN.md)
 一个用于Python代码分析和项目记忆的本地AI代理个人项目。
 
 <a id="présentation"></a>
-
 ## 介绍
 
 CodeAgent 是一个本地AI助手，专为分析Python项目代码并回答关于其代码的问题而设计。
@@ -24,23 +22,22 @@ CodeAgent 是一个本地AI助手，专为分析Python项目代码并回答关�
 该项目完全在本地运行，依赖本地大语言模型（LLM）和向量数据库。
 
 <a id="statut-du-projet"></a>
-
 ### 项目状态
 
-**M1–M7 已完成 · Devstral 自主最终回答的局限已有记录 · M8/M9 已规划**
+**M1–M7 已完成 · M8 已实现 · M9 未来计划**
+
+**M8 — 确定性检查与两个 Ollama + MCP 自主场景已在 `OLLAMA_MAX_LOADED_MODELS=1` 配置下验证。**
 
 CodeAgent 的核心基础已完工并可运行：代码分析、混合搜索、RAG管道、源码响应、索引持久化、增量更新、事实验证以及通过MCP实现工具的受控使用。
 
-里程碑 1 至 7 已完成。记忆与上下文预算已经验证；Ollama 自主最终回答的局限仍记录于[项目汇总记录](docs/memory.zh-CN.md#limites-connues)。M8 将增加受控的多步骤规划。
+[M7 汇总](docs/memory.zh-CN.md#m7--memory--context-management)介绍记忆与上下文预算。[M8 汇总](docs/memory.zh-CN.md#m8--planning--controlled-autonomous-execution)记录规划机制、验证范围与剩余限制。
 
 ---
 
 <a id="fonctionnalités-actuelles"></a>
-
 ## 当前功能
 
 <a id="analyse-du-code-python"></a>
-
 ### Python代码分析
 
 * 递归读取Python文件。
@@ -49,7 +46,6 @@ CodeAgent 的核心基础已完工并可运行：代码分析、混合搜索、R
 * 显示项目相对路径。
 
 <a id="parsing-ast"></a>
-
 ### AST解析
 
 自动提取代码中的主要元素：
@@ -74,7 +70,6 @@ CodeAgent 的核心基础已完工并可运行：代码分析、混合搜索、R
 ```
 
 <a id="recherche-sémantique"></a>
-
 ### 语义搜索
 
 * 将项目分割为多个片段（chunks）。
@@ -95,7 +90,6 @@ CodeAgent 的核心基础已完工并可运行：代码分析、混合搜索、R
 ---
 
 <a id="architecture"></a>
-
 ## 架构
 
 ```text
@@ -114,30 +108,25 @@ app
 ---
 
 <a id="technologies-utilisées"></a>
-
 ## 所使用技术
 
 <a id="parsing"></a>
-
 ### 解析
 
 * Python AST
 
 <a id="embeddings"></a>
-
 ### 嵌入（embeddings）
 
 * 句子变换模型
 * all-MiniLM-L6-v2
 
 <a id="base-vectorielle"></a>
-
 ### 基础向量
 
 * FAISS
 
 <a id="llm-local"></a>
-
 ### 本地大语言模型
 
 * Ollama
@@ -145,7 +134,6 @@ app
 * Devstral 24B 用于工具调用
 
 <a id="rag"></a>
-
 ### 检索增强生成
 
 * FAISS
@@ -155,7 +143,6 @@ app
 * 引用 `[Sx]` 及 grounding 验证
 
 <a id="tests"></a>
-
 ### 测试
 
 * Pytest
@@ -163,11 +150,9 @@ app
 ---
 
 <a id="installation"></a>
-
 ## 安装
 
 <a id="1-cloner-le-projet"></a>
-
 ### 1. 克隆项目
 
 ```bash
@@ -176,7 +161,6 @@ cd CodeAgent
 ```
 
 <a id="2-installer-les-dépendances-python"></a>
-
 ### 2. 安装 Python 依赖
 
 ```bash
@@ -184,7 +168,6 @@ pip install -r requirements.txt
 ```
 
 <a id="3-installer-ollama"></a>
-
 ### 3. 安装 Ollama
 
 在机器上安装 Ollama，然后验证安装是否成功 :
@@ -194,7 +177,6 @@ ollama --version
 ```
 
 <a id="4-télécharger-le-llm-local"></a>
-
 ### 4. 下载本地大语言模型
 
 CodeAgent 使用 `qwen2.5-coder:14b` 进行 RAG / grounding，以及使用 `devstral:24b` 进行工具调用。
@@ -215,7 +197,6 @@ ollama list
 ---
 
 <a id="exécution-du-projet"></a>
-
 ## 项目执行
 
 从项目根目录启动 CodeAgent :
@@ -230,7 +211,27 @@ python -m app.main
 Question : Comment les embeddings sont-ils ajoutés dans FAISS ?
 ```
 
-CodeAgent 提供 RAG 模式和 Agent 模式。Agent 模式使用 M6 MCP 循环，预加载本地模型，并针对每个问题显示 Devstral / grounding 的 token 数、各阶段耗时、工具调用及其耗时、grounding 状态和响应时间。
+CodeAgent 提供 RAG 模式和 Agent 模式。Agent 模式复用 MCP M6 循环，当请求中包含明确依赖时，会添加 M8 计划，预先加载本地模型，并按问题逐个显示 Devstral / grounding 的 token 数、各步骤耗时、工具调用详情、调用时长、grounding 状态以及响应时间。
+
+要在 PowerShell 中观察 M8，执行该命令后选择 **2** :
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -m app.main --project . --session m8-validation --debug
+```
+
+`--planning off` 与 M6 直接对比。`--max-steps`、`--max-plan-steps`、`--max-replans`、`--max-tool-calls`、`--max-total-tokens`、`--max-seconds` 和 `--tool-timeout` 限制了执行过程。[M8 综合分析](docs/memory.zh-CN.md#m8--planning--controlled-autonomous-execution) 展示了该计划的成果与局限性。
+
+<a id="assistance-humaine-m8-optionnelle"></a>
+### 可选的人类辅助 M8
+
+```powershell
+python -m app.main --project . --session hitl-test --debug --hitl on-failure
+```
+
+选择 **2**（Agent）。自主尝试失败后，HITL 可暂停执行，以检查证据、修正工具调用或剩余计划、重试或停止。恢复保留同一任务、已完成工作、证据与全局预算。人工输入仍须验证，且不构成来源证据；非交互执行返回 `intervention_required`。
+
+确定性测试覆盖中断与恢复。最近的真实自主场景均无需人工介入，因此这些运行本身不能验证 HITL 周期。参见 [HITL 合约](docs/memory.zh-CN.md#m8-hitl)与[验证证据](docs/memory.zh-CN.md#m8-validation)。
 
 要重新开始对话，请使用相同的会话标识符和相同的项目：
 
@@ -242,37 +243,34 @@ python -m app.main --project /chemin/vers/projet-python --session analyse-1 --co
 选择另一个`--session`以开启独立对话。预算会保留最近的交互内容，自动压缩旧内容为确定性摘要，并选择性地恢复JSONL存档。原始观察结果仍然可用；旧的引用标识符不会被重新用作当前来源。保守估计使用UTF-8字节，而非模型的分词器。
 
 <a id="vérifications-sans-llm-réel"></a>
-
 ### 无需LLM真实运行的验证
 
 ```powershell
+$m8CheckDirectory = Join-Path $env:TEMP ('codeagent-check-' + [guid]::NewGuid().ToString())
 python -m pytest -q
-python -m scripts.benchmark_memory
 $env:HF_HUB_OFFLINE = '1'
-python -m scripts.benchmark_rag --output-dir (Join-Path $env:TEMP 'codeagent-m7-rag-final')
+python -m scripts.benchmark_rag --output-dir (Join-Path $m8CheckDirectory 'rag')
 ```
+
+记忆与规划检查及临时输出文件的用法见[基准测试协议](benchmarks/llm/README.zh-CN.md#memory-and-planning-protocols)。
 
 内存基准测试不会下载任何内容。RAG基准测试需要本地已安装的MiniLM（使用`HF_HUB_OFFLINE=1`禁用网络）。`pytest.ini`和`conftest.py`会将pytest缓存和`tmp_path`文件放置在系统临时目录中，并在使用后清理fixture。
 
 ---
 
 <a id="documentation"></a>
-
 ## 文档
 
-- [项目记忆与上下文管理 — M1–M7、结果和验证](docs/memory.zh-CN.md)
+- [项目内存、上下文和规划 — M1–M8，结果与验证](docs/memory.zh-CN.md)
 - [M5 — RAG质量与来源依据核验](docs/rag_quality.zh-CN.md)
 
 <a id="roadmap"></a>
-
 # 路线图
 
 <a id="milestone-1--lecture-et-extraction-du-code"></a>
-
 ## 里程碑1 — 代码的读取与提取
 
 <a id="objectifs"></a>
-
 ### 目标
 
 * [x] 项目初始化
@@ -283,7 +281,6 @@ python -m scripts.benchmark_rag --output-dir (Join-Path $env:TEMP 'codeagent-m7-
 * [x] 单元测试搭建
 
 <a id="résultat"></a>
-
 ### 结果
 
 该项目能够自动遍历Python仓库并提取分析所需的必要信息。
@@ -291,11 +288,9 @@ python -m scripts.benchmark_rag --output-dir (Join-Path $env:TEMP 'codeagent-m7-
 ---
 
 <a id="milestone-2--embeddings-et-recherche-sémantique"></a>
-
 ## 里程碑 2 — 嵌入与语义搜索
 
 <a id="objectifs-1"></a>
-
 ### 目标
 
 * [x] 将代码划分为块
@@ -307,7 +302,6 @@ python -m scripts.benchmark_rag --output-dir (Join-Path $env:TEMP 'codeagent-m7-
 * [x] 实现语义搜索功能
 
 <a id="résultat-1"></a>
-
 ### 结果
 
 CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
@@ -315,11 +309,9 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 ---
 
 <a id="milestone-3--rag-sur-le-code"></a>
-
 ## 里程碑 3 — 代码上的 RAG
 
 <a id="benchmark-llm"></a>
-
 ### LLM 性能基准测试
 
 * [x] 定义一个通用基准以比较本地 LLM
@@ -327,7 +319,6 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 * [x] 选择并集成一个本地 LLM
 
 <a id="pipeline-rag"></a>
-
 ### RAG 流程
 
 * [x] 构建 RAG 流程
@@ -337,7 +328,6 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 * [x] 引用相关文件和行号
 
 <a id="exemple"></a>
-
 ### 示例
 
 问题：
@@ -354,11 +344,9 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 ---
 
 <a id="milestone-4--mémoire-projet"></a>
-
 ## 里程碑 4 — 项目记忆
 
 <a id="objectifs-2"></a>
-
 ### 目标
 
 * [x] 持久化保存索引
@@ -369,11 +357,9 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 ---
 
 <a id="milestone-5--rag-quality--grounding"></a>
-
 ## 里程碑 5 — RAG 质量与事实验证
 
 <a id="objectifs-3"></a>
-
 ### 目标
 
 - [x] 构建一个 RAG 基准测试
@@ -389,7 +375,6 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 - [x] 将最终流程与 M4 基线进行对比
 
 <a id="résultat-2"></a>
-
 ### 结果
 
 在最终 16 个问题的验证集上，M5 将 `Hit@5` 和 `Recall@5` 的性能从 `0.6667` 提升至 `0.8333`，同时优化了响应/回避行为，从 `0.6250` 改进到 `0.7500`。观察到的权衡是更弱的 `MRR@5`（`0.5069 → 0.3917`），以及由于事实验证带来的平均额外开销 `+2.54 s`。
@@ -397,11 +382,9 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 ---
 
 <a id="milestone-6--mcp--tool-use"></a>
-
 ## 里程碑 6 — MCP 与工具使用
 
 <a id="objectifs-4"></a>
-
 ### 目标
 
 - [x] 定义工具的最小接口
@@ -420,7 +403,6 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 - [x] 在专用保留集上独立评估grounding模型性能
 
 <a id="implémentation"></a>
-
 ### 实现
 
 初始范围仅支持只读。任何修改项目状态的工具将在执行循环稳定后才被添加，并且对于高风险操作必须明确请求确认。
@@ -428,7 +410,6 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 基准测试跟踪任务成功率、无效调用、重试、重复调用、工具错误、步骤数、grounding、token数和延迟。
 
 <a id="résultat-3"></a>
-
 ### 结果
 
 CodeAgent在判断是否需要工具时做出决策，通过MCP选择并执行合适的工具，避免无控制循环，捕获简单错误，并在grounding验证前生成最终源引用回答。
@@ -440,7 +421,6 @@ CodeAgent在判断是否需要工具时做出决策，通过MCP选择并执行�
 在20个任务的门控基准测试中，Devstral达到`100 %`的准确率；Laya和Verdict达到`75 %`，ModernBERT-NLI达到`65 %`，GLiNER2.5达到`45 %`。Jev无法评估，因为尽管调用符合文档要求，外部API仍不可访问。在30个案例的保留集上测试Verdict到Devstral的级联流程，将平均延迟降低至`42.9 %`，但其准确率仅为`93.3 %`，相较于单独的Devstral（`100 %`），因此未被采纳。
 
 <a id="future-improvement"></a>
-
 ### 未来改进
 
 - 当Jev的API可访问时重新评估其性能，并仅当新路由/grounding模型能在不增加错误接受的前提下提升准确率与延迟平衡时才考虑引入。
@@ -448,11 +428,9 @@ CodeAgent在判断是否需要工具时做出决策，通过MCP选择并执行�
 ---
 
 <a id="milestone-7--memory--context-management"></a>
-
 ## 里程碑7 — 内存与上下文管理
 
 <a id="objectifs-5"></a>
-
 ### 目标
 
 - [x] 保留最近几轮对话的短期记忆
@@ -466,60 +444,38 @@ CodeAgent在判断是否需要工具时做出决策，通过MCP选择并执行�
 - [x] 在无LLM的测试用例上持续测量连贯性、提取保真度和上下文大小
 
 <a id="résultat-4"></a>
-
 ### 结果
 
-CodeAgent 保留近期上下文，在超出预算时自动压缩较早的历史，并可通过持久化摘要恢复对话。
-
-<a id="résultat-automatisé"></a>
-
-### 自动化结果
-
-在三段各含 63 轮交互的确定性对话中，M7 在压缩和恢复后找回了全部 9 条预期信息；每轮重置历史的对照结果为 0/9。最大估算上下文为 6 271，输入上限为 6 444；完整回放将达到 48 957。摘录保真度、来源和错误恢复通过基准测试标准，且没有调用 LLM 生成摘要。这些测试替身不衡量真实模型的质量或延迟。最终验证复现了 **220 项测试通过**，数量与参考测试活动一致。使用 Ollama 时，参考对话路由通过 **3/3**，固定 MCP 来源的 FAISS 最终回答通过 **3/3**。`read_file` 技术恢复成功 **7/7**，但完整自主最终回答仍为 **0/7**。未进行实际检查的 FAISS 问题可能导致拒答。**M7 已完成**记忆与上下文范围的工作；自主生成质量、grounding 局限和 Ollama 内存压力仍记录于[结果与局限](docs/memory.zh-CN.md#tests-et-benchmarks)。[复现命令](docs/memory.zh-CN.md#commandes-de-reproduction)区分测试替身与真实模型。复现的 3/3 路由结果不保证内容忠实：空会话中的回忆会编造事实。历史语义检索仍为可选项；词法检索复用现有分词器。
+CodeAgent 拥有持久、按会话和项目隔离的对话记忆，具备自动压缩和共享上下文预算功能。其运行已在确定性测试用例上验证，**9/9 回忆准确**。**M7 已完成**，在记忆与上下文方面；历史实际测试中实现了 **7/7 读取**，但仅实现了 **0/7 完全自主最终执行**。
 
 ---
 
 <a id="milestone-8--planning--controlled-autonomous-execution"></a>
-
 ## 里程碑 8 —— 计划与受控自主执行
 
 <a id="objectifs-6"></a>
-
 ### 目标
 
-- [ ] 检测确实需要多个依赖步骤的任务
-- [ ] 仅为这些任务生成简短计划
-- [ ] 维护最小状态：目标、已完成步骤、观测、失败和剩余预算
-- [ ] 使用 M6 工具循环执行每个步骤
-- [ ] 仅在观测或错误使计划失效时重新规划剩余步骤
-- [ ] 在重新规划时保留已经验证的工作
-- [ ] 在目标达到、预算耗尽或需要用户决策时停止执行
-- [ ] 通过比较 M6 直接循环与 M8 规划来评估多步骤任务
+- [x] 检测确实需要多步骤依赖的任务
+- [x] 仅针对这些任务生成简短计划
+- [x] 保持最小状态：目标、已完成步骤、观察结果、失败情况和剩余预算
+- [x] 使用 M6 工具循环执行每一步
+- [x] 仅当观察结果或错误使计划无效时，重新规划剩余步骤
+- [x] 在重新规划时保留已验证的工作
+- [x] 当目标达成、预算耗尽或需要用户决策时，停止执行
+- [x] 通过比较 M6 直接循环与 M8 计划，评估多步骤任务
 
-<a id="implémentation-prévue"></a>
+<a id="résultat-5"></a>
+### 结果
 
-### 计划中的实现
-
-目标循环保持简单：`Goal -> Plan optionnel -> Step -> Tool -> Observation -> Next Step / Replan -> Final Answer`。
-
-简单请求不使用规划，继续直接使用 M6 循环。
-
-高级观测外置及其按需检索仍以可测量的需求为前提。
-
-<a id="résultat-attendu"></a>
-
-### 预期结果
-
-CodeAgent 预期能够受控地执行多步骤开发任务，跟踪进度，并从简单失败中恢复，无需无谓地重做已经完成的工作。
+具有依赖关系的任务使用经过验证的计划；简单任务继续使用 M6 直接循环。MCP 观察结果用于验证步骤，重新规划在同一预算内保留已完成工作。最终回答须检查所需交付内容、引用与来源依据。最终结果、复现配置与限制集中记录于 [M8 汇总](docs/memory.zh-CN.md#m8--planning--controlled-autonomous-execution)。原生 JSON Schema 输出经过评估后未被保留；交付的规划器在代码中验证 JSON 合约。
 
 ---
 
 <a id="milestone-9--advanced-rag--reliability"></a>
-
 ## 里程碑 9 — 高级 RAG 与可靠性
 
 <a id="objectifs-proposés"></a>
-
 ### 目标提案
 
 - [ ] 加强元数据、稳定标识符、版本、过滤器以及索引/分块的一致性
@@ -529,7 +485,6 @@ CodeAgent 预期能够受控地执行多步骤开发任务，跟踪进度，并�
 - [ ] 比较独立验证器/NLI 与现有锚定机制：误接受、误拒绝、P50/P95 以及延迟
 
 <a id="future-improvements--research-ideas"></a>
-
 ### 未来改进 / 研究想法
 
 对于 Python 代码，仍优先使用 AST。递归分块、TreeRAG、GraphRAG、OCR 和多模态功能需要先建立具体语料与比较评估协议，再考虑集成。目前没有理由新增 M10。多智能体、独立 Critic Agent、复杂 Reflexion 及抗幻觉微调仍暂缓。保留 FAISS 与当前 MCP 循环。无需 LangChain；仅当恢复执行和分支处理使现有工作流不足时，才重新评估 LangGraph。不计划引入分布式或云系统。
@@ -537,15 +492,14 @@ CodeAgent 预期能够受控地执行多步骤开发任务，跟踪进度，并�
 ---
 
 <a id="état-actuel-du-projet"></a>
-
 ## 项目当前状态
 
 CodeAgent 现已具备完整流程，可分析 Python 项目、索引其代码、检索相关片段、利用本地 LLM 生成上下文化响应，并在项目演进时持续更新索引。
 
-RAG 基础在 M5 完成，经 MCP 的受控工具使用在 M6 完成。**M7 已完成**记忆和上下文管理。真实路由与最终生成的局限已有记录；它们并不证明 M7 记忆或来源发生损坏。M8 将加入条件规划；M9 将汇总经测量验证的 RAG 及其可靠性改进。
+基础 RAG 已在 M5 完成，通过 MCP 控制的工具调用功能在 M6 完成。**M7 已完成**，涵盖内存与上下文管理。对路由和最终生成的实际限制已记录；这些限制并未证明 M7 存在内存或来源损坏。M8 增加了条件规划及其可观测控制；M9 仍为未来阶段，将整合 RAG 及其可靠性方面的可测量改进。
 
 <!-- multilingual-documentation -->
 
 ## 更多文档
 
-- [LLM 基准测试](benchmarks/llm/README.zh-CN.md)
+- [benchmarks/llm/README.md](benchmarks/llm/README.zh-CN.md)

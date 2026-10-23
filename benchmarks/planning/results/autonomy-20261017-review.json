@@ -1,0 +1,31 @@
+{
+  "decision": "KEEP GLOBAL",
+  "m8_status": "M8 VALIDÉ PARTIELLEMENT",
+  "review": "Static review by Codex of executed traces, current literal fixture contents, returned answers and source mappings, independent of the tested grounding verdict. No additional model or critic agent. Not a general semantic truth certificate.",
+  "raw_directory": "data/memory/m8-autonomy-20261017",
+  "historical_replay": false,
+  "limitations": [
+    "Historical B/E/F/H and five-variant raw traces were not located. Repository memory and recorded regression candidates were inspected; new predefined equivalents do not supersede historical failures.",
+    "One trial per category and strategy. No 2/3 warm-trial threshold demonstrated.",
+    "First baseline trial cold; subsequent model residency uncontrolled. Latency is descriptive, not a speed comparison.",
+    "The historical dependent oracle checks read presence rather than body completeness. Its adaptive evidence_complete=true is overridden by independent review: only the signature was read.",
+    "Pilot H succeeds adaptively but B regresses. Aggregate strict success stays 1/4; no costly repetitions or holdout trials justified.",
+    "Adaptive fidelity guard tested deterministically, not in an additional real exact-code task. Path false positive remains a separate grounding limitation.",
+    "Pilot source archived before final read-only rejection guard, conversation-routing fix, suppression of rejected code blocks and extra diagnostics. These changes do not alter outcomes of the eight measured trials; no real rerun claimed."
+  ],
+  "aggregate": {
+    "auto": {"strict_successes": 1, "trials": 4, "independent_collection_complete": 1, "false_completion": 0, "controlled_stops": 3, "tool_calls": 4, "mean_tool_calls": 1.0, "actual_tokens": 14541, "mean_actual_tokens": 3635.25, "mean_seconds": 73.6019562, "replans": 3, "budget_stops": 0},
+    "adaptive": {"strict_successes": 1, "trials": 4, "independent_collection_complete": 2, "false_completion": 0, "controlled_stops": 3, "tool_calls": 13, "mean_tool_calls": 3.25, "actual_tokens": 28720, "mean_actual_tokens": 7180, "mean_seconds": 26.1327181, "replans": 0, "pending_observations": 5, "budget_stops": 0}
+  },
+  "trials": [
+    {"case": "B-dependent", "execution": "auto", "artifact": "A-dependent.json", "strict_pass": true, "collection_complete": true, "review": "S1 locates marker in target.py at line 1. S2 reads its complete body returning 42. Both final claims cite their supporting observations; inline code matches the observed function."},
+    {"case": "B-dependent", "execution": "adaptive", "artifact": "B-dependent.json", "strict_pass": false, "collection_complete": false, "review": "Only def marker(): read, without body. Two textual completions do not trigger goal_achieved. Correct safe stop, failed task."},
+    {"case": "E-window", "execution": "auto", "artifact": "pilot-EFH.json", "strict_pass": false, "collection_complete": false, "review": "Both plan candidates rejected for multi-action objective; no MCP collection."},
+    {"case": "E-window", "execution": "adaptive", "artifact": "pilot-EFH.json", "strict_pass": false, "collection_complete": false, "review": "Required first one-line read executed. Missing body remains uncollected after reminder. No unjustified success."},
+    {"case": "F-missing", "execution": "auto", "artifact": "pilot-EFH.json", "strict_pass": false, "collection_complete": false, "review": "Actual errors on absent.py then invented present.py. User decision stop is not recovery."},
+    {"case": "F-missing", "execution": "adaptive", "artifact": "pilot-EFH.json", "strict_pass": false, "collection_complete": true, "review": "Real missing-path error, list_files, observed target.py search, signature then expanded complete body. Final rejected for citations, without grounding invocation. Recovery of data only; not end-to-end recovery. Original final candidate unavailable in this pilot artifact."},
+    {"case": "H-tests", "execution": "auto", "artifact": "pilot-EFH.json", "strict_pass": false, "collection_complete": false, "review": "Plan excerpts rejected before collection."},
+    {"case": "H-tests", "execution": "adaptive", "artifact": "pilot-EFH.json", "strict_pass": true, "collection_complete": true, "review": "Four actual calls locate/read marker and locate/read test_marker. Final S1=initial search, S2=body, S3=test body. Two claims correctly state marker returns 42 and test_marker asserts marker()==42 at the reported lines. No extra factual claim or invented code."}
+  ],
+  "holdout": {"predefined_cases": 8, "executed": 0, "reason": "No aggregate end-to-end improvement and an observed regression on the dependent case. Holdout never used for prompt tuning or strategy selection."}
+}

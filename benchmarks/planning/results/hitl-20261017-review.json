@@ -1,0 +1,1370 @@
+{
+  "protocol": "m8-hitl-20261017-review",
+  "decision": "HITL VALIDÉ PARTIELLEMENT",
+  "autonomous_m8_status": "VALIDÉ PARTIELLEMENT, unchanged",
+  "models": [
+    "devstral:24b",
+    "qwen2.5-coder:14b"
+  ],
+  "planning": "auto",
+  "deterministic": {
+    "models_simulated": true,
+    "tools_real": true,
+    "stdio_recovery_tested": true,
+    "summary": {
+      "autonomous": {
+        "strict_successes": 0,
+        "trials": 4,
+        "assisted_successes": 0,
+        "false_successes": 0,
+        "recovered_mcp_errors": 0,
+        "completed_objectives": 3,
+        "tool_calls": 5,
+        "human_interventions": 0,
+        "actual_model_tokens": null,
+        "observed_inference_latency": null
+      },
+      "supervised": {
+        "strict_successes": 4,
+        "trials": 4,
+        "assisted_successes": 4,
+        "false_successes": 0,
+        "recovered_mcp_errors": 1,
+        "completed_objectives": 10,
+        "tool_calls": 12,
+        "human_interventions": 4,
+        "actual_model_tokens": null,
+        "observed_inference_latency": null
+      }
+    },
+    "evidence": "data/memory/m8-hitl-20261017/final-deterministic/deterministic-comparison.json"
+  },
+  "real": {
+    "protocol": "One meaningful trial per scenario/mode after Devstral became available, sequential service requests. User-approved targeted guidance released only after block presentation. No manual plan or answer supplied.",
+    "autonomous": [
+      {
+        "case": "H-tests",
+        "verdict": "FAIL",
+        "strict_success": false,
+        "independent_review": {
+          "verdict": "FAIL",
+          "method": "Inspect actual tool results, complete required bodies, validated remaining objectives, candidate, citations and grounding; no model judge.",
+          "reason": "invalid_plan"
+        },
+        "plan": [],
+        "blocking_errors": [
+          "Plan refusé : Step objective must be an exact excerpt of the user request.",
+          "Step objective must be an exact excerpt of the user request."
+        ],
+        "interventions": [],
+        "human_interventions": 0,
+        "human_wait_seconds": 0.0,
+        "partial_block_recovery": false,
+        "completed_objectives": 0,
+        "tool_calls": 0,
+        "tool_attempts": 0,
+        "trace": [],
+        "observations": {},
+        "source_mapping": {},
+        "candidate": null,
+        "answer": "Exécution arrêtée : invalid_plan.\nCollecte validée : aucune.\nÉtapes non terminées : aucune.\nObjectif final non validé.\nInformations/diagnostic : Step objective must be an exact excerpt of the user request..",
+        "final_grounding_raw": "not_used",
+        "grounding_verdict_available": false,
+        "reported_tokens": 2450,
+        "actual_tokens_complete": true,
+        "actual_tokens": 2450,
+        "llm_call_seconds": 83.1027841999603,
+        "stage_seconds": {
+          "planner": 83.1027841999603,
+          "mcp_setup": 0.004092499992111698,
+          "agent": 0.0,
+          "tools": 0.0,
+          "final": 0.0,
+          "grounding": 0.0
+        },
+        "wall_seconds": 83.10889270002372,
+        "stop_reason": "invalid_plan"
+      },
+      {
+        "case": "F-missing",
+        "verdict": "FAIL",
+        "strict_success": false,
+        "independent_review": {
+          "verdict": "FAIL",
+          "method": "Inspect actual tool results, complete required bodies, validated remaining objectives, candidate, citations and grounding; no model judge.",
+          "reason": "user_decision"
+        },
+        "plan": [
+          {
+            "id": "1",
+            "objective": "Localise marker avec un premier appel search_code(query=\"marker\", path=\"absent.py\")",
+            "depends_on": [],
+            "success": {
+              "tool": "search_code",
+              "kind": "contains",
+              "value": "marker"
+            },
+            "status": "FAILED",
+            "evidence": []
+          },
+          {
+            "id": "2",
+            "objective": "lis son implémentation",
+            "depends_on": [
+              "1"
+            ],
+            "success": {
+              "tool": "read_file",
+              "kind": "nonempty",
+              "from_step": "1"
+            },
+            "status": "PENDING",
+            "evidence": []
+          }
+        ],
+        "blocking_errors": [
+          "search_code: error: {\"ok\": false, \"error\": \"tool_error\", \"tool\": \"search_code\", \"message\": \"Error executing tool search_code: Path does not exist: absent.py\"}",
+          "search_code: error: {\"ok\": false, \"error\": \"tool_error\", \"tool\": \"search_code\", \"message\": \"Error executing tool search_code: Path does not exist: present.py\"}",
+          "information manquante"
+        ],
+        "interventions": [],
+        "human_interventions": 0,
+        "human_wait_seconds": 0.0,
+        "partial_block_recovery": false,
+        "completed_objectives": 0,
+        "tool_calls": 2,
+        "tool_attempts": 2,
+        "trace": [
+          {
+            "tool": "search_code",
+            "arguments": {
+              "query": "marker",
+              "path": "absent.py",
+              "max_results": 10
+            },
+            "status": "error",
+            "duration_seconds": 0.003924499993445352,
+            "step_id": "1"
+          },
+          {
+            "tool": "search_code",
+            "arguments": {
+              "query": "marker",
+              "path": "present.py",
+              "max_results": 10
+            },
+            "status": "error",
+            "duration_seconds": 0.0018007000035140663,
+            "step_id": "1"
+          }
+        ],
+        "observations": {},
+        "source_mapping": {},
+        "candidate": null,
+        "answer": "Exécution arrêtée : user_decision.\nCollecte validée : aucune.\nÉtapes non terminées : 1 (Localise marker avec un premier appel search_code(query=\"marker\", path=\"absent.py\")), 2 (lis son implémentation).\nObjectif final non validé.\nInformations/diagnostic : information manquante.",
+        "final_grounding_raw": "not_used",
+        "grounding_verdict_available": false,
+        "reported_tokens": 4841,
+        "actual_tokens_complete": true,
+        "actual_tokens": 4841,
+        "llm_call_seconds": 35.95059769999352,
+        "stage_seconds": {
+          "planner": 22.99906900001224,
+          "mcp_setup": 0.0013522999943234026,
+          "agent": 12.951528699981282,
+          "tools": 0.005725199996959418,
+          "final": 0.0,
+          "grounding": 0.0
+        },
+        "wall_seconds": 35.96089889999712,
+        "stop_reason": "user_decision"
+      },
+      {
+        "case": "E-window",
+        "verdict": "FAIL",
+        "strict_success": false,
+        "independent_review": {
+          "verdict": "FAIL",
+          "method": "Inspect actual tool results, complete required bodies, validated remaining objectives, candidate, citations and grounding; no model judge.",
+          "reason": "invalid_plan"
+        },
+        "plan": [],
+        "blocking_errors": [
+          "Plan refusé : Each objective must cover one explicit action.",
+          "Each objective must cover one explicit action."
+        ],
+        "interventions": [],
+        "human_interventions": 0,
+        "human_wait_seconds": 0.0,
+        "partial_block_recovery": false,
+        "completed_objectives": 0,
+        "tool_calls": 0,
+        "tool_attempts": 0,
+        "trace": [],
+        "observations": {},
+        "source_mapping": {},
+        "candidate": null,
+        "answer": "Exécution arrêtée : invalid_plan.\nCollecte validée : aucune.\nÉtapes non terminées : aucune.\nObjectif final non validé.\nInformations/diagnostic : Each objective must cover one explicit action..",
+        "final_grounding_raw": "not_used",
+        "grounding_verdict_available": false,
+        "reported_tokens": 2528,
+        "actual_tokens_complete": true,
+        "actual_tokens": 2528,
+        "llm_call_seconds": 80.52189899995574,
+        "stage_seconds": {
+          "planner": 80.52189899995574,
+          "mcp_setup": 0.0018937999848276377,
+          "agent": 0.0,
+          "tools": 0.0,
+          "final": 0.0,
+          "grounding": 0.0
+        },
+        "wall_seconds": 80.52535059998627,
+        "stop_reason": "invalid_plan"
+      },
+      {
+        "case": "B-final",
+        "verdict": "FAIL",
+        "strict_success": false,
+        "independent_review": {
+          "verdict": "FAIL",
+          "method": "Inspect actual tool results, complete required bodies, validated remaining objectives, candidate, citations and grounding; no model judge.",
+          "reason": "execution_error"
+        },
+        "plan": [
+          {
+            "id": "1",
+            "objective": "Localise marker",
+            "depends_on": [],
+            "success": {
+              "tool": "search_code",
+              "kind": "contains",
+              "value": "marker"
+            },
+            "status": "COMPLETED",
+            "evidence": [
+              "S1"
+            ]
+          },
+          {
+            "id": "2",
+            "objective": "lis son implémentation",
+            "depends_on": [
+              "1"
+            ],
+            "success": {
+              "tool": "read_file",
+              "kind": "nonempty",
+              "from_step": "1"
+            },
+            "status": "COMPLETED",
+            "evidence": [
+              "S2"
+            ]
+          }
+        ],
+        "blocking_errors": [
+          "RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out."
+        ],
+        "interventions": [],
+        "human_interventions": 0,
+        "human_wait_seconds": 0.0,
+        "partial_block_recovery": false,
+        "completed_objectives": 2,
+        "tool_calls": 2,
+        "tool_attempts": 2,
+        "trace": [
+          {
+            "tool": "search_code",
+            "arguments": {
+              "query": "marker",
+              "max_results": 10
+            },
+            "status": "success",
+            "duration_seconds": 0.013242799992440268,
+            "step_id": "1",
+            "observation_id": "S1",
+            "file": "target.py"
+          },
+          {
+            "tool": "read_file",
+            "arguments": {
+              "path": "target.py",
+              "start_line": 1,
+              "end_line": 51
+            },
+            "status": "success",
+            "duration_seconds": 0.0019257999956607819,
+            "step_id": "2",
+            "observation_id": "S2",
+            "file": "target.py"
+          }
+        ],
+        "observations": {
+          "S1": {
+            "tool": "search_code",
+            "result": {
+              "matches": [
+                {
+                  "file": "target.py",
+                  "line": 1,
+                  "text": "def marker():"
+                },
+                {
+                  "file": "test_target.py",
+                  "line": 1,
+                  "text": "from target import marker"
+                },
+                {
+                  "file": "test_target.py",
+                  "line": 3,
+                  "text": "def test_marker():"
+                },
+                {
+                  "file": "test_target.py",
+                  "line": 4,
+                  "text": "assert marker() == 42"
+                }
+              ],
+              "truncated": false
+            }
+          },
+          "S2": {
+            "tool": "read_file",
+            "result": {
+              "path": "target.py",
+              "start_line": 1,
+              "end_line": 2,
+              "total_lines": 2,
+              "content": "def marker():\n    return 42",
+              "complete_symbols": [
+                {
+                  "name": "marker",
+                  "start_line": 1,
+                  "end_line": 2
+                }
+              ]
+            }
+          }
+        },
+        "source_mapping": {
+          "S1": "S1",
+          "S2": "S2"
+        },
+        "candidate": "Le marqueur est localisé dans le fichier `target.py` à la ligne 1 [S1]. Son implémentation est la suivante : `def marker():\\n    return 42` [S2].",
+        "answer": "Exécution arrêtée : execution_error.\nCollecte validée : 1 (Localise marker), 2 (lis son implémentation).\nÉtapes non terminées : aucune.\nObjectif final non validé.\nInformations/diagnostic : RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out..",
+        "final_grounding_raw": "not_used",
+        "grounding_verdict_available": false,
+        "reported_tokens": 3754,
+        "actual_tokens_complete": false,
+        "actual_tokens": null,
+        "llm_call_seconds": 334.7430671000038,
+        "stage_seconds": {
+          "planner": 20.37372870001127,
+          "mcp_setup": 0.0009213000012096018,
+          "agent": 7.865161800000351,
+          "tools": 0.01516859998810105,
+          "final": 6.501407700008713,
+          "grounding": 300.0027688999835
+        },
+        "wall_seconds": 334.76626469998155,
+        "stop_reason": "execution_error"
+      }
+    ],
+    "supervised": [
+      {
+        "case": "H-tests",
+        "verdict": "FAIL",
+        "strict_success": false,
+        "independent_review": {
+          "verdict": "FAIL",
+          "method": "Inspect actual tool results, complete required bodies, validated remaining objectives, candidate, citations and grounding; no model judge.",
+          "reason": "execution_error"
+        },
+        "plan": [
+          {
+            "id": "1",
+            "objective": "Localise marker",
+            "depends_on": [],
+            "success": {
+              "tool": "search_code",
+              "kind": "contains",
+              "value": "marker"
+            },
+            "status": "COMPLETED",
+            "evidence": [
+              "S1"
+            ]
+          },
+          {
+            "id": "2",
+            "objective": "lis son implémentation",
+            "depends_on": [
+              "1"
+            ],
+            "success": {
+              "tool": "read_file",
+              "kind": "nonempty",
+              "from_step": "1"
+            },
+            "status": "COMPLETED",
+            "evidence": [
+              "S2"
+            ]
+          },
+          {
+            "id": "3",
+            "objective": "localise les tests associés",
+            "depends_on": [
+              "1"
+            ],
+            "success": {
+              "tool": "search_code",
+              "kind": "contains",
+              "value": "marker"
+            },
+            "status": "FAILED",
+            "evidence": []
+          },
+          {
+            "id": "4",
+            "objective": "lis ces tests",
+            "depends_on": [
+              "3"
+            ],
+            "success": {
+              "tool": "read_file",
+              "kind": "nonempty",
+              "from_step": "3"
+            },
+            "status": "PENDING",
+            "evidence": []
+          }
+        ],
+        "blocking_errors": [
+          "Plan refusé : Step objective must be an exact excerpt of the user request.",
+          "Step objective must be an exact excerpt of the user request.",
+          "RuntimeError: Ollama returned an empty chat response."
+        ],
+        "interventions": [
+          {
+            "event": "human_intervention",
+            "seconds": 45.1874,
+            "outcome": "guidance_provided",
+            "reason": "invalid_plan",
+            "guidance": "Conserver les objectifs exacts et relier chaque lecture à sa recherche."
+          },
+          {
+            "event": "human_intervention",
+            "seconds": 45.1874,
+            "outcome": "resumed",
+            "reason": "invalid_plan",
+            "completed": [],
+            "observations": [],
+            "budgets": {
+              "tool_calls": 16,
+              "tokens": 30318,
+              "iterations": 12,
+              "replans": 1,
+              "seconds": 854.8125926000066
+            }
+          }
+        ],
+        "human_interventions": 1,
+        "human_wait_seconds": 8.621750599995721,
+        "partial_block_recovery": true,
+        "completed_objectives": 2,
+        "tool_calls": 2,
+        "tool_attempts": 2,
+        "trace": [
+          {
+            "tool": "search_code",
+            "arguments": {
+              "query": "marker",
+              "max_results": 10
+            },
+            "status": "success",
+            "duration_seconds": 0.00516780000180006,
+            "step_id": "1",
+            "observation_id": "S1",
+            "file": "target.py"
+          },
+          {
+            "tool": "read_file",
+            "arguments": {
+              "path": "target.py",
+              "start_line": 1,
+              "end_line": 51
+            },
+            "status": "success",
+            "duration_seconds": 0.0018928000063169748,
+            "step_id": "2",
+            "observation_id": "S2",
+            "file": "target.py"
+          }
+        ],
+        "observations": {
+          "S1": {
+            "tool": "search_code",
+            "result": {
+              "matches": [
+                {
+                  "file": "target.py",
+                  "line": 1,
+                  "text": "def marker():"
+                },
+                {
+                  "file": "test_target.py",
+                  "line": 1,
+                  "text": "from target import marker"
+                },
+                {
+                  "file": "test_target.py",
+                  "line": 3,
+                  "text": "def test_marker():"
+                },
+                {
+                  "file": "test_target.py",
+                  "line": 4,
+                  "text": "assert marker() == 42"
+                }
+              ],
+              "truncated": false
+            }
+          },
+          "S2": {
+            "tool": "read_file",
+            "result": {
+              "path": "target.py",
+              "start_line": 1,
+              "end_line": 2,
+              "total_lines": 2,
+              "content": "def marker():\n    return 42",
+              "complete_symbols": [
+                {
+                  "name": "marker",
+                  "start_line": 1,
+                  "end_line": 2
+                }
+              ]
+            }
+          }
+        },
+        "source_mapping": {},
+        "candidate": null,
+        "answer": "Exécution arrêtée : execution_error.\nCollecte validée : 1 (Localise marker), 2 (lis son implémentation).\nÉtapes non terminées : 3 (localise les tests associés), 4 (lis ces tests).\nObjectif final non validé.\nInformations/diagnostic : RuntimeError: Ollama returned an empty chat response..\nObservations conservées : S1, S2. Appels MCP exécutés : 2.",
+        "final_grounding_raw": "not_used",
+        "grounding_verdict_available": false,
+        "reported_tokens": 5418,
+        "actual_tokens_complete": false,
+        "actual_tokens": null,
+        "llm_call_seconds": 59.71464730001753,
+        "stage_seconds": {
+          "planner": 49.274476800026605,
+          "mcp_setup": 0.003964399977121502,
+          "agent": 10.440170499990927,
+          "tools": 0.007060600008117035,
+          "final": 0.0,
+          "grounding": 0.0
+        },
+        "wall_seconds": 68.353691300028,
+        "stop_reason": "execution_error"
+      },
+      {
+        "case": "F-missing",
+        "verdict": "FAIL",
+        "strict_success": false,
+        "independent_review": {
+          "verdict": "FAIL",
+          "method": "Inspect actual tool results, complete required bodies, validated remaining objectives, candidate, citations and grounding; no model judge.",
+          "reason": "human_stopped"
+        },
+        "plan": [
+          {
+            "id": "1",
+            "objective": "Localise marker avec un premier appel search_code(query=\"marker\", path=\"absent.py\")",
+            "depends_on": [],
+            "success": {
+              "tool": "search_code",
+              "kind": "contains",
+              "value": "marker"
+            },
+            "status": "FAILED",
+            "evidence": []
+          },
+          {
+            "id": "2",
+            "objective": "lis son implémentation",
+            "depends_on": [
+              "1"
+            ],
+            "success": {
+              "tool": "read_file",
+              "kind": "nonempty",
+              "from_step": "1"
+            },
+            "status": "PENDING",
+            "evidence": []
+          }
+        ],
+        "blocking_errors": [
+          "Plan refusé : A read path must come from a dependency or the current objective.",
+          "search_code: error: {\"ok\": false, \"error\": \"tool_error\", \"tool\": \"search_code\", \"message\": \"Error executing tool search_code: Path does not exist: absent.py\"}",
+          "search_code: error: {\"ok\": false, \"error\": \"tool_error\", \"tool\": \"search_code\", \"message\": \"Error executing tool search_code: Path does not exist: present.py\"}",
+          "information manquante",
+          "retry_limit"
+        ],
+        "interventions": [
+          {
+            "event": "human_intervention",
+            "seconds": 58.8351,
+            "outcome": "guidance_provided",
+            "reason": "user_decision",
+            "guidance": "Rechercher marker avec path=\".\" puis vérifier le fichier découvert."
+          },
+          {
+            "event": "human_intervention",
+            "seconds": 58.8351,
+            "outcome": "resumed",
+            "reason": "user_decision",
+            "completed": [],
+            "observations": [],
+            "budgets": {
+              "tool_calls": 14,
+              "tokens": 26713,
+              "iterations": 9,
+              "replans": 0,
+              "seconds": 841.1648982999905
+            }
+          },
+          {
+            "event": "human_intervention",
+            "seconds": 122.8533,
+            "outcome": "stopped",
+            "reason": "repeated_errors"
+          }
+        ],
+        "human_interventions": 2,
+        "human_wait_seconds": 92.62004680000246,
+        "partial_block_recovery": false,
+        "completed_objectives": 0,
+        "tool_calls": 2,
+        "tool_attempts": 3,
+        "trace": [
+          {
+            "tool": "search_code",
+            "arguments": {
+              "path": "absent.py",
+              "query": "marker",
+              "max_results": 10
+            },
+            "status": "error",
+            "duration_seconds": 0.0017025000124704093,
+            "step_id": "1"
+          },
+          {
+            "tool": "search_code",
+            "arguments": {
+              "query": "marker",
+              "path": "present.py",
+              "max_results": 10
+            },
+            "status": "error",
+            "duration_seconds": 0.0016170000017154962,
+            "step_id": "1"
+          },
+          {
+            "tool": "search_code",
+            "arguments": {
+              "path": ".",
+              "query": "marker",
+              "max_results": 10
+            },
+            "status": "retry_limit",
+            "duration_seconds": 0.0,
+            "step_id": "1"
+          }
+        ],
+        "observations": {},
+        "source_mapping": {},
+        "candidate": null,
+        "answer": "Exécution arrêtée : human_stopped.\nCollecte validée : aucune.\nÉtapes non terminées : 1 (Localise marker avec un premier appel search_code(query=\"marker\", path=\"absent.py\")), 2 (lis son implémentation).\nObjectif final non validé.\nInformations/diagnostic : retry_limit.\nObservations conservées : aucune. Appels MCP exécutés : 2.",
+        "final_grounding_raw": "not_used",
+        "grounding_verdict_available": false,
+        "reported_tokens": 7060,
+        "actual_tokens_complete": true,
+        "actual_tokens": 7060,
+        "llm_call_seconds": 30.225419700000202,
+        "stage_seconds": {
+          "planner": 20.795052100002067,
+          "mcp_setup": 0.0011534999939613044,
+          "agent": 9.430367599998135,
+          "tools": 0.0033195000141859055,
+          "final": 0.0,
+          "grounding": 0.0
+        },
+        "wall_seconds": 122.85389299999224,
+        "stop_reason": "human_stopped"
+      },
+      {
+        "case": "E-window",
+        "verdict": "FAIL",
+        "strict_success": false,
+        "independent_review": {
+          "verdict": "FAIL",
+          "method": "Inspect actual tool results, complete required bodies, validated remaining objectives, candidate, citations and grounding; no model judge.",
+          "reason": "invalid_plan"
+        },
+        "plan": [],
+        "blocking_errors": [
+          "Plan refusé : Each objective must cover one explicit action.",
+          "Each objective must cover one explicit action.",
+          "Each objective must cover one explicit action."
+        ],
+        "interventions": [
+          {
+            "event": "human_intervention",
+            "seconds": 59.6141,
+            "outcome": "guidance_provided",
+            "reason": "invalid_plan",
+            "guidance": "Conserver les objectifs exacts et relier chaque lecture à sa recherche."
+          },
+          {
+            "event": "human_intervention",
+            "seconds": 59.6141,
+            "outcome": "resumed",
+            "reason": "invalid_plan",
+            "completed": [],
+            "observations": [],
+            "budgets": {
+              "tool_calls": 16,
+              "tokens": 30240,
+              "iterations": 12,
+              "replans": 1,
+              "seconds": 840.3859515000076
+            }
+          },
+          {
+            "event": "human_intervention",
+            "seconds": 73.5651,
+            "outcome": "budget_exhausted",
+            "reason": "invalid_plan"
+          }
+        ],
+        "human_interventions": 1,
+        "human_wait_seconds": 20.245346600015182,
+        "partial_block_recovery": false,
+        "completed_objectives": 0,
+        "tool_calls": 0,
+        "tool_attempts": 0,
+        "trace": [],
+        "observations": {},
+        "source_mapping": {},
+        "candidate": null,
+        "answer": "Exécution arrêtée : invalid_plan.\nCollecte validée : aucune.\nÉtapes non terminées : objectif initial sans plan valide : Localise marker, puis lis son implémentation avec un premier read_file(path=\"target.py\", start_line=1, end_line=1) ; si cet extrait est insuffisant, élargis les bornes. Explique le résultat avec ses sources..\nObjectif final non validé.\nInformations/diagnostic : Each objective must cover one explicit action..\nObservations conservées : aucune. Appels MCP exécutés : 0.",
+        "final_grounding_raw": "not_used",
+        "grounding_verdict_available": false,
+        "reported_tokens": 3607,
+        "actual_tokens_complete": true,
+        "actual_tokens": 3607,
+        "llm_call_seconds": 53.315979400038486,
+        "stage_seconds": {
+          "planner": 53.315979400038486,
+          "mcp_setup": 0.0018798999954015017,
+          "agent": 0.0,
+          "tools": 0.0,
+          "final": 0.0,
+          "grounding": 0.0
+        },
+        "wall_seconds": 73.56552180001745,
+        "stop_reason": "invalid_plan"
+      },
+      {
+        "case": "B-final",
+        "verdict": "FAIL",
+        "strict_success": false,
+        "independent_review": {
+          "verdict": "FAIL",
+          "method": "Inspect actual tool results, complete required bodies, validated remaining objectives, candidate, citations and grounding; no model judge.",
+          "reason": "execution_error"
+        },
+        "plan": [
+          {
+            "id": "1",
+            "objective": "Localise marker",
+            "depends_on": [],
+            "success": {
+              "tool": "search_code",
+              "kind": "contains",
+              "value": "marker"
+            },
+            "status": "COMPLETED",
+            "evidence": [
+              "S1"
+            ]
+          },
+          {
+            "id": "2",
+            "objective": "lis son implémentation",
+            "depends_on": [
+              "1"
+            ],
+            "success": {
+              "tool": "read_file",
+              "kind": "nonempty",
+              "from_step": "1"
+            },
+            "status": "COMPLETED",
+            "evidence": [
+              "S2"
+            ]
+          }
+        ],
+        "blocking_errors": [
+          "RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out."
+        ],
+        "interventions": [],
+        "human_interventions": 0,
+        "human_wait_seconds": 0.0,
+        "partial_block_recovery": false,
+        "completed_objectives": 2,
+        "tool_calls": 2,
+        "tool_attempts": 2,
+        "trace": [
+          {
+            "tool": "search_code",
+            "arguments": {
+              "query": "marker",
+              "max_results": 10
+            },
+            "status": "success",
+            "duration_seconds": 0.028814499994041398,
+            "step_id": "1",
+            "observation_id": "S1",
+            "file": "target.py"
+          },
+          {
+            "tool": "read_file",
+            "arguments": {
+              "path": "target.py",
+              "start_line": 1,
+              "end_line": 51
+            },
+            "status": "success",
+            "duration_seconds": 0.001594500005012378,
+            "step_id": "2",
+            "observation_id": "S2",
+            "file": "target.py"
+          }
+        ],
+        "observations": {
+          "S1": {
+            "tool": "search_code",
+            "result": {
+              "matches": [
+                {
+                  "file": "target.py",
+                  "line": 1,
+                  "text": "def marker():"
+                },
+                {
+                  "file": "test_target.py",
+                  "line": 1,
+                  "text": "from target import marker"
+                },
+                {
+                  "file": "test_target.py",
+                  "line": 3,
+                  "text": "def test_marker():"
+                },
+                {
+                  "file": "test_target.py",
+                  "line": 4,
+                  "text": "assert marker() == 42"
+                }
+              ],
+              "truncated": false
+            }
+          },
+          "S2": {
+            "tool": "read_file",
+            "result": {
+              "path": "target.py",
+              "start_line": 1,
+              "end_line": 2,
+              "total_lines": 2,
+              "content": "def marker():\n    return 42",
+              "complete_symbols": [
+                {
+                  "name": "marker",
+                  "start_line": 1,
+                  "end_line": 2
+                }
+              ]
+            }
+          }
+        },
+        "source_mapping": {
+          "S1": "S1",
+          "S2": "S2"
+        },
+        "candidate": "Le marqueur est localisé dans le fichier `target.py` à la ligne 1. Son implémentation est la suivante : `def marker():\\n    return 42` [S1][S2].",
+        "answer": "Exécution arrêtée : execution_error.\nCollecte validée : 1 (Localise marker), 2 (lis son implémentation).\nÉtapes non terminées : aucune.\nObjectif final non validé.\nInformations/diagnostic : RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out..\nObservations conservées : S1, S2. Appels MCP exécutés : 2.",
+        "final_grounding_raw": "not_used",
+        "grounding_verdict_available": false,
+        "reported_tokens": 3754,
+        "actual_tokens_complete": false,
+        "actual_tokens": null,
+        "llm_call_seconds": 319.6179784000269,
+        "stage_seconds": {
+          "planner": 9.521010800002841,
+          "mcp_setup": 0.0011634999827947468,
+          "agent": 4.0114900000044145,
+          "tools": 0.030408999999053776,
+          "final": 6.069083000009414,
+          "grounding": 300.01639460001024
+        },
+        "wall_seconds": 319.65489550001803,
+        "stop_reason": "execution_error"
+      }
+    ],
+    "summary": {
+      "autonomous": {
+        "trials": 4,
+        "strict_successes": 0,
+        "autonomous_successes": 0,
+        "assisted_successes": 0,
+        "false_successes": 0,
+        "partial_block_recoveries": 0,
+        "completed_objectives": 2,
+        "tool_calls": 4,
+        "human_interventions": 0,
+        "human_wait_seconds": 0.0,
+        "reported_tokens_sum": 13573,
+        "actual_tokens_sum": null,
+        "llm_call_seconds": 534.3183479999134,
+        "wall_seconds": 534.3614068999887
+      },
+      "supervised": {
+        "trials": 4,
+        "strict_successes": 0,
+        "autonomous_successes": 0,
+        "assisted_successes": 0,
+        "false_successes": 0,
+        "partial_block_recoveries": 1,
+        "completed_objectives": 4,
+        "tool_calls": 6,
+        "human_interventions": 4,
+        "human_wait_seconds": 121.48714400001336,
+        "reported_tokens_sum": 19839,
+        "actual_tokens_sum": null,
+        "llm_call_seconds": 462.87402480008313,
+        "wall_seconds": 584.4280016000557
+      }
+    },
+    "subcategories_not_tested": [
+      "Ollama E: window recovery after completed observations (initial plan rejected instead).",
+      "Ollama B: rejected final followed by human refinalization (grounding service timed out instead)."
+    ],
+    "infrastructure_incidents": {
+      "protocol": "hitl-ollama-infrastructure-blocked",
+      "results": [
+        {
+          "case": "H-tests",
+          "execution": "auto",
+          "mode": "M8_PLANNED",
+          "question": "Localise marker, puis lis son impl�mentation, puis localise les tests associ�s, puis lis ces tests.",
+          "simulated": false,
+          "success": false,
+          "expected_success": true,
+          "expectation_met": false,
+          "evidence_complete": false,
+          "answer_complete": false,
+          "planning_needed": true,
+          "planning_selected": true,
+          "planning_false_positive": false,
+          "planning_false_negative": false,
+          "planning_calls": 1,
+          "completed_steps": 0,
+          "planned_steps": 0,
+          "independently_valid_steps": 0,
+          "completed_step_evidence_valid": true,
+          "replans": 0,
+          "local_revisions": 0,
+          "replanning_success": null,
+          "repeated_calls": 0,
+          "tool_calls": 0,
+          "tool_attempts": 0,
+          "tool_successes": 0,
+          "tool_failures": 0,
+          "tool_schema_or_validation_errors": 0,
+          "max_context_estimate": 3768,
+          "input_limit": 15616,
+          "context_bounded": true,
+          "grounding": "not_used",
+          "grounded_non_abstention": false,
+          "seconds": 300.0688054000202,
+          "stage_seconds": {
+            "planner": 300.0604369000066,
+            "mcp_setup": 0.006111299997428432,
+            "agent": 0.0,
+            "tools": 0.0,
+            "final": 0.0,
+            "grounding": 0.0
+          },
+          "step_seconds": null,
+          "actual_model_tokens": null,
+          "fixture_token_estimates": null,
+          "stage_tokens": {
+            "planner": {
+              "prompt_tokens": 0,
+              "completion_tokens": 0
+            },
+            "agent": {
+              "prompt_tokens": 0,
+              "completion_tokens": 0
+            },
+            "final": {
+              "prompt_tokens": 0,
+              "completion_tokens": 0
+            },
+            "grounding": {
+              "prompt_tokens": 0,
+              "completion_tokens": 0
+            }
+          },
+          "answer": "Ex�cution arr�t�e : execution_error.\nCollecte valid�e : aucune.\n�tapes non termin�es : aucune.\nObjectif final non valid�.\nInformations/diagnostic : RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out..",
+          "error": null,
+          "stop_reason": "execution_error",
+          "execution_state": {
+            "goal": "Localise marker, puis lis son impl�mentation, puis localise les tests associ�s, puis lis ces tests.",
+            "mode": "M8_PLANNED",
+            "reason": "plusieurs actions avec d�pendance explicite",
+            "plan": [],
+            "current_step": null,
+            "completed": [],
+            "remaining": [],
+            "observations": [],
+            "errors": [
+              "RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out."
+            ],
+            "replans": 0,
+            "stop_reason": "execution_error",
+            "budgets": {
+              "tool_calls": 16,
+              "tokens": 28488,
+              "iterations": 12,
+              "replans": 2,
+              "seconds": 599.931645500008
+            },
+            "events": [
+              {
+                "event": "routing",
+                "seconds": 0.0,
+                "mode": "M8_PLANNED",
+                "reason": "plusieurs actions avec d�pendance explicite",
+                "request": "Localise marker, puis lis son impl�mentation, puis localise les tests associ�s, puis lis ces tests."
+              },
+              {
+                "event": "stop",
+                "seconds": 300.0683,
+                "reason": "execution_error",
+                "completed": [],
+                "remaining": [],
+                "detail": "RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out."
+              },
+              {
+                "event": "summary",
+                "seconds": 300.0684,
+                "completed": [],
+                "remaining": [],
+                "tool_calls": 0,
+                "replans": 0,
+                "stop_reason": "execution_error",
+                "grounding": "not_used",
+                "tokens": "unavailable",
+                "budgets": {
+                  "tool_calls": 16,
+                  "tokens": 28488,
+                  "iterations": 12,
+                  "replans": 2,
+                  "seconds": 599.931645500008
+                }
+              }
+            ]
+          },
+          "control_checks": {},
+          "trace": [],
+          "observations": {},
+          "source_mapping": {},
+          "selected_sources": [],
+          "grounding_claims": [],
+          "final_candidate": null,
+          "validation_diagnostic": null,
+          "independent_semantic_review": null
+        },
+        {
+          "case": "F-missing",
+          "execution": "auto",
+          "mode": "M8_PLANNED",
+          "question": "Localise marker avec un premier appel search_code(query=\"marker\", path=\"absent.py\"), puis lis son impl�mentation ; si cet appel �choue, corrige seulement son param�tre path.",
+          "simulated": false,
+          "success": false,
+          "expected_success": true,
+          "expectation_met": false,
+          "evidence_complete": false,
+          "answer_complete": false,
+          "planning_needed": true,
+          "planning_selected": true,
+          "planning_false_positive": false,
+          "planning_false_negative": false,
+          "planning_calls": 1,
+          "completed_steps": 0,
+          "planned_steps": 0,
+          "independently_valid_steps": 0,
+          "completed_step_evidence_valid": true,
+          "replans": 0,
+          "local_revisions": 0,
+          "replanning_success": null,
+          "repeated_calls": 0,
+          "tool_calls": 0,
+          "tool_attempts": 0,
+          "tool_successes": 0,
+          "tool_failures": 0,
+          "tool_schema_or_validation_errors": 0,
+          "max_context_estimate": 3847,
+          "input_limit": 15616,
+          "context_bounded": true,
+          "grounding": "not_used",
+          "grounded_non_abstention": false,
+          "seconds": 300.0136838000035,
+          "stage_seconds": {
+            "planner": 300.01182489999337,
+            "mcp_setup": 0.0010849999962374568,
+            "agent": 0.0,
+            "tools": 0.0,
+            "final": 0.0,
+            "grounding": 0.0
+          },
+          "step_seconds": null,
+          "actual_model_tokens": null,
+          "fixture_token_estimates": null,
+          "stage_tokens": {
+            "planner": {
+              "prompt_tokens": 0,
+              "completion_tokens": 0
+            },
+            "agent": {
+              "prompt_tokens": 0,
+              "completion_tokens": 0
+            },
+            "final": {
+              "prompt_tokens": 0,
+              "completion_tokens": 0
+            },
+            "grounding": {
+              "prompt_tokens": 0,
+              "completion_tokens": 0
+            }
+          },
+          "answer": "Ex�cution arr�t�e : execution_error.\nCollecte valid�e : aucune.\n�tapes non termin�es : aucune.\nObjectif final non valid�.\nInformations/diagnostic : RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out..",
+          "error": null,
+          "stop_reason": "execution_error",
+          "execution_state": {
+            "goal": "Localise marker avec un premier appel search_code(query=\"marker\", path=\"absent.py\"), puis lis son impl�mentation ; si cet appel �choue, corrige seulement son param�tre path.",
+            "mode": "M8_PLANNED",
+            "reason": "plusieurs actions avec d�pendance explicite",
+            "plan": [],
+            "current_step": null,
+            "completed": [],
+            "remaining": [],
+            "observations": [],
+            "errors": [
+              "RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out."
+            ],
+            "replans": 0,
+            "stop_reason": "execution_error",
+            "budgets": {
+              "tool_calls": 16,
+              "tokens": 28409,
+              "iterations": 12,
+              "replans": 2,
+              "seconds": 599.9864487000159
+            },
+            "events": [
+              {
+                "event": "routing",
+                "seconds": 0.0,
+                "mode": "M8_PLANNED",
+                "reason": "plusieurs actions avec d�pendance explicite",
+                "request": "Localise marker avec un premier appel search_code(query=\"marker\", path=\"absent.py\"), puis lis son impl�mentation ; si cet appel �choue, corrige seulement son param�tre path."
+              },
+              {
+                "event": "stop",
+                "seconds": 300.0135,
+                "reason": "execution_error",
+                "completed": [],
+                "remaining": [],
+                "detail": "RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out."
+              },
+              {
+                "event": "summary",
+                "seconds": 300.0136,
+                "completed": [],
+                "remaining": [],
+                "tool_calls": 0,
+                "replans": 0,
+                "stop_reason": "execution_error",
+                "grounding": "not_used",
+                "tokens": "unavailable",
+                "budgets": {
+                  "tool_calls": 16,
+                  "tokens": 28409,
+                  "iterations": 12,
+                  "replans": 2,
+                  "seconds": 599.9864487000159
+                }
+              }
+            ]
+          },
+          "control_checks": {},
+          "trace": [],
+          "observations": {},
+          "source_mapping": {},
+          "selected_sources": [],
+          "grounding_claims": [],
+          "final_candidate": null,
+          "validation_diagnostic": null,
+          "independent_semantic_review": null
+        }
+      ],
+      "interrupted_case": "E-window",
+      "not_started": [
+        "B-final"
+      ],
+      "supervised_status": "NOT TESTED",
+      "reason": "H and F each timed out after 300 s before any planner output or MCP call. Model runner /health returns 503; api/ps has no loaded model. Stopped only our benchmark clients; shared Ollama service unchanged. No targeted guidance applied to this unrelated infrastructure block."
+    },
+    "availability_evidence": "data/memory/m8-hitl-20261017/availability.json"
+  },
+  "verification": {
+    "pytest": "709 passed",
+    "hitl_tests": 25,
+    "memory_checks": {
+      "context_bounded": true,
+      "fixture_recall_complete": true,
+      "extractive_fidelity": true,
+      "sources_and_grounding_preserved": true,
+      "errors_recovered": true,
+      "no_summary_model_calls": true
+    },
+    "planning_checks": {
+      "context_bounded": true,
+      "completed_steps_have_evidence": true,
+      "routing_no_false_positives": true,
+      "routing_no_false_negatives": true,
+      "scenario_expectations_met": true,
+      "controlled_stops_and_recovery": true
+    },
+    "planning_trials": 32,
+    "diff_check": "passed",
+    "unrelated_initial_sources_preserved": true,
+    "source_hashes": "data/memory/m8-hitl-20261017/verified-source-hashes.json"
+  },
+  "limitations": [
+    "No strict assisted success demonstrated with Ollama; H recovered two actual steps then failed.",
+    "Metrics updated after pilot: partial verified recovery differs from task success; derived recovery uses original event order. Raw earlier conservative recovery_success remains unchanged.",
+    "After pilot F, a generic guard suppresses an impossible second intervention when retries and replanning are exhausted. Pilot records retain the original operator stop (two interactions). Final code verified deterministically, no second real trial claimed.",
+    "H reported tokens omit an empty HTTP completion; timed-out grounding token cost is unavailable. Reported sums are incomplete where actual_tokens_sum is null.",
+    "llm_call_seconds includes client-side loading and failures; human/operator wait is separate. No causal latency improvement claimed.",
+    "Current on-failure mode does not detect semantic false positives accepted by grounding; final review remains manual.",
+    "No new model, download, dependency, workflow engine, memory, commit, push or M9 work."
+  ],
+  "evidence_directory": "data/memory/m8-hitl-20261017",
+  "evidence_sha256": {
+    "autonomous-partial.json": "b0a1673081337a7abc5861099fbbeb8eb1462347043745599f23f09c858ee95d",
+    "autonomous-ready-progress.json": "c9af98d51f9cb30607e2bca697d5ad09aeaca957daea3985cacaf33969f8d497",
+    "autonomous-ready.json": "d46496a7957e1bef829b6c3c850c78f016a9da659983397f6e8722aeb1874d32",
+    "autonomous-ready.log": "4cf5f0d866ad0da34fbd45a1ab03caf486b835d386cf5e300531ab806953e489",
+    "autonomous.log": "89771547c6b36302011f1bc3a8a1ea07753a82de4f5a8d46e2bcf590ae8c1ee4",
+    "availability.json": "c5b6654a70cf32febb40c8f19bceab3fb2ae331dda7b1c7cb6ce6990f8035b87",
+    "build_report.py": "31ac7be1d9074dd3e8a65cde0155360d6af0773ea2639f5df69ad73ec62a995d",
+    "changed-initial-sources.json": "9dbedc8d3285dca0fc31e76a0f0cd616ccf8594e4c6d0d6e9e254bd58900c026",
+    "decision-E-window-1.json": "0b8a63345ae74ac37bddb6490e42386e6fcdc367cf455f7edd61ae3787da0275",
+    "decision-F-missing-1.json": "2d72a4bec1b72ec9d4606119ca3cea9a3c667769a845afda5d8400e5c3cbd8a2",
+    "decision-F-missing-2.json": "25e64c6155c7a75ac3ae2ef40ade9510e6c73aaa3dec78a0212790eeee725359",
+    "decision-H-tests-1.json": "4273268b13378150cdfc812c03e7f1314842b1b13a825a73e5dd4ea8518377ab",
+    "delivery-output-directory.txt": "aef86cf5076cd72bdf1605ee0259c9c9eff05aa8a0d67e80f5c86eb50c89e8a1",
+    "delivery-source-hashes.json": "c517d84aa049f2d33791ed8b0382bcb3163d213edd8d9a4d2acdba4df2779cf4",
+    "delivery-source.zip": "3cc8064639b47279b2907e0bc42b9dc85d6ae05394818bf0223aa4b0e238c022",
+    "deterministic-B-off.json": "6085058bebb999cf11bdb52bd86519d3e8aeb777edaa836feaf090884cf93fa8",
+    "deterministic-B-on-failure.json": "44ab4d164165f084159203ee64d03a3f5d2b11896e718f42118231fdd5fc4413",
+    "deterministic-comparison.json": "9dadc80dfc36ca9ae4da14d705eecfcf689477fbe781e7e7cc3a5a9c78f04363",
+    "deterministic-E-off.json": "d44a0110db206a6e4ca8890e14ef5ce9512e98d063fc73a0bee13f3a978f5384",
+    "deterministic-E-on-failure.json": "2c28e3435c856ca3a5f8648fd859ca812362fd77071186f8140fe08a81d8de99",
+    "deterministic-F-off.json": "17e9427701fd75388401722b19bf1963bdb0300ba8ad6bd096088308090fa5e9",
+    "deterministic-F-on-failure.json": "5b376f480594d43126b6c8845b4407d832c3411675c6c1b639f426680277903d",
+    "deterministic-H-multisource-off.json": "0fb91e67bbc3ca68bce3e1ef86dca19e21456f62add323aca02ae5af8fe00ffd",
+    "deterministic-H-multisource-on-failure.json": "2319f428575afbd2cd5c53ce37cbe7c3397cffc8f60f9a804d488a2088f4ed40",
+    "deterministic-H-off.json": "75e001a4b9ddfdfcf8de9910d11fc6c0239217d501c51f0274ca317ac1d63352",
+    "deterministic-H-on-failure.json": "b643fb3e085eb6cf2fbc1a96ffa3b3a64d3effbf0452dea51012fd24a14cde5a",
+    "deterministic-summary.json": "dd195125d87a42d5a0959a4fbee602905d0313524c70f9d20de467c5565f4761",
+    "deterministic.json": "386f7e673a5a50fb0a19230c78efab109823ea015cf83f202c1fee180f031b2f",
+    "deterministic.log": "d490126f2aa4c3bc968f8c9a65c1d83b7f465e774835fe78dea13e52a4730828",
+    "deterministic_driver.py": "3eaf2d4a55fda188c0bd2bb442f4301a6c56ebe863220a1e5e01784622e933b6",
+    "entry-hashes.json": "8fea2663fabf316bb2b41046a4573bb515d4eeb8134081ce2f636a8eb08b08b6",
+    "entry-status.txt": "e86141de621ce38d6b5c9e873a0ebde337e7607810b968ad88afed4249767665",
+    "final-deterministic.log": "775186f4911b3f1c865cdf83d6de33e989724c44f964f790c88d0c0a06515e6f",
+    "final-output-directory.txt": "98d31721d1dabe8ed07b061a9431ba4b45c5360421381930cc2f13606881ed87",
+    "hitl-diagnostic.txt": "b2983fb32bb193722942065608ccd4e9e431d9e94c2193f5037e22d2f11ef63e",
+    "memory-delivery.json": "0a6173d244901dc5c23cc0e28bc54c18b5ae6151b0783b15d35a516b3b7feb2a",
+    "memory-delivery.txt": "9e66a71fbb1229f252566f7d28eab5ea0810f34eae1af75967f41a466b1ce24e",
+    "memory-final.json": "29f4371a0937fadbaf6e814c5d5e76bd86fa59c34b5866fb4ce83134260de4cc",
+    "memory-final.txt": "1c8ee8b36e153b75911df25847dc7a3d363383e1b51316fa766042757d4223ae",
+    "memory-verified.json": "6715c03681d54b17aa6c62ee75b04b978a2617ba0f36848c28558eaadc0bf3fb",
+    "memory-verified.txt": "40811ffa959452301debe8bcc05c29e267e3e77d8a92ead4cdf3339356c304fc",
+    "memory.json": "23c773d8a2efac6766cf167491bb3f310789404e807cad246cb2832192a9dfbc",
+    "multisource.log": "bef9d1c3f62987a5586ffe0d3bb48ed24aa32f6f7e45d72f7f147aad3d17024e",
+    "multisource_driver.py": "ea2efbb307f1d4bd4d42ac5d95f82e4dcc1c726826c3bd2ae08f1958773a5965",
+    "pending-E-window-1.json": "40e5f08ea597392e3680bf57f642f0909f872363473e3c6ae33a4c4f58e6050a",
+    "pending-F-missing-1.json": "2f8e5a5fb9e71b613104fc2ddd4cc088754f4e6a8b05923e549523af5d09389b",
+    "pending-F-missing-2.json": "7cc922f3b6c61c9bdc5743571e4b619f6beb623349645b04703b4fe54bf475f1",
+    "pending-H-tests-1.json": "9613fa42756b518bd83750567afe4d6184d8913aedac69feb47ee9fa67e00e69",
+    "pilot_driver.py": "613aab471d1f8c2ba0996e621cfc12e9b0dd559992a48321829caaa86ac4e834",
+    "planning-delivery.json": "e1962aa6798ae719e986a7449eca15087201c35077cf4523b6349ab260063731",
+    "planning-delivery.txt": "3a100df8f2a4e67f62b835baf5b435abb036ce4201119466a8afeb9af0d1658c",
+    "planning-final.json": "605dc218e9e36519e2d56785f6cddccb3d6550deda613331147171f208048e29",
+    "planning-final.txt": "b5af5f8f54766fc0a21f47199af0741a12681ca45dc1ba3b2609981f63aa5309",
+    "planning-verified.json": "f202a237b838c8c29c52a1d3bd939f42126cdd867f60ce85694c79b31b30d388",
+    "planning-verified.txt": "eb2fab191d7d1ee0f1e993882363880df58dc37dd77523fea938f0f4fe678604",
+    "planning.json": "68249f450e8736e5072e141d7ce6a941053c0143b0ec2a31e5e191288922049d",
+    "pytest-delivery.txt": "24ad06c231d4e2aa5ba3526aed804137671ce47c2bbd46ebad77d2dfeabecba4",
+    "pytest-final.txt": "b8d187f4fd3310237282a427cbc3d6eb5810d64388419c27aeda29aac7f84836",
+    "pytest-first.txt": "73f33f9f18c332cba94e3b9ac73abd8bf3ac40d369a5b3e6bc5b1934c8e7e4e2",
+    "pytest-verified.txt": "c77810e032e1313c48baf175bf7da7f1f8e03cae991c7a35ecc1278a91a2dfdc",
+    "real-partial-review.json": "1a0b3a04b8d8fbedaf69d75f5a1f845f06f911254a0ea7fe225ac8d18d60ecc5",
+    "supervised-B-final.json": "d0da7ff8a5b4c014720f62351ca18c44cebe3b554420013ef419a0e8a99a5a87",
+    "supervised-E-window.json": "8328756f105847f00a7506437606b080fe4a04d8843bea816760ee30c8e5347a",
+    "supervised-F-missing.json": "3d54eed9843252068d4db3a31e00d93de8fb5a168d39fa43c9c7fedbc61299e8",
+    "supervised-H-tests.json": "80afa2a0e387d85e8b318b464adfa8fad9dc650d3b1130a1f452c412c8ab591c",
+    "supervised.json": "1e148c27d863a1dc8753c441697953cab215b5f9913045b24214b8f4b435e81d",
+    "supervised.log": "1cdcafb580007e9001b65ee3cd72ab998cc8e83ae33e9aa2c30651ee3a73b3d3",
+    "verified-output-directory.txt": "a5625d368f1795900fb42f2b08aefe46fb7d5373432321691a439b26ed9cfd53",
+    "verified-source-hashes.json": "fa0d2f9ed30a78125d448a5022411123593a268edeb9a994098ac598088cf653",
+    "verified-source.zip": "c5dd6b056270743391fca1e4054dc94aacb1074be6051e3946e5d7075544954e",
+    "final-deterministic/deterministic-B-off.json": "041e8768e5446aa1df35d151c18376390326154883bb832eef1b6d4fc3b55bee",
+    "final-deterministic/deterministic-B-on-failure.json": "269dbc4acd1c7a23e4e69f730c0b0f62dbc5f0e7eea4a4e656c7805794acf55b",
+    "final-deterministic/deterministic-comparison.json": "bdee42e1fc25cf039b2f4bbe698f73cb29f0927795c0a9d68511951fe0b4e02f",
+    "final-deterministic/deterministic-E-off.json": "7530f7648d85cd5aa5733a90728d765e88f63e78aa9e0c3bf27f912dc1fae2ce",
+    "final-deterministic/deterministic-E-on-failure.json": "67f31bb529653986105325968182da528e67379f1faeab3cd36f4c6162cd6bbc",
+    "final-deterministic/deterministic-F-off.json": "6f1ced9ff5e8cda9bdb7af018805771dc10c5eca7a504afd1b2ba14f0b2c0aea",
+    "final-deterministic/deterministic-F-on-failure.json": "62cc1b376485ce986c7ca11d3467dc5577d923658c90a1433c7a1c0ba39c0e51",
+    "final-deterministic/deterministic-H-multisource-off.json": "b4126e2c5d22e45a6d15a296fd07de66e7ce7a28df86a65d64fbdb48d8359767",
+    "final-deterministic/deterministic-H-multisource-on-failure.json": "f4ff3522d07e9ac24c7725e39007c7a4d19103f9fa907338789f1d22ae5d0024",
+    "final-deterministic/deterministic-H-off.json": "17c8db8c7c7bc54985eb7ebb0a7e73774ab5afaf4f46a8baf688c278bb2328f0",
+    "final-deterministic/deterministic-H-on-failure.json": "e3e9e498a8cbf7746e457a324ca18268e78dbaa056428a85351f52ed75c1c935",
+    "final-deterministic/deterministic.json": "48e88f1a7ba4d0db749b54d74150b29c21425d1fed07ff75bc88a4075926b5fb",
+    "final-deterministic/deterministic_driver.py": "b6b198b6ad15665ea0685f5b14f46c74f4fc58340e7674cccc84037c53b172ef",
+    "final-deterministic/multisource_driver.py": "1abb1c1a0445ba719176d623d4540ba89267bacf5f08b6056442725308c1421c"
+  }
+}

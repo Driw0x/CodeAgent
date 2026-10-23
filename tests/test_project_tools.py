@@ -30,7 +30,7 @@ def test_read_file_eof_and_empty_bounds(tmp_path, monkeypatch):
     monkeypatch.setattr(project_tools, "PROJECT_ROOT", tmp_path)
     (tmp_path / "short.py").write_text("one\ntwo\n", encoding="utf-8")
     assert project_tools.read_file("short.py", 2, 100) == {
-        "path": "short.py", "start_line": 2, "end_line": 2, "content": "two",
+        "path": "short.py", "start_line": 2, "end_line": 2, "total_lines": 2, "content": "two", "complete_symbols": [],
     }
     (tmp_path / "empty.py").write_text("", encoding="utf-8")
     assert project_tools.read_file("empty.py")["content"] == ""

@@ -1,0 +1,32 @@
+{
+  "version": "m8-finalization-1",
+  "frozen_before_real_trials": true,
+  "models": ["devstral:24b", "qwen2.5-coder:14b"],
+  "parameters": {"temperature": 0, "seed": 42, "num_predict": 512, "context_tokens": 16384},
+  "budgets": {"max_total_tokens": 32768, "max_seconds": 900, "max_tool_calls": 16, "max_steps": 12},
+  "criteria": [
+    "All explicit deliverables covered, with factual and semantic review against the recorded observations",
+    "Local citations support each claim; no invented path, symbol, behavior or source",
+    "Requested exact code equals the complete observed target, including indentation",
+    "Abstention only for information genuinely missing; accepted incomplete answers count as false success",
+    "Internal goal_achieved and SUPPORTED alone never establish independent success"
+  ],
+  "pilot": ["B", "F", "H", "Markdown", "negative"],
+  "excluded": {"E": "Recorded corrected read absent: execution/continuation failure, not eligible for finalizer comparison"},
+  "historical_limitations": [
+    "Old abstaining B, original Markdown and oldest E/F/H raw observations unavailable; do not manufacture exact replays",
+    "B uses recorded complete global pilot; F/H use recorded complete adaptive pilot",
+    "F original rejected candidate missing, but original successful observations and diagnostic are available",
+    "Markdown and negative are newly collected cases, explicitly not historical replays"
+  ],
+  "continuation_gate": "Evaluate C and full-chain experiments only if B increases independently correct accepted responses without additional false success. Stop after one small pilot otherwise.",
+  "adoption_gate": "Pilot benefit must survive frozen holdout and reproducible end-to-end checks; no default change on insufficient evidence.",
+  "holdout": [
+    {"id": "function", "question": "Localise build_manifest dans app/memory/project_state.py, puis lis son implémentation. Explique le résultat avec ses sources.", "reads": ["app/memory/project_state.py"]},
+    {"id": "compare", "question": "Lis app/memory/project_state.py, puis compare la persistance avec app/memory/vector_store.py. Cite chaque fichier.", "reads": ["app/memory/project_state.py", "app/memory/vector_store.py"]},
+    {"id": "tests", "question": "Localise project_memory_dir dans app/utils/paths.py, puis lis son implémentation, puis inspecte ses tests associés dans tests/test_vector_store.py.", "reads": ["app/utils/paths.py", "tests/test_vector_store.py"]},
+    {"id": "exact-code", "question": "Montre le code exact de project_memory_dir. Localise project_memory_dir dans app/utils/paths.py, puis lis son implémentation.", "reads": ["app/utils/paths.py"]},
+    {"id": "missing", "question": "Quel serveur distant reçoit les sauvegardes de save_manifest ? Lis app/memory/project_state.py. Si cette information manque, indique que tu ne peux pas la déterminer.", "reads": ["app/memory/project_state.py"]}
+  ],
+  "review": "Static source/answer review by Codex, separate from the existing grounder; no second LLM judge or NLI. Descriptive latency, model residency uncontrolled. One sample per case, no statistical claim."
+}

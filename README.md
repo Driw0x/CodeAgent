@@ -1,55 +1,64 @@
+[English](README.md) | [Français](README.fr.md) | [简体中文](README.zh-CN.md)
+
+<a id="codeagent"></a>
 # CodeAgent
 
-[Français](README.md) | [简体中文](README.zh-CN.md)
-Projet personnel de création d’un Agent IA local pour l’analyse de code Python et la mémoire de projet.
 
-## Présentation
+Personal project to create a local AI agent for Python code analysis and project memory.
 
-CodeAgent est un assistant IA local conçu pour analyser des projets Python et répondre à des questions sur leur code.
+<a id="présentation"></a>
+## Introduction
 
-L’objectif du projet est de créer un agent capable de :
+CodeAgent is a local AI assistant designed to analyze Python projects and answer questions about their code.
 
-- lire automatiquement les fichiers Python d’un projet,
-- indexer le code avec des embeddings,
-- comprendre la structure générale du projet,
-- répondre à des questions sur le code,
-- conserver une mémoire simple du projet,
-- utiliser des outils de manière contrôlée lorsque nécessaire,
-- planifier les tâches multi-étapes lorsque cela apporte un bénéfice réel.
+The objective of the project is to create an agent capable of:
 
-Le projet fonctionne entièrement en local grâce à un LLM local et une base vectorielle.
+- automatically reading Python files in a project,
+- indexing the code with embeddings,
+- understanding the overall structure of the project,
+- answering questions about the code,
+- maintaining a simple memory of the project,
+- using tools in a controlled manner when necessary,
+- planning multi-step tasks when it provides real benefit.
 
-### Statut du projet
+The project operates entirely locally using a local LLM and a vector database.
 
-**M1–M7 terminés · Limites des réponses autonomes Devstral documentées · M8/M9 planifiés**
+<a id="statut-du-projet"></a>
+### Project Status
 
-Le socle principal de CodeAgent est terminé et fonctionnel : analyse de code, recherche hybride, pipeline RAG, réponses sourcées, persistance de l'index, mise à jour incrémentale, grounding et utilisation contrôlée de tools via MCP.
+**M1–M7 completed · M8 implemented · M9 future**
 
-Les Milestones 1 à 7 sont terminés. La mémoire et le budget de contexte sont vérifiés ; les limites
-des finales autonomes Ollama restent documentées dans la [mémoire consolidée](docs/memory.md#limites-connues). M8 ajoutera la planification multi-étapes contrôlée.
+**M8 — Deterministic checks and two autonomous Ollama + MCP scenarios validated with `OLLAMA_MAX_LOADED_MODELS=1`.**
+
+The core of CodeAgent is complete and functional: code analysis, hybrid search, RAG pipeline, source-based responses, index persistence, incremental updates, grounding, and controlled tool usage via MCP.
+
+Memory and context budgets are covered by the [M7 synthesis](docs/memory.md#m7--memory--context-management). The [M8 synthesis](docs/memory.md#m8--planning--controlled-autonomous-execution) documents planning, validation scope and remaining limitations.
 
 ---
 
-## Fonctionnalités actuelles
+<a id="fonctionnalités-actuelles"></a>
+## Current Features
 
-### Analyse du code Python
+<a id="analyse-du-code-python"></a>
+### Python Code Analysis
 
-* Lecture récursive des fichiers Python.
-* Filtrage des dossiers inutiles (`.venv`, `__pycache__`, etc.).
-* Extraction du contenu des fichiers.
-* Affichage des chemins relatifs du projet.
+* Recursive reading of Python files.
+* Filtering of unnecessary directories (`.venv`, `__pycache__`, etc.).
+* Extraction of file content.
+* Displaying relative paths within the project.
 
-### Parsing AST
+<a id="parsing-ast"></a>
+### AST Parsing
 
-Extraction automatique des principaux éléments du code :
+Automatic extraction of key code elements:
 
-* Fonctions (`FunctionDef`)
+* Functions (`FunctionDef`)
 * Classes (`ClassDef`)
 * Variables (`Assign`, `AnnAssign`)
 * Imports (`Import`)
-* Imports spécifiques (`ImportFrom`)
+* Specific imports (`ImportFrom`)
 
-Chaque élément est converti en chunk contenant :
+Each element is converted into a chunk containing:
 
 ```python
 {
@@ -62,25 +71,27 @@ Chaque élément est converti en chunk contenant :
 }
 ```
 
-### Recherche sémantique
+<a id="recherche-sémantique"></a>
+### Semantic Search
 
-* Découpage du projet en chunks.
-* Génération d'embeddings avec `all-MiniLM-L6-v2`.
-* Stockage des vecteurs dans un index FAISS.
-* Génération d'embeddings pour les requêtes utilisateur.
-* Recherche des k chunks les plus pertinents.
-* Recherche sémantique des candidats avec FAISS.
-* Recherche hybride dense + lexicale.
-* Reranking lexical des chunks candidats.
-* Sélection des chunks les plus pertinents pour le contexte RAG.
+* Dividing the project into chunks.
+* Generating embeddings with `all-MiniLM-L6-v2`.
+* Storing vectors in a FAISS index.
+* Generating embeddings for user queries.
+* Searching for the k most relevant chunks.
+* Semantic search of candidate chunks with FAISS.
+* Hybrid dense and lexical search.
+* Lexical reranking of candidate chunks.
+* Selection of the most relevant chunks for the RAG context.
 
-Exemples de requêtes :
+Examples of queries:
 
 * "function that reads file content"
 * "function that reads directory"
 
 ---
 
+<a id="architecture"></a>
 ## Architecture
 
 ```text
@@ -98,76 +109,88 @@ app
 
 ---
 
-## Technologies utilisées
+<a id="technologies-utilisées"></a>
+## Technologies used
 
+<a id="parsing"></a>
 ### Parsing
 
 * Python AST
 
+<a id="embeddings"></a>
 ### Embeddings
 
 * Sentence Transformers
 * all-MiniLM-L6-v2
 
-### Base vectorielle
+<a id="base-vectorielle"></a>
+### Vector database
 
 * FAISS
 
-### LLM local
+<a id="llm-local"></a>
+### Local LLM
 
 * Ollama
 * Qwen2.5-Coder 14B
-* Devstral 24B pour le tool calling
+* Devstral 24B for tool calling
 
+<a id="rag"></a>
 ### RAG
 
 * FAISS
-* Recherche hybride dense + lexicale
-* Reranking lexical
-* Injection de contexte avec provenance fichier/lignes
-* Citations `[Sx]` et vérification du grounding
+* Hybrid dense and lexical search
+* Lexical reranking
+* Context injection with file/line provenance
+* Citations `[Sx]` and grounding verification
 
+<a id="tests"></a>
 ### Tests
 
 * Pytest
 
 ---
 
+<a id="installation"></a>
 ## Installation
 
-### 1. Cloner le projet
+<a id="1-cloner-le-projet"></a>
+### 1. Clone the project
 
 ```bash
 git clone <repo>
 cd CodeAgent
 ```
 
-### 2. Installer les dépendances Python
+<a id="2-installer-les-dépendances-python"></a>
+### 2. Install Python dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Installer Ollama
+<a id="3-installer-ollama"></a>
+### 3. Install Ollama
 
-Installer Ollama sur la machine, puis vérifier que l'installation fonctionne :
+Install Ollama on the machine, then verify that the installation works :
 
 ```bash
 ollama --version
 ```
 
-### 4. Télécharger le LLM local
+<a id="4-télécharger-le-llm-local"></a>
+### 4. Download the local LLM
 
-CodeAgent utilise `qwen2.5-coder:14b` pour le RAG / grounding et `devstral:24b` pour le tool calling.
+CodeAgent uses `qwen2.5-coder:14b` for RAG / grounding and `devstral:24b` for tool calling.
 
-Télécharger le modèle avec :
+Download the model with :
 
 ```bash
 ollama pull qwen2.5-coder:14b
 ollama pull devstral:24b
 ```
 
-Vérifier que le modèle est disponible :
+Verify that the model is available :
 
 ```bash
 ollama list
@@ -175,291 +198,311 @@ ollama list
 
 ---
 
-## Exécution du projet
+<a id="exécution-du-projet"></a>
+## Execution of the project
 
-Depuis la racine du projet, lancer CodeAgent avec :
+From the root of the project, launch CodeAgent with :
 
 ```bash
 python -m app.main
 ```
 
-Le programme demande ensuite une question sur le projet :
+The program then asks a question about the project :
 
 ```text
 Question : Comment les embeddings sont-ils ajoutés dans FAISS ?
 ```
 
-CodeAgent propose un mode RAG et un mode Agent. Le mode Agent utilise la boucle MCP M6, précharge les modèles locaux et affiche par question les tokens Devstral / grounding, les temps par étape, les appels de tools, leur durée, le statut du grounding et le temps de réponse.
+CodeAgent offers a RAG mode and an Agent mode. The Agent mode reuses the MCP M6 loop, adds a plan M8 when the request contains explicit dependencies, preloads local models, and displays per question the Devstral / grounding tokens, step times, tool calls, their duration, grounding status, and response time.
 
-Pour reprendre une conversation, utilisez le même identifiant de session et le même projet :
+To observe M8 in PowerShell, select **2** after this command :
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -m app.main --project . --session m8-validation --debug
+```
+
+`--planning off` compares with M6 directly. `--max-steps`, `--max-plan-steps`, `--max-replans`, `--max-tool-calls`, `--max-total-tokens`, `--max-seconds` and `--tool-timeout` bound the execution. The [M8 synthesis](docs/memory.md#m8--planning--controlled-autonomous-execution) presents the results and limitations of this planning.
+
+<a id="assistance-humaine-m8-optionnelle"></a>
+### Human oversight M8, optional
+
+```powershell
+python -m app.main --project . --session hitl-test --debug --hitl on-failure
+```
+
+Select **2** (Agent). After an autonomous attempt fails, HITL can pause to inspect evidence, correct a tool call or remaining plan, retry, or stop. Resumption preserves the task, completed work, evidence and global budgets. Human input is validated and never treated as source evidence; noninteractive execution returns `intervention_required`.
+
+Deterministic tests cover interruption and resumption. The latest real autonomous scenarios needed no intervention, so those runs alone do not validate a HITL cycle. See the [HITL contract](docs/memory.md#m8-hitl) and [validation evidence](docs/memory.md#m8-validation).
+
+To resume a conversation, use the same session identifier and the same project:
 
 ```bash
 python -m app.main --session analyse-1
 python -m app.main --project /chemin/vers/projet-python --session analyse-1 --context-tokens 16384
 ```
 
-Choisissez un autre `--session` pour une conversation indépendante. Le budget conserve les échanges récents,
-compresse automatiquement les anciens en extraits déterministes et récupère sélectivement l'archive JSONL.
-Les observations originales restent disponibles ; les anciens identifiants de citation ne sont pas réutilisés
-comme sources actuelles. L'estimation conservatrice utilise les octets UTF-8, pas un tokenizer de modèle.
+Choose a different `--session` for an independent conversation. The budget preserves recent exchanges, automatically compresses older ones into deterministic snippets, and selectively retrieves the JSONL archive. Original observations remain available; previous citation identifiers are not reused as current sources. The conservative estimate uses UTF-8 bytes, not a model tokenizer.
 
-### Vérifications sans LLM réel
+<a id="vérifications-sans-llm-réel"></a>
+### LLM-free validations
 
 ```powershell
+$m8CheckDirectory = Join-Path $env:TEMP ('codeagent-check-' + [guid]::NewGuid().ToString())
 python -m pytest -q
-python -m scripts.benchmark_memory
 $env:HF_HUB_OFFLINE = '1'
-python -m scripts.benchmark_rag --output-dir (Join-Path $env:TEMP 'codeagent-m7-rag-final')
+python -m scripts.benchmark_rag --output-dir (Join-Path $m8CheckDirectory 'rag')
 ```
 
-Le benchmark mémoire ne télécharge rien. Le benchmark RAG nécessite MiniLM déjà disponible localement
-(utiliser `HF_HUB_OFFLINE=1` pour interdire le réseau). `pytest.ini` et `conftest.py` placent cache pytest
-et fichiers `tmp_path` dans les temporaires système, avec nettoyage des fixtures après leur utilisation.
+See the [benchmark protocols](benchmarks/llm/README.md#memory-and-planning-protocols) for memory and planning checks with temporary output files.
+
+The memory benchmark does not download anything. The RAG benchmark requires MiniLM already available locally (use `HF_HUB_OFFLINE=1` to disable network access). `pytest.ini` and `conftest.py` place pytest cache and `tmp_path` files into system temporary directories, with fixture cleanup after use.
 
 ---
 
+<a id="documentation"></a>
 ## Documentation
 
-- [Mémoire projet et gestion du contexte — M1–M7, résultats et validation](docs/memory.md)
+- [Project memory, context, and planning — M1–M8, results and validation](docs/memory.md)
 - [M5 — RAG Quality & Grounding](docs/rag_quality.md)
 
+<a id="roadmap"></a>
 # Roadmap
 
-## Milestone 1 — Lecture et extraction du code
+<a id="milestone-1--lecture-et-extraction-du-code"></a>
+## Milestone 1 — Code reading and extraction
 
-### Objectifs
+<a id="objectifs"></a>
+### Objectives
 
-* [x] Initialisation du projet
-* [x] Lecture récursive des fichiers Python
-* [x] Gestion des chemins
-* [x] Ignorer les fichiers inutiles
-* [x] Extraction du contenu
-* [x] Mise en place des tests unitaires
+* [x] Project initialization
+* [x] Recursive file reading in Python
+* [x] Path management
+* [x] Ignore useless files
+* [x] Content extraction
+* [x] Unit test implementation
 
-### Résultat
+<a id="résultat"></a>
+### Result
 
-Le projet est capable de parcourir automatiquement un dépôt Python et d'en extraire les informations nécessaires à l'analyse.
-
----
-
-## Milestone 2 — Embeddings et recherche sémantique
-
-### Objectifs
-
-* [x] Découpage du code en chunks
-* [x] Parsing AST
-* [x] Génération des embeddings
-* [x] Indexation vectorielle
-* [x] Recherche des voisins les plus proches
-* [x] Embedding des requêtes utilisateur
-* [x] Recherche sémantique fonctionnelle
-
-### Résultat
-
-CodeAgent est capable de retrouver automatiquement les portions de code les plus pertinentes à partir d'une question en langage naturel.
+The project is capable of automatically traversing a Python repository and extracting the necessary information for analysis.
 
 ---
 
-## Milestone 3 — RAG sur le code
+<a id="milestone-2--embeddings-et-recherche-sémantique"></a>
+## Milestone 2 — Embeddings and semantic search
 
-### Benchmark LLM
+<a id="objectifs-1"></a>
+### Objectives
 
-* [x] Définir un benchmark commun pour comparer les LLM locaux
-* [x] Comparer plusieurs LLM locaux
-* [x] Sélectionner et intégrer un LLM local
+* [x] Code chunking
+* [x] AST parsing
+* [x] Generation of embeddings
+* [x] Vector indexing
+* [x] Search for nearest neighbors
+* [x] User query embedding
+* [x] Functional semantic search
 
-### Pipeline RAG
+<a id="résultat-1"></a>
+### Result
 
-* [x] Construire le pipeline RAG
-* [x] Injecter les chunks retrouvés dans le contexte
-* [x] Répondre à des questions sur le projet
-* [x] Générer des explications de code
-* [x] Référencer les fichiers et lignes concernées
+CodeAgent is capable of automatically retrieving the most relevant code portions from a natural language question.
 
-### Exemple
+---
+
+<a id="milestone-3--rag-sur-le-code"></a>
+## Milestone 3 — Code RAG
+
+<a id="benchmark-llm"></a>
+### LLM Benchmark
+
+* [x] Define a common benchmark to compare local LLMs
+* [x] Compare several local LLMs
+* [x] Select and integrate a local LLM
+
+<a id="pipeline-rag"></a>
+### RAG Pipeline
+
+* [x] Build the RAG pipeline
+* [x] Inject retrieved chunks into the context
+* [x] Answer questions about the project
+* [x] Generate code explanations
+* [x] Reference files and lines involved
+
+<a id="exemple"></a>
+### Example
 
 Question :
 
-> Où est définie la fonction qui lit les fichiers ?
+> Where is the function that reads files defined?
 
-Réponse :
+Answer :
 
-> La fonction `read()` est définie dans `app/parser/file_loader.py`, lignes 6-9.
+> The function `read()` is defined in `app/parser/file_loader.py`, lines 6-9.
 
 Sources:
 - `app/parser/file_loader.py:6-9`
 
 ---
 
-## Milestone 4 — Mémoire projet
+<a id="milestone-4--mémoire-projet"></a>
+## Milestone 4 — Project Memory
 
-### Objectifs
+<a id="objectifs-2"></a>
+### Objectives
 
-* [x] Sauvegarde persistante des index
-* [x] Historique des analyses
-* [x] Mise à jour incrémentale des embeddings
-* [x] Suivi des modifications du projet
+* [x] Persistent storage of indexes
+* [x] History of analyses
+* [x] Incremental update of embeddings
+* [x] Tracking project modifications
 
 ---
 
+<a id="milestone-5--rag-quality--grounding"></a>
 ## Milestone 5 — RAG Quality & Grounding
 
-### Objectifs
+<a id="objectifs-3"></a>
+### Objectives
 
-- [x] Construire un benchmark RAG
-- [x] Ajouter Recall@K, Precision@K et MRR
-- [x] Évaluer le retrieval actuel comme baseline
-- [x] Ajouter une recherche hybride dense + lexicale
-- [x] Évaluer et améliorer le reranking
-- [x] Améliorer le contexte envoyé au LLM
-- [x] Renforcer le prompt contre les hallucinations
-- [x] Ajouter les citations fichier + lignes
-- [x] Vérifier automatiquement les citations
-- [x] Ajouter une vérification source <=> réponse
-- [x] Comparer le pipeline final à la baseline M4
+- [x] Build a RAG benchmark
+- [x] Add Recall@K, Precision@K, and MRR
+- [x] Evaluate the current retrieval as baseline
+- [x] Add a hybrid dense + lexical search
+- [x] Evaluate and improve reranking
+- [x] Improve the context sent to the LLM
+- [x] Strengthen the prompt against hallucinations
+- [x] Add file and line citations
+- [x] Automatically verify citations
+- [x] Add a consistency check between source <=> response
+- [x] Compare the final pipeline to baseline M4
 
-### Résultat
+<a id="résultat-2"></a>
+### Result
 
-Sur le holdout final de 16 questions, M5 améliore `Hit@5` et `Recall@5` de `0.6667` à `0.8333`, ainsi que le comportement réponse/abstention de `0.6250` à `0.7500`. Le compromis observé est un `MRR@5` plus faible (`0.5069 → 0.3917`) et un surcoût moyen de `+2.54 s` dû au grounding.
+On the final holdout of 16 questions, M5 improves `Hit@5` and `Recall@5` from `0.6667` to `0.8333`, as well as the response/abstention behavior of `0.6250` to `0.7500`. The observed trade-off is a `MRR@5` lower (`0.5069 → 0.3917`) and an average cost increase of `+2.54 s` due to grounding.
 
 ---
 
+<a id="milestone-6--mcp--tool-use"></a>
 ## Milestone 6 — MCP & Tool Use
 
-### Objectifs
+<a id="objectifs-4"></a>
+### Objectives
 
-- [x] Définir une interface minimale pour les tools
-- [x] Décrire chaque tool avec un nom, une description et un `JSON Schema`
-- [x] Valider les paramètres avant exécution
-- [x] Implémenter un premier ensemble de tools read-only : lecture de fichiers, recherche de code, listing de fichiers, inspection du diff Git et exécution des tests
-- [x] Laisser le LLM décider si un tool est nécessaire et lequel utiliser
-- [x] Intégrer les tools via MCP
-- [x] Mettre en place la boucle `LLM -> Tool Call -> Validation -> Exécution -> Observation -> LLM`
-- [x] Ajouter timeout, nombre maximal d'étapes, retries limités et détection des appels identiques `tool + arguments`
-- [x] Valider les résultats des tools et retourner des erreurs structurées au LLM
-- [x] Réutiliser le grounding M5 pour la réponse finale lorsque des sources projet sont utilisées
-- [x] Évaluer le tool use sur un benchmark dédié
-- [x] Suivre par question les tokens Devstral / grounding, les étapes, appels de tools, temps par étape et temps individuel des tools
-- [x] Optimiser le contexte tool avec recherche bornée, lecture ciblée et consolidation des sources redondantes
-- [x] Évaluer séparément les modèles de grounding sur un holdout dédié
+- [x] Define a minimal interface for tools
+- [x] Describe each tool with a name, a description, and a `JSON Schema`
+- [x] Validate parameters before execution
+- [x] Implement a first set of read-only tools: file reading, code search, file listing, Git diff inspection, and test execution
+- [x] Let the LLM decide whether a tool is necessary and which one to use
+- [x] Integrate tools via MCP
+- [x] Set up the loop `LLM -> Tool Call -> Validation -> Exécution -> Observation -> LLM`
+- [x] Add timeout, maximum number of steps, limited retries, and detection of identical tool calls `tool + arguments`
+- [x] Validate tool results and return structured errors to the LLM
+- [x] Reuse the grounding M5 for the final response when project sources are used
+- [x] Evaluate tool use on a dedicated benchmark
+- [x] Track tokens Devstral / grounding, steps, tool calls, time per step, and individual tool execution time by question
+- [x] Optimize the tool context with bounded search, targeted reading, and consolidation of redundant sources
+- [x] Evaluate grounding models separately on a dedicated holdout
 
-### Implémentation
+<a id="implémentation"></a>
+### Implementation
 
-Le premier périmètre reste read-only. Les tools modifiant l'état du projet ne seront ajoutés qu'après stabilisation de la boucle d'exécution et devront demander une confirmation explicite pour les opérations à risque.
+The initial scope remains read-only. Tools that modify project state will only be added after stabilization of the execution loop and must request explicit confirmation for high-risk operations.
 
-Le benchmark suit le taux de réussite des tâches, les appels invalides, retries, appels dupliqués, erreurs de tools, nombre d'étapes, grounding, tokens et latence.
+The benchmark follows task success rate, invalid calls, retries, duplicated calls, tool errors, number of steps, grounding, tokens, and latency.
 
-### Résultat
+<a id="résultat-3"></a>
+### Result
 
-CodeAgent détermine lorsqu'un outil est nécessaire, sélectionne et exécute le bon tool via MCP, récupère d'erreurs simples sans boucle incontrôlée et génère une réponse finale sourcée avant validation du grounding.
+CodeAgent determines when a tool is necessary, selects and executes the appropriate tool via MCP, recovers from simple errors without uncontrolled loops, and generates a final response with sources before grounding validation.
 
-Sur le benchmark end-to-end final de 20 tâches, le routing, la sélection du tool, le no-tool et les arguments atteignent `100 %`, tandis que le succès end-to-end atteint `80 %` (`13` réponses groundées acceptées, `4` rejets `unsupported`, `0` `citation_error`). La moyenne est de `2.10` étapes et `1.15` appels de tools par tâche ; la latence moyenne reste élevée à `131.05 s`, principalement à cause des LLM locaux.
+On the final end-to-end benchmark of 20 tasks, routing, tool selection, no-tool, and argument handling achieve `100 %`, while end-to-end success achieves `80 %` (`13` grounded responses accepted, `4` rejections `unsupported`, `0` `citation_error`). The average is `2.10` steps and `1.15` tool calls per task; latency remains high at `131.05 s`, primarily due to local LLMs.
 
-Sur un holdout grounding de 40 cas équilibrés, `Qwen2.5-Coder 14B` atteint `97.5 %` d'accuracy, `100 %` de recall sur les cas unsupported, 0 false accept et 1 false reject. `Devstral 24B` atteint `90 %` avec 0 false accept et 4 false rejects ; Qwen14 est donc retenu pour le grounding M6. L'optimisation du contexte réduit le smoke test multi-tool d'environ `10.5k` à `6.6k` tokens, et l'optimisation de `search_code` réduit son temps observé d'environ `17.1 s` à `0.01-0.12 s`.
+On a holdout grounding of 40 balanced cases, `Qwen2.5-Coder 14B` achieves `97.5 %` accuracy, `100 %` recall on unsupported cases, 0 false accept, and 1 false reject. `Devstral 24B` achieves `90 %` with 0 false accept and 4 false rejects; Qwen14 is therefore selected for grounding M6. Context optimization reduces the multi-tool smoke test by approximately `10.5k` to `6.6k` tokens, and optimization of `search_code` reduces its observed time by approximately `17.1 s` to `0.01-0.12 s`.
 
-Sur le benchmark de gating de 20 tâches, Devstral atteint `100 %` de précision ; Laya et Verdict `75 %`, ModernBERT-NLI `65 %` et GLiNER2.5 `45 %`. Jev n'a pas pu être évalué car l'API externe est restée inaccessible malgré un appel conforme à la documentation. Une cascade Verdict -> Devstral testée sur un holdout de 30 tâches réduit la latence moyenne de `42.9 %`, mais atteint `93.3 %` de précision contre `100 %` pour Devstral seul ; elle n'est donc pas retenue.
+On the gating benchmark of 20 tasks, Devstral achieves `100 %` precision; Laya and Verdict `75 %`, ModernBERT-NLI `65 %`, and GLiNER2.5 `45 %`. Jev could not be evaluated as the external API remained inaccessible despite a compliant call to the documentation. A cascade Verdict -> Devstral tested on a holdout of 30 tasks reduces average latency by `42.9 %`, but achieves `93.3 %` precision against `100 %` for Devstral alone; it is therefore not retained.
 
+<a id="future-improvement"></a>
 ### Future improvement
 
-- Réévaluer Jev lorsque son API sera accessible et de futurs routeurs / grounders spécialisés uniquement s'ils améliorent le compromis précision / latence sans augmenter les false accepts.
+- Re-evaluate Jev when its API becomes accessible and consider future specialized routers / grounders only if they improve the precision/latency trade-off without increasing false accepts.
 
 ---
 
+<a id="milestone-7--memory--context-management"></a>
 ## Milestone 7 — Memory & Context Management
 
-### Objectifs
+<a id="objectifs-5"></a>
+### Objectives
 
-- [x] Conserver une mémoire court terme des derniers tours de conversation
-- [x] Résumer et compresser les anciens tours
-- [x] Définir un budget de tokens pour le contexte
-- [x] Déclencher automatiquement la compression lorsque le seuil est dépassé
-- [x] Persister le résumé entre deux exécutions
-- [ ] Optionnel : récupérer d'anciens échanges pertinents par recherche sémantique
-- [x] Séparer sessions et projets, conserver décisions, contraintes, erreurs et provenance
-- [x] Sélectionner les observations structurées avant compression, conserver les originaux pour vérification
-- [x] Mesurer continuité, fidélité extractive et taille du contexte sur des fixtures sans LLM
+- [x] Maintain a short-term memory of the most recent conversation turns
+- [x] Summarize and compress previous turns
+- [x] Define a token budget for the context
+- [x] Automatically trigger compression when the threshold is exceeded
+- [x] Persist the summary between executions
+- [ ] Optional: retrieve relevant past exchanges via semantic search
+- [x] Separate sessions and projects, preserve decisions, constraints, errors, and provenance
+- [x] Select structured observations before compression, retain originals for verification
+- [x] Measure continuity, extractive fidelity, and context size on deterministic fixtures without an LLM
 
-### Résultat
+<a id="résultat-4"></a>
+### Result
 
-CodeAgent conserve le contexte récent, compresse automatiquement l'historique ancien lorsque le budget est dépassé et peut reprendre une conversation avec un résumé persistant.
-
-### Résultat automatisé
-
-Sur trois conversations déterministes de 63 échanges, M7 retrouve les 9 informations attendues après
-compaction et reprise, contre 0/9 avec historique réinitialisé à chaque tour. Le contexte maximal estimé
-est de 6 271 pour une limite d'entrée de 6 444 ; le replay complet atteindrait 48 957.
-Fidélité extractive, sources et récupération d'erreurs passent les critères du benchmark, sans appel LLM
-de résumé. Ces fixtures ne mesurent ni la qualité d'un vrai modèle ni sa latence.
-La finalisation reproduit **220 tests réussis** : compteur inchangé par rapport à la campagne de référence.
-Avec Ollama, le routage conversationnel de référence passe **3/3** et les finales FAISS à sources MCP
-fixées passent **3/3**. Les récupérations techniques `read_file` réussissent **7/7**, mais les finales
-autonomes complètes restent à **0/7**. FAISS sans inspection peut conduire à une abstention.
-**M7 TERMINÉ** pour la mémoire et le contexte ; qualité de génération autonome, limites du grounding
-et pression mémoire Ollama restent documentées dans les [résultats et limites](docs/memory.md#tests-et-benchmarks).
-Les [commandes de reproduction](docs/memory.md#commandes-de-reproduction) distinguent fixtures et modèles réels.
-Le routage 3/3 reproduit ne garantit pas la fidélité du contenu : un rappel en session vide invente des faits.
-La recherche sémantique historique reste optionnelle ; la récupération lexicale réutilise le tokenizer existant.
+CodeAgent has a persistent, session- and project-isolated conversational memory with automatic compression and shared context budget. The operation is validated on deterministic fixtures, with **9/9 recall**. **M7 is complete** for memory and context; historical real tests recover **7/7 reads**, but only **0/7 fully autonomous final outcomes**.
 
 ---
 
+<a id="milestone-8--planning--controlled-autonomous-execution"></a>
 ## Milestone 8 — Planning & Controlled Autonomous Execution
 
-### Objectifs
+<a id="objectifs-6"></a>
+### Objectives
 
-- [ ] Détecter les tâches nécessitant réellement plusieurs étapes dépendantes
-- [ ] Générer un plan court uniquement pour ces tâches
-- [ ] Maintenir un état minimal : objectif, étapes terminées, observations, échecs et budget restant
-- [ ] Exécuter chaque étape avec la boucle de tools M6
-- [ ] Replanifier uniquement les étapes restantes lorsqu'une observation ou une erreur invalide le plan
-- [ ] Préserver le travail déjà validé lors d'un replanning
-- [ ] Arrêter l'exécution lorsque l'objectif est atteint, que le budget est épuisé ou qu'une décision utilisateur est nécessaire
-- [ ] Évaluer les tâches multi-étapes en comparant la boucle directe M6 et la planification M8
+- [x] Detect tasks that genuinely require multiple dependent steps
+- [x] Generate a short plan only for such tasks
+- [x] Maintain a minimal state: objective, completed steps, observations, failures, and remaining budget
+- [x] Execute each step using the M6 tools loop
+- [x] Replan only the remaining steps when an observation or error invalidates the plan
+- [x] Preserve previously validated work during replanning
+- [x] Stop execution when the objective is achieved, the budget is exhausted, or user input is required
+- [x] Evaluate multi-step tasks by comparing the direct M6 loop with the M8 planning approach
 
-### Implémentation prévue
+<a id="résultat-5"></a>
+### Result
 
-La boucle cible reste simple : `Goal -> Plan optionnel -> Step -> Tool -> Observation -> Next Step / Replan -> Final Answer`.
-
-La planification n'est pas utilisée pour les requêtes simples : elles continuent d'utiliser directement la boucle M6.
-
-L'externalisation avancée des observations et leur récupération à la demande restent conditionnelles à un besoin mesuré.
-
-### Résultat attendu
-
-CodeAgent est capable d'exécuter de manière contrôlée des tâches de développement multi-étapes, de suivre leur progression et de récupérer d'échecs simples sans recommencer inutilement le travail déjà accompli.
+Dependent tasks use a validated plan; simple tasks retain direct M6 execution. MCP observations verify steps, and replanning preserves completed work within the same budgets. Final answers are checked for requested deliverables, citations and grounding. The [M8 synthesis](docs/memory.md#m8--planning--controlled-autonomous-execution) centralizes the final results, reproduction settings and limitations. Native JSON Schema output was evaluated and not retained; the delivered planner validates its JSON contract in code.
 
 ---
 
+<a id="milestone-9--advanced-rag--reliability"></a>
 ## Milestone 9 — Advanced RAG & Reliability
 
-### Objectifs proposés
+<a id="objectifs-proposés"></a>
+### Proposed objectives
 
-- [ ] Renforcer les métadonnées, identifiants stables, versions, filtres et cohérence index/chunks
-- [ ] Comparer BM25 et rerankers spécialisés au lexical/RRF existant, avec Hit@K, Recall@K, MRR et nDCG
-- [ ] Évaluer recherche itérative et reformulation uniquement lorsque le retrieval initial échoue
-- [ ] Détecter sources obsolètes ou contradictoires et évaluer une correction ciblée
-- [ ] Comparer un vérificateur indépendant/NLI au grounding existant : false accepts, false rejects, P50/P95 et latence
+- [ ] Strengthen metadata, stable identifiers, versions, filters, and index/chunk consistency
+- [ ] Compare BM25 and specialized rerankers against the existing lexical/RRF approach, using Hit@K, Recall@K, MRR, and nDCG
+- [ ] Evaluate iterative retrieval and reformulation only when the initial retrieval fails
+- [ ] Detect obsolete or contradictory sources and evaluate targeted corrections
+- [ ] Compare an independent verifier/NLI against the existing grounding: false accepts, false rejects, P50/P95, and latency
 
+<a id="future-improvements--research-ideas"></a>
 ### Future improvements / Research ideas
 
-AST reste prioritaire pour Python. Chunking récursif, TreeRAG, GraphRAG, OCR et multimodal demandent un corpus concret
-et un protocole comparatif avant intégration. Aucun M10 n'est justifié actuellement.
-Multi-agent, Critic Agent indépendant, Reflexion sophistiquée et fine-tuning anti-hallucination restent reportés.
-FAISS et la boucle MCP actuelle sont conservés. LangChain n'est pas nécessaire ; LangGraph ne sera réévalué
-que si reprises et embranchements rendent les workflows actuels insuffisants. Aucun système distribué ou cloud n'est prévu.
+AST remains prioritized for Python. Recursive chunking, TreeRAG, GraphRAG, OCR, and multimodal approaches require a concrete corpus and a comparative protocol before integration. No M10 is currently justified. Multi-agent, independent Critic Agent, sophisticated reflection, and anti-hallucination fine-tuning remain deferred. FAISS and the current MCP loop are preserved. LangChain is not necessary; LangGraph will only be re-evaluated if resumptions and branches make the current workflows insufficient. No distributed or cloud system is planned.
 
 ---
 
-## État actuel du projet
+<a id="état-actuel-du-projet"></a>
+## Current project status
 
-CodeAgent dispose désormais d'un pipeline complet permettant d'analyser un projet Python, d'indexer son code, de retrouver les portions pertinentes, de générer des réponses contextualisées avec un LLM local et de maintenir l'index à jour lorsque le projet évolue.
+CodeAgent now has a complete pipeline enabling analysis of a Python project, indexing its code, retrieving relevant portions, generating context-aware responses using a local LLM, and maintaining the index up to date as the project evolves.
 
-Le socle RAG est terminé à M5 et le tool use contrôlé via MCP est terminé à M6. **M7 est terminé** pour
-la gestion de mémoire et de contexte. Les limites réelles de routage et de génération finale sont documentées ;
-elles ne prouvent pas une corruption de mémoire ou de sources M7. M8 ajoutera la planification conditionnelle ;
-M9 regroupera les améliorations mesurées du RAG et de sa fiabilité.
+The RAG foundation is complete at M5 and tool use controlled via MCP is complete at M6. **M7 is complete** for memory and context management. The actual limits of routing and final generation are documented; they do not prove memory or source corruption in M7. M8 adds conditional planning and its observable controls; M9 remains future and will consolidate measured improvements in RAG and reliability.
 
 <!-- multilingual-documentation -->
 
-## Documentation complémentaire
+<a id="documentation-complémentaire"></a>
+## Complementary documentation
 
-- [Benchmarks LLM](benchmarks/llm/README.md)
+- [benchmarks/llm/README.md](benchmarks/llm/README.md)

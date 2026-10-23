@@ -1,3 +1,4 @@
+import ast
 import os
 import subprocess
 import sys
@@ -78,12 +79,25 @@ def read_file(path: str, start_line: int = 1, end_line: int | None = None) -> di
 
     actual_end = len(lines) if end_line is None else min(end_line, len(lines))
     content = "\n".join(lines[start_line - 1:actual_end])
+    complete_symbols = []
+    if file_path.suffix in {".py", ".pyi"}:
+        try:
+            tree = ast.parse("\n".join(lines))
+        except SyntaxError:
+            tree = None
+        for node in ast.walk(tree) if tree else ():
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                first = min([node.lineno, *(decorator.lineno for decorator in node.decorator_list)])
+                if start_line <= first and node.end_lineno <= actual_end:
+                    complete_symbols.append({"name": node.name, "start_line": first, "end_line": node.end_lineno})
 
     return {
         "path": file_path.relative_to(PROJECT_ROOT).as_posix(),
         "start_line": start_line,
         "end_line": actual_end,
+        "total_lines": len(lines),
         "content": content,
+        "complete_symbols": complete_symbols,
     }
 
 

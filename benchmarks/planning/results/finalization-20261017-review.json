@@ -1,0 +1,1192 @@
+{
+  "decision": "KEEP CURRENT",
+  "m8_status": "M8 VALIDÉ PARTIELLEMENT",
+  "raw_directory": "data/memory/m8-finalization-20261017",
+  "historical_replay": false,
+  "reviewer": "Codex static review, independent of the tested grounder; no second model or human review claimed",
+  "protocol_sha256": "8aa1848a9914866a75196f6a9601f65d64a196d0c78db545b40ddb49d269b9a7",
+  "ollama_version": "0.40.4",
+  "models": {
+    "models": [
+      {
+        "name": "qwen2.5:7b-instruct-q4_K_M",
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "modified_at": "2026-10-15T19:09:43.3599105+02:00",
+        "size": 4683087332,
+        "digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen2",
+          "families": [
+            "qwen2"
+          ],
+          "parameter_size": "7.6B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 32768,
+          "embedding_length": 3584,
+          "runner": "ggml"
+        },
+        "capabilities": [
+          "completion",
+          "tools"
+        ]
+      },
+      {
+        "name": "qwen3:4b-instruct-2507-q4_K_M",
+        "model": "qwen3:4b-instruct-2507-q4_K_M",
+        "modified_at": "2026-10-15T19:07:32.5809745+02:00",
+        "size": 2497293803,
+        "digest": "0edcdef34593eac1aa2be9c7d06c432dcf81945adca5eca2f27662c18f168ba0",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen3",
+          "families": [
+            "qwen3"
+          ],
+          "parameter_size": "4.0B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 262144,
+          "embedding_length": 2560,
+          "runner": "ggml"
+        },
+        "capabilities": [
+          "tools",
+          "thinking",
+          "completion"
+        ]
+      },
+      {
+        "name": "devstral:24b",
+        "model": "devstral:24b",
+        "modified_at": "2026-09-14T21:12:51.3480004+02:00",
+        "size": 14333928046,
+        "digest": "9bd74193e93935e9d8564d88607b220a9d341c4a36b748cffcbd9ad4f47a9ca9",
+        "details": {
+          "parent_model": "devstral:latest",
+          "format": "gguf",
+          "family": "llama",
+          "families": [
+            "llama"
+          ],
+          "parameter_size": "23.6B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 131072,
+          "embedding_length": 5120,
+          "runner": "ggml"
+        },
+        "capabilities": [
+          "completion",
+          "tools"
+        ]
+      },
+      {
+        "name": "qwen2.5-coder:14b",
+        "model": "qwen2.5-coder:14b",
+        "modified_at": "2026-09-14T21:05:40.7046092+02:00",
+        "size": 8988124298,
+        "digest": "9ec8897f747e246e970bc5cfdda85d22f1123dc2e3d34978a010a75968716849",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen2",
+          "families": [
+            "qwen2"
+          ],
+          "parameter_size": "14.8B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 32768,
+          "embedding_length": 5120,
+          "runner": "ggml"
+        },
+        "capabilities": [
+          "completion",
+          "tools",
+          "insert"
+        ]
+      },
+      {
+        "name": "qwen2.5-coder:7b",
+        "model": "qwen2.5-coder:7b",
+        "modified_at": "2026-09-14T21:02:38.5376727+02:00",
+        "size": 4683087561,
+        "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+        "details": {
+          "parent_model": "",
+          "format": "gguf",
+          "family": "qwen2",
+          "families": [
+            "qwen2"
+          ],
+          "parameter_size": "7.6B",
+          "quantization_level": "Q4_K_M",
+          "context_length": 32768,
+          "embedding_length": 3584,
+          "runner": "ggml"
+        },
+        "capabilities": [
+          "completion",
+          "tools",
+          "insert"
+        ]
+      }
+    ]
+  },
+  "frozen": {
+    "version": "m8-finalization-1",
+    "frozen_before_real_trials": true,
+    "models": [
+      "devstral:24b",
+      "qwen2.5-coder:14b"
+    ],
+    "parameters": {
+      "temperature": 0,
+      "seed": 42,
+      "num_predict": 512,
+      "context_tokens": 16384
+    },
+    "budgets": {
+      "max_total_tokens": 32768,
+      "max_seconds": 900,
+      "max_tool_calls": 16,
+      "max_steps": 12
+    },
+    "criteria": [
+      "All explicit deliverables covered, with factual and semantic review against the recorded observations",
+      "Local citations support each claim; no invented path, symbol, behavior or source",
+      "Requested exact code equals the complete observed target, including indentation",
+      "Abstention only for information genuinely missing; accepted incomplete answers count as false success",
+      "Internal goal_achieved and SUPPORTED alone never establish independent success"
+    ],
+    "pilot": [
+      "B",
+      "F",
+      "H",
+      "Markdown",
+      "negative"
+    ],
+    "excluded": {
+      "E": "Recorded corrected read absent: execution/continuation failure, not eligible for finalizer comparison"
+    },
+    "historical_limitations": [
+      "Old abstaining B, original Markdown and oldest E/F/H raw observations unavailable; do not manufacture exact replays",
+      "B uses recorded complete global pilot; F/H use recorded complete adaptive pilot",
+      "F original rejected candidate missing, but original successful observations and diagnostic are available",
+      "Markdown and negative are newly collected cases, explicitly not historical replays"
+    ],
+    "continuation_gate": "Evaluate C and full-chain experiments only if B increases independently correct accepted responses without additional false success. Stop after one small pilot otherwise.",
+    "adoption_gate": "Pilot benefit must survive frozen holdout and reproducible end-to-end checks; no default change on insufficient evidence.",
+    "holdout": [
+      {
+        "id": "function",
+        "question": "Localise build_manifest dans app/memory/project_state.py, puis lis son implémentation. Explique le résultat avec ses sources.",
+        "reads": [
+          "app/memory/project_state.py"
+        ]
+      },
+      {
+        "id": "compare",
+        "question": "Lis app/memory/project_state.py, puis compare la persistance avec app/memory/vector_store.py. Cite chaque fichier.",
+        "reads": [
+          "app/memory/project_state.py",
+          "app/memory/vector_store.py"
+        ]
+      },
+      {
+        "id": "tests",
+        "question": "Localise project_memory_dir dans app/utils/paths.py, puis lis son implémentation, puis inspecte ses tests associés dans tests/test_vector_store.py.",
+        "reads": [
+          "app/utils/paths.py",
+          "tests/test_vector_store.py"
+        ]
+      },
+      {
+        "id": "exact-code",
+        "question": "Montre le code exact de project_memory_dir. Localise project_memory_dir dans app/utils/paths.py, puis lis son implémentation.",
+        "reads": [
+          "app/utils/paths.py"
+        ]
+      },
+      {
+        "id": "missing",
+        "question": "Quel serveur distant reçoit les sauvegardes de save_manifest ? Lis app/memory/project_state.py. Si cette information manque, indique que tu ne peux pas la déterminer.",
+        "reads": [
+          "app/memory/project_state.py"
+        ]
+      }
+    ],
+    "review": "Static source/answer review by Codex, separate from the existing grounder; no second LLM judge or NLI. Descriptive latency, model residency uncontrolled. One sample per case, no statistical claim."
+  },
+  "phases": {
+    "pilot": {
+      "summary": {
+        "baseline": {
+          "trials": 5,
+          "delivered_correct": 2,
+          "complete_candidates": 5,
+          "correct_candidates": 4,
+          "false_successes": 0,
+          "false_rejections": 2,
+          "invalid_citations": 1,
+          "unjustified_abstentions": 0,
+          "tokens": 9415,
+          "seconds": 388.29130169999553
+        },
+        "guided": {
+          "trials": 5,
+          "delivered_correct": 3,
+          "complete_candidates": 5,
+          "correct_candidates": 4,
+          "false_successes": 0,
+          "false_rejections": 1,
+          "invalid_citations": 1,
+          "unjustified_abstentions": 0,
+          "tokens": 12177,
+          "seconds": 99.83630480006104
+        }
+      },
+      "records": [
+        {
+          "artifact": "data/memory/m8-finalization-20261017/pilot/B-baseline.json",
+          "case": "B",
+          "strategy": "baseline",
+          "accepted": true,
+          "grounding": "passed",
+          "seconds": 287.53359890001593,
+          "tokens": {
+            "devstral_prompt": 1085,
+            "devstral_completion": 64,
+            "grounding_prompt": 1310,
+            "grounding_completion": 6,
+            "total": 2465
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Complete observed two-line implementation delivered inline with current source references"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/pilot/B-guided.json",
+          "case": "B",
+          "strategy": "guided",
+          "accepted": true,
+          "grounding": "passed",
+          "seconds": 11.57104330000584,
+          "tokens": {
+            "devstral_prompt": 1318,
+            "devstral_completion": 47,
+            "grounding_prompt": 973,
+            "grounding_completion": 6,
+            "total": 2344
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Location and complete body correctly attributed"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/pilot/F-baseline.json",
+          "case": "F",
+          "strategy": "baseline",
+          "accepted": false,
+          "grounding": "citation_error",
+          "seconds": 29.464366100000916,
+          "tokens": {
+            "devstral_prompt": 1191,
+            "devstral_completion": 151,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 1342
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": false,
+            "format_valid": true,
+            "strict_candidate_correct": false,
+            "note": "Uncited final factual paragraph and list_files cited for corrected search execution"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/pilot/F-guided.json",
+          "case": "F",
+          "strategy": "guided",
+          "accepted": false,
+          "grounding": "unsupported",
+          "seconds": 25.336265800026013,
+          "tokens": {
+            "devstral_prompt": 1460,
+            "devstral_completion": 123,
+            "grounding_prompt": 865,
+            "grounding_completion": 6,
+            "total": 2454
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": false,
+            "format_valid": false,
+            "strict_candidate_correct": false,
+            "note": "Error source used for successful correction; unsolicited fenced code"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/pilot/H-baseline.json",
+          "case": "H",
+          "strategy": "baseline",
+          "accepted": false,
+          "grounding": "unsupported",
+          "seconds": 28.549534999998286,
+          "tokens": {
+            "devstral_prompt": 1245,
+            "devstral_completion": 146,
+            "grounding_prompt": 922,
+            "grounding_completion": 6,
+            "total": 2319
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Body and test assertion correct, locally attributed to S2/S3. Conservative qualification gate rejects function marker in the test paragraph despite previous S2 definition; counted as an independent false rejection, not an invented behavior"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/pilot/H-guided.json",
+          "case": "H",
+          "strategy": "guided",
+          "accepted": true,
+          "grounding": "passed",
+          "seconds": 24.71199660000275,
+          "tokens": {
+            "devstral_prompt": 1534,
+            "devstral_completion": 98,
+            "grounding_prompt": 1958,
+            "grounding_completion": 12,
+            "total": 3602
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Location, complete implementation and literal test assertion delivered from current sources"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/pilot/Markdown-baseline.json",
+          "case": "Markdown",
+          "strategy": "baseline",
+          "accepted": true,
+          "grounding": "passed",
+          "seconds": 31.358347200002754,
+          "tokens": {
+            "devstral_prompt": 1010,
+            "devstral_completion": 136,
+            "grounding_prompt": 1202,
+            "grounding_completion": 6,
+            "total": 2354
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Complete exact function with observed import; existing single-source repair verifies before adding S1. Review returned normalized answer, not the unnormalized candidate"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/pilot/Markdown-guided.json",
+          "case": "Markdown",
+          "strategy": "guided",
+          "accepted": true,
+          "grounding": "passed",
+          "seconds": 27.653392900014296,
+          "tokens": {
+            "devstral_prompt": 1253,
+            "devstral_completion": 143,
+            "grounding_prompt": 1208,
+            "grounding_completion": 6,
+            "total": 2610
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Same complete observed source, with verified single-source citation repair"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/pilot/negative-baseline.json",
+          "case": "negative",
+          "strategy": "baseline",
+          "accepted": false,
+          "grounding": "unsupported",
+          "seconds": 11.38545449997764,
+          "tokens": {
+            "devstral_prompt": 878,
+            "devstral_completion": 57,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 935
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Correct abstention plus literal empty search result. Return-evidence syntax guard mistakes search returned no results for a Python return claim; false rejection before grounder call"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/pilot/negative-guided.json",
+          "case": "negative",
+          "strategy": "guided",
+          "accepted": false,
+          "grounding": "unsupported",
+          "seconds": 10.563606200012146,
+          "tokens": {
+            "devstral_prompt": 1110,
+            "devstral_completion": 57,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 1167
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Identical justified abstention and identical deterministic false rejection"
+          }
+        }
+      ]
+    },
+    "holdout": {
+      "summary": {
+        "baseline": {
+          "trials": 5,
+          "delivered_correct": 1,
+          "complete_candidates": 5,
+          "correct_candidates": 3,
+          "false_successes": 0,
+          "false_rejections": 2,
+          "invalid_citations": 1,
+          "unjustified_abstentions": 1,
+          "tokens": 25410,
+          "seconds": 259.753211000032
+        },
+        "guided": {
+          "trials": 5,
+          "delivered_correct": 0,
+          "complete_candidates": 4,
+          "correct_candidates": 2,
+          "false_successes": 0,
+          "false_rejections": 2,
+          "invalid_citations": 1,
+          "unjustified_abstentions": 0,
+          "tokens": 26283,
+          "seconds": 210.52599050005665
+        }
+      },
+      "records": [
+        {
+          "artifact": "data/memory/m8-finalization-20261017/holdout/holdout-compare-baseline.json",
+          "case": "holdout-compare",
+          "strategy": "baseline",
+          "accepted": false,
+          "grounding": "passed",
+          "seconds": 66.410177200014,
+          "tokens": {
+            "devstral_prompt": 2465,
+            "devstral_completion": 227,
+            "grounding_prompt": 8723,
+            "grounding_completion": 21,
+            "total": 11436
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Correctly distinguishes manifest.json from index.faiss plus chunks.json. Existing literal-comparison certificate refuses this semantic comparison; false rejection"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/holdout/holdout-compare-guided.json",
+          "case": "holdout-compare",
+          "strategy": "guided",
+          "accepted": false,
+          "grounding": "passed",
+          "seconds": 62.40078210001229,
+          "tokens": {
+            "devstral_prompt": 2717,
+            "devstral_completion": 233,
+            "grounding_prompt": 8419,
+            "grounding_completion": 18,
+            "total": 11387
+          },
+          "independent_review": {
+            "complete": false,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": false,
+            "note": "Describes manifest/index roles and shared JSON but omits binary FAISS persistence, the important concrete distinction. Literal-comparison certificate also refuses; keywords or SUPPORTED would miss incomplete semantic comparison"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/holdout/holdout-exact-code-baseline.json",
+          "case": "holdout-exact-code",
+          "strategy": "baseline",
+          "accepted": true,
+          "grounding": "passed",
+          "seconds": 32.776541300001554,
+          "tokens": {
+            "devstral_prompt": 999,
+            "devstral_completion": 126,
+            "grounding_prompt": 1156,
+            "grounding_completion": 6,
+            "total": 2287
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Exact complete observed function lines 6-9, verified single-source repair; delivered successfully"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/holdout/holdout-exact-code-guided.json",
+          "case": "holdout-exact-code",
+          "strategy": "guided",
+          "accepted": false,
+          "grounding": "unsupported",
+          "seconds": 31.668853100010892,
+          "tokens": {
+            "devstral_prompt": 1242,
+            "devstral_completion": 133,
+            "grounding_prompt": 1162,
+            "grounding_completion": 6,
+            "total": 2543
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Exact identical function. Grounder rejects wording implementation read at lines 6-9, although complete_symbols places function there within actual full-file read. Independent reading treats this as the code excerpt, not the read_file call bounds: conservative false rejection. This interpretation is explicit, not a semantic certificate"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/holdout/holdout-function-baseline.json",
+          "case": "holdout-function",
+          "strategy": "baseline",
+          "accepted": false,
+          "grounding": "passed",
+          "seconds": 70.24621080001816,
+          "tokens": {
+            "devstral_prompt": 1583,
+            "devstral_completion": 226,
+            "grounding_prompt": 4492,
+            "grounding_completion": 12,
+            "total": 6313
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": false,
+            "strict_candidate_correct": false,
+            "note": "Complete function explanation, but fenced source was not requested and violates unchanged output contract"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/holdout/holdout-function-guided.json",
+          "case": "holdout-function",
+          "strategy": "guided",
+          "accepted": false,
+          "grounding": "passed",
+          "seconds": 52.81760460001533,
+          "tokens": {
+            "devstral_prompt": 1835,
+            "devstral_completion": 220,
+            "grounding_prompt": 4485,
+            "grounding_completion": 12,
+            "total": 6552
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": false,
+            "strict_candidate_correct": false,
+            "note": "Same unsolicited source block; no finalization benefit"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/holdout/holdout-missing-baseline.json",
+          "case": "holdout-missing",
+          "strategy": "baseline",
+          "accepted": false,
+          "grounding": "unsupported",
+          "seconds": 25.979615799995372,
+          "tokens": {
+            "devstral_prompt": 1590,
+            "devstral_completion": 91,
+            "grounding_prompt": 1099,
+            "grounding_completion": 3,
+            "total": 2783
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Scoped absence of remote-server information in the fully observed file, literal manifest write, justified abstention. Grounder rejects scoped absence; independent false rejection"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/holdout/holdout-missing-guided.json",
+          "case": "holdout-missing",
+          "strategy": "guided",
+          "accepted": false,
+          "grounding": "unsupported",
+          "seconds": 7.8893475999939255,
+          "tokens": {
+            "devstral_prompt": 1816,
+            "devstral_completion": 29,
+            "grounding_prompt": 1097,
+            "grounding_completion": 3,
+            "total": 2945
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": true,
+            "format_valid": true,
+            "strict_candidate_correct": true,
+            "note": "Correct abstention. Inline symbol and citation prevent pure-abstention exemption; grounder then rejects. Independent false rejection"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/holdout/holdout-tests-baseline.json",
+          "case": "holdout-tests",
+          "strategy": "baseline",
+          "accepted": false,
+          "grounding": "citation_error",
+          "seconds": 64.34066590000293,
+          "tokens": {
+            "devstral_prompt": 2335,
+            "devstral_completion": 256,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 2591
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": false,
+            "citations_valid": false,
+            "format_valid": false,
+            "strict_candidate_correct": false,
+            "unjustified_abstention": true,
+            "note": "Uncited unsolicited block and generic unjustified rest abstention. Describes 8-hex hash as unique, which is not guaranteed by the code"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/holdout/holdout-tests-guided.json",
+          "case": "holdout-tests",
+          "strategy": "guided",
+          "accepted": false,
+          "grounding": "citation_error",
+          "seconds": 55.74940310002421,
+          "tokens": {
+            "devstral_prompt": 2613,
+            "devstral_completion": 243,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 2856
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": false,
+            "citations_valid": false,
+            "format_valid": false,
+            "strict_candidate_correct": false,
+            "note": "Drops generic abstention, but keeps uncited unsolicited block and unproven uniqueness claim"
+          }
+        }
+      ]
+    },
+    "revision": {
+      "summary": {
+        "revision": {
+          "trials": 1,
+          "delivered_correct": 0,
+          "complete_candidates": 1,
+          "correct_candidates": 0,
+          "false_successes": 0,
+          "false_rejections": 0,
+          "invalid_citations": 1,
+          "unjustified_abstentions": 0,
+          "tokens": 5215,
+          "seconds": 87.46329590000096
+        }
+      },
+      "records": [
+        {
+          "artifact": "data/memory/m8-finalization-20261017/revision/F-revision.json",
+          "case": "F",
+          "strategy": "revision",
+          "accepted": false,
+          "grounding": "unsupported",
+          "seconds": 87.46329590000096,
+          "tokens": {
+            "devstral_prompt": 3253,
+            "devstral_completion": 250,
+            "grounding_prompt": 1700,
+            "grounding_completion": 12,
+            "total": 5215
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": false,
+            "format_valid": false,
+            "strict_candidate_correct": false,
+            "note": "Only adds S1 from listing to correction claim, which still does not prove corrected search execution. Keeps unsolicited code. Rejected again, no extra tool call; prototype removed"
+          }
+        }
+      ]
+    },
+    "recovery-selection": {
+      "summary": {
+        "baseline": {
+          "trials": 1,
+          "delivered_correct": 0,
+          "complete_candidates": 1,
+          "correct_candidates": 0,
+          "false_successes": 0,
+          "false_rejections": 0,
+          "invalid_citations": 1,
+          "unjustified_abstentions": 0,
+          "tokens": 1496,
+          "seconds": 62.04989759999444
+        },
+        "guided": {
+          "trials": 1,
+          "delivered_correct": 0,
+          "complete_candidates": 1,
+          "correct_candidates": 0,
+          "false_successes": 0,
+          "false_rejections": 0,
+          "invalid_citations": 1,
+          "unjustified_abstentions": 0,
+          "tokens": 2544,
+          "seconds": 36.887108299997635
+        }
+      },
+      "records": [
+        {
+          "artifact": "data/memory/m8-finalization-20261017/recovery-selection/F-baseline.json",
+          "case": "F",
+          "strategy": "baseline",
+          "accepted": false,
+          "grounding": "citation_error",
+          "seconds": 62.04989759999444,
+          "tokens": {
+            "devstral_prompt": 1296,
+            "devstral_completion": 200,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 1496
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": false,
+            "format_valid": true,
+            "strict_candidate_correct": false,
+            "note": "Corrected search S2 now retained and cited. Final factual summary still uncited; no extra attempt made"
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/recovery-selection/F-guided.json",
+          "case": "F",
+          "strategy": "guided",
+          "accepted": false,
+          "grounding": "unsupported",
+          "seconds": 36.887108299997635,
+          "tokens": {
+            "devstral_prompt": 1569,
+            "devstral_completion": 142,
+            "grounding_prompt": 827,
+            "grounding_completion": 6,
+            "total": 2544
+          },
+          "independent_review": {
+            "complete": true,
+            "facts_correct": true,
+            "citations_valid": false,
+            "format_valid": true,
+            "strict_candidate_correct": false,
+            "note": "Actual corrected search cited at S2, but preceding correction claim still cites list_files S1. Verifier rejects that claim; no default change justified"
+          }
+        }
+      ]
+    },
+    "e2e": {
+      "summary": {
+        "baseline": {
+          "trials": 4,
+          "strict_successes": 1,
+          "collection_complete": 1,
+          "false_successes": 0,
+          "tokens": 14887,
+          "seconds": 398.847814400011
+        },
+        "guided": {
+          "trials": 4,
+          "strict_successes": 1,
+          "collection_complete": 1,
+          "false_successes": 0,
+          "tokens": 16008,
+          "seconds": 424.54029779994744
+        }
+      },
+      "records": [
+        {
+          "artifact": "data/memory/m8-finalization-20261017/e2e/dependent-baseline.json",
+          "case": "dependent",
+          "strategy": "baseline",
+          "internal_accepted": true,
+          "independent_review": {
+            "plan_valid": true,
+            "necessary_actions_executed": true,
+            "collection_complete": true,
+            "final_generated": true,
+            "complete": true,
+            "citations_valid": true,
+            "facts_correct": true,
+            "strict_pass": true,
+            "note": "Actual search and complete read; location and full two-line implementation locally sourced"
+          },
+          "seconds": 67.89561330000288,
+          "tokens": {
+            "devstral_prompt": 3510,
+            "devstral_completion": 246,
+            "grounding_prompt": 1306,
+            "grounding_completion": 6,
+            "total": 5068
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/e2e/dependent-guided.json",
+          "case": "dependent",
+          "strategy": "guided",
+          "internal_accepted": true,
+          "independent_review": {
+            "plan_valid": true,
+            "necessary_actions_executed": true,
+            "collection_complete": true,
+            "final_generated": true,
+            "complete": true,
+            "citations_valid": true,
+            "facts_correct": true,
+            "strict_pass": true,
+            "note": "Same complete task delivered with separate local references"
+          },
+          "seconds": 59.112094299984165,
+          "tokens": {
+            "devstral_prompt": 3743,
+            "devstral_completion": 245,
+            "grounding_prompt": 981,
+            "grounding_completion": 6,
+            "total": 4975
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/e2e/E-window-baseline.json",
+          "case": "E-window",
+          "strategy": "baseline",
+          "internal_accepted": false,
+          "independent_review": {
+            "plan_valid": false,
+            "necessary_actions_executed": false,
+            "collection_complete": false,
+            "final_generated": false,
+            "complete": false,
+            "citations_valid": null,
+            "facts_correct": null,
+            "strict_pass": false,
+            "note": "Invalid plan, no initial signature read and no corrected read"
+          },
+          "seconds": 137.4490769999975,
+          "tokens": {
+            "devstral_prompt": 1944,
+            "devstral_completion": 584,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 2528
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/e2e/E-window-guided.json",
+          "case": "E-window",
+          "strategy": "guided",
+          "internal_accepted": false,
+          "independent_review": {
+            "plan_valid": false,
+            "necessary_actions_executed": false,
+            "collection_complete": false,
+            "final_generated": false,
+            "complete": false,
+            "citations_valid": null,
+            "facts_correct": null,
+            "strict_pass": false,
+            "note": "Same invalid plan; a final prompt change cannot supply the absent corrected read"
+          },
+          "seconds": 137.2770898999879,
+          "tokens": {
+            "devstral_prompt": 1944,
+            "devstral_completion": 584,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 2528
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/e2e/F-missing-baseline.json",
+          "case": "F-missing",
+          "strategy": "baseline",
+          "internal_accepted": false,
+          "independent_review": {
+            "plan_valid": true,
+            "necessary_actions_executed": false,
+            "collection_complete": false,
+            "final_generated": false,
+            "complete": false,
+            "citations_valid": null,
+            "facts_correct": null,
+            "strict_pass": false,
+            "note": "Real errors on absent.py then invented present.py; stops user_decision before successful collection"
+          },
+          "seconds": 59.47728520000237,
+          "tokens": {
+            "devstral_prompt": 4594,
+            "devstral_completion": 247,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 4841
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/e2e/F-missing-guided.json",
+          "case": "F-missing",
+          "strategy": "guided",
+          "internal_accepted": false,
+          "independent_review": {
+            "plan_valid": true,
+            "necessary_actions_executed": false,
+            "collection_complete": false,
+            "final_generated": false,
+            "complete": false,
+            "citations_valid": null,
+            "facts_correct": null,
+            "strict_pass": false,
+            "note": "Same missing-path failure, no body read, no finalizer invoked; cannot attribute failure to guided generation"
+          },
+          "seconds": 94.57803489998332,
+          "tokens": {
+            "devstral_prompt": 5665,
+            "devstral_completion": 390,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 6055
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/e2e/H-tests-baseline.json",
+          "case": "H-tests",
+          "strategy": "baseline",
+          "internal_accepted": false,
+          "independent_review": {
+            "plan_valid": false,
+            "necessary_actions_executed": false,
+            "collection_complete": false,
+            "final_generated": false,
+            "complete": false,
+            "citations_valid": null,
+            "facts_correct": null,
+            "strict_pass": false,
+            "note": "Invalid plan before MCP collection"
+          },
+          "seconds": 134.02583890000824,
+          "tokens": {
+            "devstral_prompt": 1882,
+            "devstral_completion": 568,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 2450
+          }
+        },
+        {
+          "artifact": "data/memory/m8-finalization-20261017/e2e/H-tests-guided.json",
+          "case": "H-tests",
+          "strategy": "guided",
+          "internal_accepted": false,
+          "independent_review": {
+            "plan_valid": false,
+            "necessary_actions_executed": false,
+            "collection_complete": false,
+            "final_generated": false,
+            "complete": false,
+            "citations_valid": null,
+            "facts_correct": null,
+            "strict_pass": false,
+            "note": "Same invalid plan, finalizer not invoked"
+          },
+          "seconds": 133.57307869999204,
+          "tokens": {
+            "devstral_prompt": 1882,
+            "devstral_completion": 568,
+            "grounding_prompt": 0,
+            "grounding_completion": 0,
+            "total": 2450
+          }
+        }
+      ]
+    },
+    "extraction": [
+      {
+        "case": "holdout-exact-code",
+        "strategy": "direct_extraction",
+        "candidate": "```python\ndef project_memory_dir(project_path: str | Path, memory_root: str | Path) -> Path:\n    project_path = Path(project_path).resolve()\n    project_id = hashlib.sha256(str(project_path).encode(\"utf-8\")).hexdigest()[:8]\n    return Path(memory_root) / f\"{project_path.name}-{project_id}\"\n```\n[S2]",
+        "answer": "```python\ndef project_memory_dir(project_path: str | Path, memory_root: str | Path) -> Path:\n    project_path = Path(project_path).resolve()\n    project_id = hashlib.sha256(str(project_path).encode(\"utf-8\")).hexdigest()[:8]\n    return Path(memory_root) / f\"{project_path.name}-{project_id}\"\n```\n[S2]",
+        "accepted": true,
+        "seconds": 2.357605400000466,
+        "tokens": {
+          "devstral_prompt": 0,
+          "devstral_completion": 0,
+          "grounding_prompt": 594,
+          "grounding_completion": 3,
+          "total": 597
+        },
+        "final_generation_calls": 0,
+        "limitation": "Complete source delivery only; does not certify additional semantic deliverables or autonomous collection"
+      },
+      {
+        "case": "Markdown",
+        "strategy": "direct_extraction",
+        "candidate": "```python\ndef extract_names(target):\n    if isinstance(target, ast.Name):\n        return [target.id]\n    elif isinstance(target, ast.Tuple):\n        names = []\n        for elt in target.elts:\n            names.extend(extract_names(elt))\n        return names\n    elif isinstance(target, ast.Attribute):\n        return [ast.unparse(target)]\n    return []\n```\n[S2]",
+        "answer": "```python\ndef extract_names(target):\n    if isinstance(target, ast.Name):\n        return [target.id]\n    elif isinstance(target, ast.Tuple):\n        names = []\n        for elt in target.elts:\n            names.extend(extract_names(elt))\n        return names\n    elif isinstance(target, ast.Attribute):\n        return [ast.unparse(target)]\n    return []\n```\n[S2]",
+        "accepted": true,
+        "seconds": 2.489468300016597,
+        "tokens": {
+          "devstral_prompt": 0,
+          "devstral_completion": 0,
+          "grounding_prompt": 611,
+          "grounding_completion": 3,
+          "total": 614
+        },
+        "final_generation_calls": 0,
+        "limitation": "Complete source delivery only; does not certify additional semantic deliverables or autonomous collection"
+      }
+    ]
+  },
+  "combined": {
+    "baseline": {
+      "trials": 10,
+      "delivered_correct": 3,
+      "complete_candidates": 10,
+      "correct_candidates": 7,
+      "false_successes": 0,
+      "false_rejections": 4,
+      "invalid_citations": 2,
+      "unjustified_abstentions": 1,
+      "tokens": 34825,
+      "seconds": 648.0445127000276
+    },
+    "guided": {
+      "trials": 10,
+      "delivered_correct": 3,
+      "complete_candidates": 9,
+      "correct_candidates": 6,
+      "false_successes": 0,
+      "false_rejections": 3,
+      "invalid_citations": 2,
+      "unjustified_abstentions": 0,
+      "tokens": 38460,
+      "seconds": 310.3622953001177
+    }
+  },
+  "same_selected_sources": {
+    "B": true,
+    "F": true,
+    "H": true,
+    "Markdown": true,
+    "negative": true,
+    "holdout-compare": true,
+    "holdout-exact-code": true,
+    "holdout-function": true,
+    "holdout-missing": true,
+    "holdout-tests": true
+  },
+  "validation": {
+    "pytest_passed": 684,
+    "memory_checks": {
+      "context_bounded": true,
+      "fixture_recall_complete": true,
+      "extractive_fidelity": true,
+      "sources_and_grounding_preserved": true,
+      "errors_recovered": true,
+      "no_summary_model_calls": true
+    },
+    "planning_checks": {
+      "context_bounded": true,
+      "completed_steps_have_evidence": true,
+      "routing_no_false_positives": true,
+      "routing_no_false_negatives": true,
+      "scenario_expectations_met": true,
+      "controlled_stops_and_recovery": true
+    }
+  },
+  "archives": {
+    "initial-code.zip": "3e1dea0182f30786afe7d64d5cd19f8cc7178d8b701470f8496bb0ed362b92ed",
+    "experiment-with-revision.zip": "e981dc15cdabf69f098f5e952f9f3bc97378344e53ebcee983936c777cb877b8",
+    "experiment-recovery-selection.zip": "99de023e1c9993954e23744692691b439a5aa88692cabff910b4eef8f95234b7"
+  },
+  "limitations": [
+    "Project conversation JSONL inspected: 49 entries, latest 2026-10-14, M7/debug/isolation sessions. Does not contain the missing older M8 B/E/F/H or Markdown recordings.",
+    "Oldest B abstention and Markdown raw recordings unavailable. Recorded complete pilot observations reused, not invented historical equivalents.",
+    "One trial per case/strategy, sequential. Cold first trial and uncontrolled model residency; no speed claim.",
+    "Frozen finalization observations do not measure autonomous collection. E excluded because corrected read absent.",
+    "Some independent false-rejection labels depend on explicit semantic interpretation documented in each review.",
+    "No general semantic completeness certificate. Zero false successes observed is not a universal guarantee.",
+    "B and C production branches and selectors removed after evaluation; exact experiment source remains archived.",
+    "Selection safeguard retains actual corrected tool execution; separate real F pair remains 0/1 in each strategy.",
+    "Direct extraction validates normalized observed code only, not additional explanations, autonomous execution or byte-exact EOF conventions."
+  ]
+}

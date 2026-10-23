@@ -1,13 +1,19 @@
 import json
+import sys
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
+import numpy as np
 import pytest
+from markdown_it import MarkdownIt
 
 import app.agent.tool_loop as loop_module
-from app.agent.tool_loop import ToolLoop
+from app.agent.tool_loop import ToolLoop, normalize_single_source_citations
 from app.llm import LocalLLM
 from app.memory.conversation import ConversationMemory
 from app.rag import RAGPipeline
+from app.rag.grounding import extract_claims
+from tests.test_rag_grounding import source
 from tests.test_rag_pipeline import make_chunk
 from tests.test_tool_loop import FakeClient, FakeGroundingLLM, FakeLLM, tool_result
 
@@ -443,6 +449,63 @@ def test_missing_citation_is_attached_only_after_single_source_verification(verd
                       "La réponse générée contient des affirmations non supportées par les sources.")
 
 
+@pytest.mark.parametrize("fence", ["```", "````", "~~~"])
+@pytest.mark.parametrize("newline", ["\n", "\r\n"])
+def test_citation_repair_preserves_code_and_inline_characters(fence, newline, monkeypatch):
+    monkeypatch.setenv("CODEAGENT_DEBUG", "1")
+    from app.rag.grounding import claims_have_citations
+
+    block = (f'{fence}python\n'
+             'def marker(value: str = "é\\t`[S1]`"):\n'
+             '\ttext = "first\\n\\nsecond"  \n\n'
+             '    return value != "\\\\" and {"key": text}\n'
+             f'{fence}').replace("\n", newline)
+    inline = '`value != "\\\\"`'
+    candidate = f"Voici le code :{newline}{newline}{block}{newline}{newline}Expression {inline}."
+    grounding = FakeGroundingLLM()
+    agent = ToolLoop(llm=FakeLLM([]), grounding_llm=grounding, server=object())
+
+    result = agent._finalize_answer(candidate, [make_chunk()])
+
+    assert block in result
+    assert inline in result
+    assert result.endswith(f"Expression {inline}. [S1]")
+    assert claims_have_citations(result)
+    assert agent.last_grounding == "passed"
+    assert agent.last_debug["citation_repair"] == "verified"
+
+
+def test_citation_repair_preserves_code_blank_line_and_indentation():
+    from app.agent.tool_loop import normalize_single_source_citations
+
+    block = "```python\ndef marker():\n    value = 42\n\n    return value\n```"
+    candidate = f"Voici le code :\n\n{block}\n\nLa valeur vaut 42."
+    result = normalize_single_source_citations(candidate, 1)
+    assert block in result
+    assert result.endswith("La valeur vaut 42. [S1]")
+
+
+def test_citation_repair_preserves_multiline_inline_code_and_existing_references():
+    from app.agent.tool_loop import normalize_single_source_citations
+
+    inline = '``value = "`"\n\n    value + "é"``'
+    block = '```python\nvalue = "``` ~~~"\n\n    other = "é"\n```'
+    candidate = f"Premier fait [S1].\n\n[S1]\n\n{block}\n\nExpression {inline}."
+    assert normalize_single_source_citations(candidate, 1) == candidate.replace(
+        block, block + "\n[S1]",
+    ) + " [S1]"
+
+
+@pytest.mark.parametrize("code", ["```python\ndef marker():\n\n    return 42", "`value\n\nmore"])
+def test_unclosed_code_cannot_be_repaired_inside_the_code(code, monkeypatch):
+    monkeypatch.setenv("CODEAGENT_DEBUG", "1")
+    agent = ToolLoop(llm=FakeLLM([]), grounding_llm=FakeGroundingLLM(), server=object())
+    result = agent._finalize_answer("Voici le code :\n\n" + code, [make_chunk()])
+    assert "citations invalides ou manquantes" in result
+    assert agent.last_grounding == "citation_error"
+    assert agent.last_debug["citation_repair"] == "rejected"
+
+
 @pytest.mark.parametrize("answer", [
     "ORION vaut 42. Je ne peux pas déterminer le reste à partir des sources disponibles.",
     "ORION vaut 42 [S9]. Je ne peux pas déterminer le reste à partir des sources disponibles.",
@@ -586,3 +649,127 @@ async def test_project_name_and_tool_in_conversation_recall_do_not_require_docum
     assert await agent.ask(question) == "read_file"
     assert agent.last_grounding == "not_used"
     assert agent.last_trace == []
+
+
+@pytest.mark.parametrize("candidate", [
+    "```python\nx = 1\n```",
+    "Avant.\n\n```python\nif True:\n    text = '<&>'\n```\n\nAprès.",
+    "```python\nx = 1\n```\n\n```python\ny = 2\n```",
+    "Texte `print('[S8]')`.",
+    "~~~python\nx = '[S2]'\n~~~",
+    "````python\ntext = '```'\n````",
+    "  ```python\r\n  x = '[S8]'\r\n  ```  \r\n\r\nAprès.",
+])
+def test_R5_repair_preserves_markdown_structure(candidate):
+    result = normalize_single_source_citations(candidate, 1)
+    original = MarkdownIt().parse(candidate)
+    repaired = MarkdownIt().parse(result)
+    original_code = [(t.type, t.markup, t.info, t.content) for t in original if t.type == "fence"]
+    repaired_code = [(t.type, t.markup, t.info, t.content) for t in repaired if t.type == "fence"]
+    assert repaired_code == original_code
+    assert [(c.type, c.content) for t in repaired for c in (t.children or []) if c.type == "code_inline"] == [
+        (c.type, c.content) for t in original for c in (t.children or []) if c.type == "code_inline"]
+    assert result.replace(" [S1]", "").replace("\r\n[S1]", "").replace("\n[S1]", "") == candidate
+    assert all(not (line.strip().startswith(("```", "~~~")) and "[S1]" in line) for line in result.splitlines())
+    assert all(ids == [1] for _, ids in extract_claims(result))
+
+
+def test_R5_existing_reference_and_impossible_repair():
+    cited = "Code [S1] :\n\n```python\n    x = 1\n```"
+    assert normalize_single_source_citations(cited, 1) == cited
+    for candidate in ("```python\nx = 1", "Texte `incomplet"):
+        assert normalize_single_source_citations(candidate, 1) == candidate
+    candidate = "```python\nx = 1\n```"
+    assert normalize_single_source_citations(candidate, 2) == candidate
+    judge = MagicMock()
+    judge.generate.return_value = "UNSUPPORTED"
+    agent = ToolLoop(llm=FakeLLM([]), grounding_llm=judge)
+    assert agent._finalize_answer(candidate, [source("x = 2")]) != candidate
+
+
+class Embedding:
+    def encode(self, texts, **kwargs):
+        return np.zeros((len(texts), 384), dtype="float32")
+
+
+@pytest.mark.parametrize("state", ["coherent", "no_manifest", "no_index", "changed"])
+def test_R10_index_provenance_and_restart(tmp_path, monkeypatch, state):
+    import app.main as main
+    from app.memory.project_state import build_manifest, save_manifest
+    from app.memory.vector_store import build_index, save_index
+    from app.parser.file_loader import read_dir
+    from app.utils.paths import project_memory_dir
+    project = tmp_path / "project"
+    project.mkdir()
+    file = project / "state.py"
+    file.write_text("FLAG = 1\n", encoding="utf8")
+    memory_root = tmp_path / "memory"
+    directory = project_memory_dir(project, memory_root)
+    chunks = [{"file": str(file), "type": "variable", "name": "FLAG", "content": "FLAG = 1", "start_line": 1, "end_line": 1}]
+    if state != "no_index":
+        save_index(build_index(Embedding(), chunks), chunks, directory)
+    if state != "no_manifest":
+        save_manifest(build_manifest(read_dir(project), project), directory)
+    if state != "coherent":
+        file.write_text("FLAG = 2\n", encoding="utf8")
+    monkeypatch.setattr(main, "PROJECT_PATH", project)
+    monkeypatch.setattr(main, "MEMORY_ROOT", memory_root)
+    monkeypatch.setitem(sys.modules, "sentence_transformers", SimpleNamespace(SentenceTransformer=lambda _: Embedding()))
+    monkeypatch.setattr(main, "LocalLLM", lambda **kw: FakeLLM([]))
+    original = main.build_index
+    builder = MagicMock(wraps=original)
+    monkeypatch.setattr(main, "build_index", builder)
+    first, _, _ = main.build_rag_pipeline()
+    second, _, _ = main.build_rag_pipeline()
+    expected = "FLAG = 1" if state == "coherent" else "FLAG = 2"
+    assert first.retriever.__self__.chunks[0]["content"] == expected
+    assert second.retriever.__self__.chunks[0]["content"] == expected
+    assert first.retriever("FLAG", 1)[0]["content"] == expected
+    assert second.retriever("FLAG", 1)[0]["content"] == expected
+    assert builder.call_count == (1 if state in {"no_index", "no_manifest"} else 0)
+
+
+@pytest.mark.parametrize("failure", ["build", "serialize", "interrupt_index", "interrupt_chunks", "interrupt_manifest"])
+def test_R10_failed_update_never_marks_old_index_current(tmp_path, monkeypatch, failure):
+    import app.main as main
+    from pathlib import Path
+    from app.memory.project_state import load_manifest
+    from app.memory.vector_store import load_index
+    project = tmp_path / "project"
+    project.mkdir()
+    file = project / "state.py"
+    file.write_text("FLAG = 1\n", encoding="utf8")
+    monkeypatch.setattr(main, "PROJECT_PATH", project)
+    monkeypatch.setattr(main, "MEMORY_ROOT", tmp_path / "memory")
+    monkeypatch.setitem(sys.modules, "sentence_transformers", SimpleNamespace(SentenceTransformer=lambda _: Embedding()))
+    monkeypatch.setattr(main, "LocalLLM", lambda **kw: FakeLLM([]))
+    _, _, directory = main.build_rag_pipeline()
+    old = {name: (directory / name).read_bytes() for name in ("index.faiss", "chunks.json", "manifest.json")}
+    file.write_text("FLAG = 2\n", encoding="utf8")
+    with monkeypatch.context() as fault:
+        if failure == "build":
+            fault.setattr(main, "update_index", MagicMock(side_effect=RuntimeError("embedding failed")))
+        elif failure == "serialize":
+            fault.setattr(main, "save_manifest", MagicMock(side_effect=OSError("disk full")))
+        else:
+            replace = Path.replace
+            filename = {"interrupt_index": "index.faiss", "interrupt_chunks": "chunks.json", "interrupt_manifest": "manifest.json"}[failure]
+            def interrupted(path, target):
+                if path.name == filename:
+                    raise KeyboardInterrupt("interrupted publication")
+                return replace(path, target)
+            fault.setattr(Path, "replace", interrupted)
+        with pytest.raises((RuntimeError, OSError, KeyboardInterrupt)):
+            main.build_rag_pipeline()
+    if failure in {"build", "serialize"}:
+        assert all((directory / name).read_bytes() == content for name, content in old.items())
+        assert load_index(directory)[1][0]["content"] == "FLAG = 1"
+    else:
+        assert not (directory / "manifest.json").exists()
+    repaired, _, _ = main.build_rag_pipeline()
+    assert repaired.retriever.__self__.chunks[0]["content"] == "FLAG = 2"
+    assert repaired.retriever("FLAG", 1)[0]["content"] == "FLAG = 2"
+    assert "state.py" in load_manifest(directory)
+    restarted, _, _ = main.build_rag_pipeline()
+    assert restarted.retriever.__self__.chunks[0]["content"] == "FLAG = 2"
+    assert restarted.retriever("FLAG", 1)[0]["content"] == "FLAG = 2"

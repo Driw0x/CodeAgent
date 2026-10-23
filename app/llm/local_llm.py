@@ -66,6 +66,7 @@ class LocalLLM:
             "total_tokens": prompt_tokens + completion_tokens,
         }
         self.last_request_stats = {
+            "done_reason": data.get("done_reason"),
             "load_duration_ms": (data.get("load_duration", 0) or 0) / 1_000_000,
             "prompt_eval_duration_ms": (
                 data.get("prompt_eval_duration", 0) or 0
@@ -138,12 +139,11 @@ class LocalLLM:
             payload["system"] = system_prompt
 
         data = self._request("/api/generate", payload)
+        self._record_stats(data)
         generated_text = data.get("response")
 
         if not isinstance(generated_text, str) or not generated_text.strip():
             raise RuntimeError("Ollama returned an empty response.")
-
-        self._record_stats(data)
 
         return generated_text.strip()
 
@@ -170,6 +170,7 @@ class LocalLLM:
             payload["tools"] = tools
 
         data = self._request("/api/chat", payload)
+        self._record_stats(data)
         message = data.get("message")
 
         if not isinstance(message, dict):
@@ -180,7 +181,5 @@ class LocalLLM:
 
         if (not isinstance(content, str) or not content.strip()) and not tool_calls:
             raise RuntimeError("Ollama returned an empty chat response.")
-
-        self._record_stats(data)
 
         return message

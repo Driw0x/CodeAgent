@@ -1,4 +1,4 @@
-[Français](rag_quality.md) | [简体中文](rag_quality.zh-CN.md)
+[English](rag_quality.md) | [Français](rag_quality.fr.md) | [简体中文](rag_quality.zh-CN.md)
 
 [项目 README](../README.zh-CN.md)
 

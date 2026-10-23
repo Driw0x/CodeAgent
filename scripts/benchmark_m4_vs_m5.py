@@ -15,7 +15,7 @@ from app.rag.citations import (
     validate_citations,
 )
 from app.rag.grounding import (
-    is_missing_information,
+    is_pure_abstention,
     verify_grounding,
 )
 from app.rag.prompt import (
@@ -213,7 +213,7 @@ def has_answer_content(
     sentences = re.split(r"(?<=[.!?])\s+", answer)
     for sentence in sentences:
         sentence = sentence.strip()
-        if sentence and not is_abstention(sentence) and not is_missing_information(sentence):
+        if sentence and not is_abstention(sentence) and not is_pure_abstention(sentence):
             return True
     return False
 

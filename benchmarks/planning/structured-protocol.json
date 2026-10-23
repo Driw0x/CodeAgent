@@ -1,0 +1,25 @@
+{
+  "protocol": "m8-structured-20261017",
+  "primary": "Independent end-to-end success, complete requested actions and faithful locally cited answer; schema compliance alone never counts as success.",
+  "models": ["devstral:24b", "qwen2.5-coder:14b"],
+  "options": {"temperature": 0, "seed": 42, "num_ctx": 16384, "num_predict": 512, "timeout": 300},
+  "budgets": {"max_steps": 12, "max_plan_steps": 6, "max_replans": 2, "max_tool_calls": 16, "max_total_tokens": 32768, "max_seconds": 900},
+  "treatment": "Only /api/chat format on planner requests. Same system/user prompts, native tools, finalizer, grounder, fresh memory, temporary project and validators. No schema inserted into the prompt in B.",
+  "order": ["H current", "H schema", "E current/schema only if H changes validity or execution", "B current/schema regression", "F current/schema complementary recovery control"],
+  "extension": "Only if independent end-to-end benefit appears without critical regression: two further warm paired trials for H/E/B, then the frozen holdout below, without tuning. Otherwise stop the campaign. No finalization/model experiment unless the first results justify it.",
+  "adopt": "Executable-plan gain, independent end-to-end gain on critical and unseen tasks, no critical regression or false success, acceptable measured cost. Otherwise KEEP CURRENT when no real gain; INCONCLUSIVE for insufficient or obstructed comparison.",
+  "review": "Static independent review against exact fixture contents, executed MCP arguments/results and source mappings; not a second model judge, not an additional human review. Check every factual assertion and citation, omissions, abstention, exact-code requests and declared goal_achieved separately from benchmark success.",
+  "holdout": {
+    "files": {
+      "polar.py": "def polar_value():\n    return 73\n",
+      "test_polar.py": "from polar import polar_value\n\ndef test_polar_value():\n    assert polar_value() == 73\n",
+      "north.py": "LIMIT = 7\n",
+      "south.py": "LIMIT = 11\n"
+    },
+    "cases": [
+      {"id": "holdout-function", "question": "Localise polar_value, puis lis son implémentation.", "needs_plan": true, "expected_success": true, "options": {}, "required_reads": ["polar.py"], "read_contains": {"polar.py": ["def polar_value():", "return 73"]}, "answer_contains": ["polar_value", "73"]},
+      {"id": "holdout-tests", "question": "Localise polar_value, puis lis son implémentation, puis localise les tests associés, puis lis ces tests.", "needs_plan": true, "expected_success": true, "options": {}, "required_reads": ["polar.py", "test_polar.py"], "read_contains": {"polar.py": ["return 73"], "test_polar.py": ["def test_polar_value():", "assert polar_value() == 73"]}, "answer_contains": ["polar_value", "73", "test_polar_value"]},
+      {"id": "holdout-compare", "question": "Lis north.py, puis lis south.py, puis compare LIMIT dans north.py et south.py.", "needs_plan": true, "expected_success": true, "options": {}, "required_reads": ["north.py", "south.py"], "read_contains": {"north.py": ["LIMIT = 7"], "south.py": ["LIMIT = 11"]}, "answer_contains": ["LIMIT", "7", "11"]}
+    ]
+  }
+}

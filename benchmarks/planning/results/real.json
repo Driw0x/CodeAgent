@@ -1,0 +1,300 @@
+{
+  "protocol": "planning-v1-real",
+  "models": [
+    "devstral:24b",
+    "qwen2.5-coder:14b"
+  ],
+  "simulated": false,
+  "criteria": "Current MCP read evidence, required answer facts, accepted citations/grounding, and every planned step complete.",
+  "limitations": [
+    "Fixture choices and grounding are scripted; they measure execution mechanics, never model intelligence or production latency.",
+    "Fixture tokens are synthetic UTF-8 byte/4 estimates; actual_model_tokens is null without Ollama.",
+    "M6/M8 use identical fixture call sequences, budgets, source data and fresh memory; no measured advantage is presumed.",
+    "Real mode uses the real router/planner/tools/final/grounder. Scripted invalid-plan/error/replan injections apply only to fixture mode.",
+    "Real expected failures are not guaranteed: Ollama may choose different valid calls; review answers and raw evidence.",
+    "Per-step latency comes from recorded start/completion/failure events; unfinished attempts have no completion latency.",
+    "Known M7 result remains 7/7 read_file successes and 0/7 fully autonomous finals; this benchmark does not revise it."
+  ],
+  "checks": {
+    "context_bounded": true,
+    "completed_steps_have_evidence": true,
+    "routing_no_false_positives": true,
+    "routing_no_false_negatives": true,
+    "scenario_expectations_met": false
+  },
+  "results": [
+    {
+      "case": "dependent",
+      "execution": "off",
+      "mode": "M6_DIRECT",
+      "question": "Localise marker, puis lis son implémentation.",
+      "simulated": false,
+      "success": false,
+      "expected_success": true,
+      "expectation_met": false,
+      "evidence_complete": false,
+      "answer_complete": false,
+      "planning_needed": true,
+      "planning_selected": false,
+      "planning_false_positive": null,
+      "planning_false_negative": null,
+      "planning_calls": 0,
+      "completed_steps": 0,
+      "planned_steps": 0,
+      "independently_valid_steps": 0,
+      "completed_step_evidence_valid": true,
+      "replans": 0,
+      "replanning_success": null,
+      "repeated_calls": 0,
+      "tool_calls": 0,
+      "tool_successes": 0,
+      "tool_failures": 0,
+      "tool_schema_or_validation_errors": 0,
+      "max_context_estimate": 4534,
+      "input_limit": 15616,
+      "context_bounded": true,
+      "grounding": "not_used",
+      "grounded_non_abstention": false,
+      "seconds": 300.09776950004743,
+      "stage_seconds": {
+        "planner": 0.0,
+        "mcp_setup": 0.005262299964670092,
+        "agent": 300.09163549996447,
+        "tools": 0.0,
+        "final": 0.0,
+        "grounding": 0.0
+      },
+      "step_seconds": null,
+      "actual_model_tokens": null,
+      "fixture_token_estimates": null,
+      "stage_tokens": {
+        "planner": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0
+        },
+        "agent": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0
+        },
+        "final": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0
+        },
+        "grounding": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0
+        }
+      },
+      "answer": "",
+      "error": "RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out.",
+      "stop_reason": null,
+      "execution_state": {
+        "goal": "Localise marker, puis lis son implémentation.",
+        "mode": "M6_DIRECT",
+        "reason": "planning désactivé explicitement",
+        "plan": [],
+        "current_step": null,
+        "completed": [],
+        "remaining": [],
+        "observations": [],
+        "errors": [],
+        "replans": 0,
+        "stop_reason": null,
+        "budgets": {
+          "tool_calls": 16,
+          "tokens": 27722,
+          "seconds": 599.9024129000027
+        },
+        "events": [
+          {
+            "event": "routing",
+            "seconds": 0.0,
+            "mode": "M6_DIRECT",
+            "reason": "planning désactivé explicitement",
+            "request": "Localise marker, puis lis son implémentation."
+          },
+          {
+            "event": "summary",
+            "seconds": 300.0976,
+            "completed": [],
+            "remaining": [],
+            "tool_calls": 0,
+            "replans": 0,
+            "stop_reason": null,
+            "grounding": "not_used",
+            "tokens": {
+              "devstral_prompt": 0,
+              "devstral_completion": 0,
+              "grounding_prompt": 0,
+              "grounding_completion": 0,
+              "total": 0
+            },
+            "budgets": {
+              "tool_calls": 16,
+              "tokens": 27722,
+              "seconds": 599.9024129000027
+            }
+          }
+        ]
+      },
+      "trace": [],
+      "observations": {},
+      "source_mapping": {},
+      "grounding_claims": [],
+      "unavailable_model_counters": {
+        "devstral_prompt": 0,
+        "devstral_completion": 0,
+        "grounding_prompt": 0,
+        "grounding_completion": 0,
+        "total": 0
+      },
+      "token_measurement": "unavailable_no_response"
+    },
+    {
+      "case": "dependent",
+      "execution": "auto",
+      "mode": "M8_PLANNED",
+      "question": "Localise marker, puis lis son implémentation.",
+      "simulated": false,
+      "success": false,
+      "expected_success": true,
+      "expectation_met": false,
+      "evidence_complete": false,
+      "answer_complete": false,
+      "planning_needed": true,
+      "planning_selected": true,
+      "planning_false_positive": false,
+      "planning_false_negative": false,
+      "planning_calls": 1,
+      "completed_steps": 0,
+      "planned_steps": 0,
+      "independently_valid_steps": 0,
+      "completed_step_evidence_valid": true,
+      "replans": 0,
+      "replanning_success": null,
+      "repeated_calls": 0,
+      "tool_calls": 0,
+      "tool_successes": 0,
+      "tool_failures": 0,
+      "tool_schema_or_validation_errors": 0,
+      "max_context_estimate": 1607,
+      "input_limit": 15616,
+      "context_bounded": true,
+      "grounding": "not_used",
+      "grounded_non_abstention": false,
+      "seconds": 300.0092543999781,
+      "stage_seconds": {
+        "planner": 300.0071326000034,
+        "mcp_setup": 0.0008773999870754778,
+        "agent": 0.0,
+        "tools": 0.0,
+        "final": 0.0,
+        "grounding": 0.0
+      },
+      "step_seconds": null,
+      "actual_model_tokens": null,
+      "fixture_token_estimates": null,
+      "stage_tokens": {
+        "planner": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0
+        },
+        "agent": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0
+        },
+        "final": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0
+        },
+        "grounding": {
+          "prompt_tokens": 0,
+          "completion_tokens": 0
+        }
+      },
+      "answer": "Exécution arrêtée : execution_error.\nCollecte validée : aucune.\nÉtapes non terminées : aucune.\nObjectif final non validé.\nInformations/diagnostic : RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out..",
+      "error": null,
+      "stop_reason": "execution_error",
+      "execution_state": {
+        "goal": "Localise marker, puis lis son implémentation.",
+        "mode": "M8_PLANNED",
+        "reason": "plusieurs actions avec dépendance explicite",
+        "plan": [],
+        "current_step": null,
+        "completed": [],
+        "remaining": [],
+        "observations": [],
+        "errors": [
+          "RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out."
+        ],
+        "replans": 0,
+        "stop_reason": "execution_error",
+        "budgets": {
+          "tool_calls": 16,
+          "tokens": 30649,
+          "seconds": 599.9914411999634
+        },
+        "events": [
+          {
+            "event": "routing",
+            "seconds": 0.0,
+            "mode": "M8_PLANNED",
+            "reason": "plusieurs actions avec dépendance explicite",
+            "request": "Localise marker, puis lis son implémentation."
+          },
+          {
+            "event": "stop",
+            "seconds": 300.0085,
+            "reason": "execution_error",
+            "completed": [],
+            "remaining": [],
+            "detail": "RuntimeError: Unable to reach Ollama at http://127.0.0.1:11434 or the request timed out."
+          },
+          {
+            "event": "summary",
+            "seconds": 300.0086,
+            "completed": [],
+            "remaining": [],
+            "tool_calls": 0,
+            "replans": 0,
+            "stop_reason": "execution_error",
+            "grounding": "not_used",
+            "tokens": {
+              "devstral_prompt": 0,
+              "devstral_completion": 0,
+              "grounding_prompt": 0,
+              "grounding_completion": 0,
+              "total": 0
+            },
+            "budgets": {
+              "tool_calls": 16,
+              "tokens": 30649,
+              "seconds": 599.9914411999634
+            }
+          }
+        ]
+      },
+      "trace": [],
+      "observations": {},
+      "source_mapping": {},
+      "grounding_claims": [],
+      "unavailable_model_counters": {
+        "devstral_prompt": 0,
+        "devstral_completion": 0,
+        "grounding_prompt": 0,
+        "grounding_completion": 0,
+        "total": 0
+      },
+      "token_measurement": "unavailable_no_response"
+    }
+  ],
+  "routing": {
+    "false_positives": 0,
+    "false_negatives": 0,
+    "samples": 1
+  },
+  "measurement_notes": [
+    "Both requests timed out before any Ollama response. Initialized zero counters are unavailable measurements, retained separately.",
+    "Captured before final reporting and deadline metadata refinements; no successful generation was retested."
+  ]
+}

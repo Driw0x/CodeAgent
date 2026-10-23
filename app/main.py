@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import json
 import os
+import tempfile
 import traceback
 from pathlib import Path
 from time import perf_counter
@@ -89,9 +90,21 @@ def print_agent_stats(agent: ToolLoop, elapsed: float):
     print(f"Grounding prompt tokens     : " f"{stats['grounding_prompt']}")
     print(f"Grounding generated tokens  : " f"{stats['grounding_completion']}")
     print(f"Total tokens                : " f"{stats['total']}")
+    if not stats["total"]:
+        print("Token measurement           : unavailable (no completed model request)")
     print(f"Agent steps                 : " f"{agent.last_steps}")
     print(f"Tool calls                  : " f"{len(agent.last_trace)}")
     print(f"Grounding                   : " f"{agent.last_grounding}")
+    execution = agent.last_execution
+    print(f"Execution mode              : {execution.get('mode', 'unavailable')}")
+    print(f"Stop reason                 : {execution.get('stop_reason') or 'M6 direct response'}")
+    if execution.get("human"):
+        print("HITL metrics                : " + json.dumps(execution["human"], ensure_ascii=False))
+        print("Remaining budget            : " + json.dumps(execution["budgets"], ensure_ascii=False))
+        print(f"Finalization attempts        : {len(execution.get('final_attempts', []))}")
+    if execution.get("plan"):
+        print(f"Completed / unfinished      : {execution['completed']} / {execution['remaining']}")
+        print(f"Replanning count            : {execution['replans']}")
     print(f"Response time               : " f"{elapsed:.2f} s")
     print("\nStage details")
     print("---------------------------------")
@@ -111,6 +124,7 @@ def print_agent_stats(agent: ToolLoop, elapsed: float):
         f"{stages['grounding']['completion_tokens']}"
     )
     print(f"MCP setup time              : " f"{times['mcp_setup']:.2f} s")
+    print(f"Planner tokens / time       : {stages['planner']['prompt_tokens']} + {stages['planner']['completion_tokens']} / {times['planner']:.2f} s")
     print(f"Agent LLM time              : " f"{times['agent']:.2f} s")
     print(f"Tools time                  : " f"{times['tools']:.2f} s")
     print(f"Final answer time           : " f"{times['final']:.2f} s")
@@ -167,12 +181,12 @@ def preload_model(llm, label: str):
     print(f"{label} ready in " f"{elapsed:.2f} s")
 
 
-def run_agent(session_id="default", context_tokens=None):
+def run_agent(session_id="default", context_tokens=None, **execution_options):
     print("\nAgent mode")
     llm = LocalLLM(model="devstral:24b", context_tokens=context_tokens)
     memory_dir = project_memory_dir(PROJECT_PATH, MEMORY_ROOT)
     memory = ConversationMemory(memory_dir, session_id, max_tokens=max(512, ContextBudget.for_llm(llm).input_limit // 3))
-    agent = ToolLoop(llm=llm, memory=memory)
+    agent = ToolLoop(llm=llm, memory=memory, **execution_options)
     if context_tokens is not None:
         agent.grounding_llm = LocalLLM(model=agent.grounding_llm.model, context_tokens=context_tokens)
     print(f"Session: {session_id} | checkpoint: {memory.state_path}")
@@ -214,6 +228,20 @@ def run_agent(session_id="default", context_tokens=None):
             print("Debug: " + json.dumps(agent.last_debug, ensure_ascii=False))
 
 
+def _save_rag_state(index, chunks, manifest, directory):
+    """Stage all files before publishing; a missing manifest invalidates interrupted writes."""
+    directory.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="rag-update-", dir=directory) as temporary:
+        staged = Path(temporary)
+        save_index(index, chunks, staged)
+        save_manifest(manifest, staged)
+        # The old snapshot survives build/serialization failures. Once publication starts,
+        # remove its validity marker before replacing either member of the index pair.
+        (directory / "manifest.json").unlink(missing_ok=True)
+        for name in ("index.faiss", "chunks.json", "manifest.json"):
+            (staged / name).replace(directory / name)
+
+
 def build_rag_pipeline(session_id="default", context_tokens=None):
     from sentence_transformers import SentenceTransformer
 
@@ -222,59 +250,54 @@ def build_rag_pipeline(session_id="default", context_tokens=None):
     files = read_dir(PROJECT_PATH)
     current_manifest = build_manifest(files, PROJECT_PATH)
 
-    if index_exists(memory_dir):
+    if index_exists(memory_dir) and manifest_exists(memory_dir):
         print("Loading index from memory...")
         index, chunks = load_index(memory_dir)
 
-        if manifest_exists(memory_dir):
-            previous_manifest = load_manifest(memory_dir)
-            changes = compare_manifests(previous_manifest, current_manifest)
+        previous_manifest = load_manifest(memory_dir)
+        changes = compare_manifests(previous_manifest, current_manifest)
 
-            if changes["added"] or changes["modified"] or changes["deleted"]:
-                print("\nProject changes detected:")
+        if changes["added"] or changes["modified"] or changes["deleted"]:
+            print("\nProject changes detected:")
 
-                for path in changes["added"]:
-                    print(f"  + Added:    {path}")
+            for path in changes["added"]:
+                print(f"  + Added:    {path}")
 
-                for path in changes["modified"]:
-                    print(f"  ~ Modified: {path}")
+            for path in changes["modified"]:
+                print(f"  ~ Modified: {path}")
 
-                for path in changes["deleted"]:
-                    print(f"  - Deleted:  {path}")
+            for path in changes["deleted"]:
+                print(f"  - Deleted:  {path}")
 
-                changed_paths = changes["added"] + changes["modified"] + changes["deleted"]
-                files_by_path = {
-                    project_relative_path(file["path"], PROJECT_PATH): file
-                    for file in files
-                }
-                new_chunks = []
+            changed_paths = changes["added"] + changes["modified"] + changes["deleted"]
+            files_by_path = {
+                project_relative_path(file["path"], PROJECT_PATH): file
+                for file in files
+            }
+            new_chunks = []
 
-                for path in (changes["added"] + changes["modified"]):
-                    new_chunks.extend(chunking(files_by_path[path]))
+            for path in (changes["added"] + changes["modified"]):
+                new_chunks.extend(chunking(files_by_path[path]))
 
-                index, chunks = (
-                    update_index(
-                        model=model,
-                        index=index,
-                        chunks=chunks,
-                        new_chunks=new_chunks,
-                        changed_paths=changed_paths,
-                        project_path=PROJECT_PATH,
-                    )
+            index, chunks = (
+                update_index(
+                    model=model,
+                    index=index,
+                    chunks=chunks,
+                    new_chunks=new_chunks,
+                    changed_paths=changed_paths,
+                    project_path=PROJECT_PATH,
                 )
-                save_index(index, chunks, memory_dir)
-                save_manifest(current_manifest, memory_dir)
-                print(
-                    f"\nIndex updated: "
-                    f"{len(changes['added'])} added, "
-                    f"{len(changes['modified'])} modified, "
-                    f"{len(changes['deleted'])} deleted."
-                )
-            else:
-                print("No project changes detected.")
+            )
+            _save_rag_state(index, chunks, current_manifest, memory_dir)
+            print(
+                f"\nIndex updated: "
+                f"{len(changes['added'])} added, "
+                f"{len(changes['modified'])} modified, "
+                f"{len(changes['deleted'])} deleted."
+            )
         else:
-            save_manifest(current_manifest, memory_dir)
-            print("Project state initialized.")
+            print("No project changes detected.")
     else:
         print("Building index...")
         chunks = []
@@ -283,8 +306,7 @@ def build_rag_pipeline(session_id="default", context_tokens=None):
             chunks.extend(chunking(file))
 
         index = build_index(model=model, chunks=chunks, dimension=EMBEDDING_DIMENSION)
-        save_index(index, chunks, memory_dir)
-        save_manifest(current_manifest, memory_dir)
+        _save_rag_state(index, chunks, current_manifest, memory_dir)
 
     retriever = FaissRetriever(model=model, index=index, chunks=chunks)
     llm = LocalLLM(context_tokens=context_tokens)
@@ -302,6 +324,15 @@ def main():
     parser.add_argument("--project", type=Path, default=PROJECT_PATH, help="Python project to inspect.")
     parser.add_argument("--context-tokens", type=int, help="Ollama num_ctx and shared context budget.")
     parser.add_argument("--debug", action="store_true", help="Agent diagnostics: full exception traceback and grounding candidate/sources in terminal and local history.")
+    parser.add_argument("--planning", choices=("auto", "off", "adaptive"), default="auto", help="M8 global planning, direct M6, or experimental adaptive execution.")
+    parser.add_argument("--hitl", choices=("off", "on-failure"), default="off", help="Bounded human guidance on M8 failures; requires interactive stdin.")
+    parser.add_argument("--max-steps", type=int, default=12, help="Global M6 iterations per question (including all planned steps).")
+    parser.add_argument("--max-plan-steps", type=int, default=6)
+    parser.add_argument("--max-replans", type=int, default=2)
+    parser.add_argument("--max-tool-calls", type=int, default=16)
+    parser.add_argument("--max-total-tokens", type=int, default=32768, help="Global LLM token ceiling; conservative reservation before each request.")
+    parser.add_argument("--max-seconds", type=float, default=900)
+    parser.add_argument("--tool-timeout", type=float, default=60)
     args = parser.parse_args()
     if args.debug:
         os.environ["CODEAGENT_DEBUG"] = "1"
@@ -316,7 +347,10 @@ def main():
     mode = input("\nChoice : ").strip()
 
     if mode == "2":
-        run_agent(args.session, args.context_tokens)
+        run_agent(args.session, args.context_tokens, planning=args.planning, hitl=args.hitl, max_steps=args.max_steps,
+                  max_plan_steps=args.max_plan_steps, max_replans=args.max_replans,
+                  max_tool_calls=args.max_tool_calls, max_total_tokens=args.max_total_tokens,
+                  max_seconds=args.max_seconds, tool_timeout=args.tool_timeout)
         return
 
     pipeline, llm, memory_dir = build_rag_pipeline(args.session, args.context_tokens)

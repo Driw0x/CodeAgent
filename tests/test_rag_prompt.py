@@ -7,6 +7,10 @@ from app.rag import (
 )
 from app.rag.prompt import PROJECT_ROOT, SYSTEM_PROMPT
 
+import pytest
+
+from app.rag.prompt import CODE_BLOCK_RULE, output_contract_satisfied
+
 CHUNK = {
     "file": "app/parser/file_loader.py",
     "type": "function",
@@ -122,3 +126,22 @@ def test_system_prompt_handles_missing_information():
     assert "connaissances internes" in SYSTEM_PROMPT
     assert "outils" in SYSTEM_PROMPT
     assert "sources externes" in SYSTEM_PROMPT
+    assert "nomme précisément la partie" in SYSTEM_PROMPT
+    assert "conclus sans abstention" in SYSTEM_PROMPT
+    assert "Je ne peux pas déterminer le reste" not in SYSTEM_PROMPT
+
+
+@pytest.mark.parametrize("question,candidate,accepted", [
+    ("Explique la fonction.", "Exemple :\n\n```python\nx = 1\n```", False),
+    ("Montre le code.", "```python\nx = 1\n```", True),
+    ("Donne un exemple de code.", "~~~python\nx = 1\n~~~", True),
+    ("Ne montre pas le code.", "```python\nx = 1\n```", False),
+    ("Ne modifie pas le code. Montre le code.", "```python\nx = 1\n```", True),
+    ("Explique sans code.", "```python\nx = 1\n```", False),
+    ("Explique la fonction.", "> Exemple :\n> ```python\n> x = 1\n> ```", False),
+    ("Explique la fonction.", "Exemple :\n\n    x = 1\n", False),
+    ("Explique la fonction.", "La valeur est `1` [S1].", True),
+])
+def test_C2_same_rule_covers_examples_requests_and_prose(question, candidate, accepted):
+    assert CODE_BLOCK_RULE in SYSTEM_PROMPT
+    assert output_contract_satisfied(question, candidate) is accepted

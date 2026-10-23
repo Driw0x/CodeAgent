@@ -75,6 +75,8 @@ def reduce_observation(content: str, question: str, max_bytes: int = 2500) -> st
     result["original_bytes"] = estimate_tokens(content)
 
     for key, value in data.items():
+        if key == "complete_symbols":
+            continue  # Disjoint retained lines no longer prove complete symbol coverage.
         if isinstance(value, list):
             selected = []
             for _, item in sorted(enumerate(value), key=lambda pair: (-score(pair[1]), pair[0])):
