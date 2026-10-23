@@ -1,5 +1,9 @@
 # CodeAgent — Project Memory
 
+[Français](memory.md) | [简体中文](memory.zh-CN.md)
+
+[README du projet](../README.md)
+
 > Mémoire synthétique du projet : M1–M6 terminés, M7 terminé dans son périmètre mémoire et contexte ; limites autonomes documentées.
 
 ## État actuel

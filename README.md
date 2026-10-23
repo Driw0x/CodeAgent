@@ -1,4 +1,6 @@
 # CodeAgent
+
+[Français](README.md) | [简体中文](README.zh-CN.md)
 Projet personnel de création d’un Agent IA local pour l’analyse de code Python et la mémoire de projet.
 
 ## Présentation
@@ -455,3 +457,9 @@ Le socle RAG est terminé à M5 et le tool use contrôlé via MCP est terminé �
 la gestion de mémoire et de contexte. Les limites réelles de routage et de génération finale sont documentées ;
 elles ne prouvent pas une corruption de mémoire ou de sources M7. M8 ajoutera la planification conditionnelle ;
 M9 regroupera les améliorations mesurées du RAG et de sa fiabilité.
+
+<!-- multilingual-documentation -->
+
+## Documentation complémentaire
+
+- [Benchmarks LLM](benchmarks/llm/README.md)

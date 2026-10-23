@@ -1,5 +1,10 @@
 # M5 — RAG Quality & Grounding
 
+[Français](rag_quality.md) | [简体中文](rag_quality.zh-CN.md)
+
+[README du projet](../README.md)
+
+
 ## Objectif
 
 Améliorer la qualité du retrieval et la cohérence entre les sources

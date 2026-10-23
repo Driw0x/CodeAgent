@@ -1,3 +1,7 @@
+[Français](README.md) | [简体中文](README.zh-CN.md)
+
+[README du projet](../../README.md)
+
 ## Résultats du benchmark
 
 Sept modèles locaux ont été évalués avec le même benchmark, le même runtime Ollama et les mêmes paramètres de génération.
