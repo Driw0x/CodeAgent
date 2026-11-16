@@ -442,10 +442,34 @@ Les tâches dépendantes utilisent un plan validé ; les tâches simples conserv
 ### Future improvements / Research ideas
 
 AST reste prioritaire pour Python. Chunking récursif, TreeRAG, GraphRAG, OCR et multimodal demandent un corpus concret
-et un protocole comparatif avant intégration. Aucun M10 n'est justifié actuellement.
+et un protocole comparatif avant intégration.
 Multi-agent, Critic Agent indépendant, Reflexion sophistiquée et fine-tuning anti-hallucination restent reportés.
-FAISS et la boucle MCP actuelle sont conservés. LangChain n'est pas nécessaire ; LangGraph ne sera réévalué
-que si reprises et embranchements rendent les workflows actuels insuffisants. Aucun système distribué ou cloud n'est prévu.
+FAISS et les tools MCP restent le socle réutilisable pour la refonte M10. Aucun système distribué n'est prévu.
+
+---
+
+## Milestone 10 — Refonte simplifiée avec LangGraph et traçabilité
+
+### Objectifs proposés
+
+- [ ] Refaire l'orchestration avec LangGraph, ou une API similaire si elle couvre les mêmes besoins avec moins de code et de dépendances ; documenter brièvement le choix sur un parcours représentatif
+- [ ] Établir la matrice de parité avec les fonctionnalités livrées de M1 à M9 au démarrage : CLI, LLM locaux, parsing AST, index FAISS persistant et incrémental, retrieval, citations et grounding
+- [ ] Conserver les tools MCP, la validation des arguments et résultats, les timeouts, retries bornés, détection des doublons et budgets d'exécution
+- [ ] Conserver la mémoire isolée par session et projet, la compression, les budgets de contexte, la planification conditionnelle, le replanning, les acquis validés, les arrêts explicites et le HITL optionnel
+- [ ] Réutiliser les composants métier existants et remplacer l'orchestration sur mesure par le minimum de primitives natives nécessaires, sans couche générique multi-framework
+- [ ] Intégrer LangSmith si LangGraph est retenu, ou un outil équivalent pour l'autre API, et relier les traces aux sessions, projets, exécutions et cas de benchmark
+- [ ] Conserver une traçabilité comparable : appels LLM et tools, arguments, observations, sources et citations, décisions de grounding, transitions du plan, erreurs, retries, interventions humaines, raisons d'arrêt, tokens et durées par étape ; signaler les métriques indisponibles
+- [ ] Garder les diagnostics et exports locaux utiles aux benchmarks ; rendre le tracing distant configurable et documenter sa configuration ainsi que les données envoyées
+- [ ] Comparer l'implémentation actuelle et la refonte avec les tests et benchmarks RAG, tools, mémoire et planning existants, à modèles, corpus et budgets identiques
+
+### Critères de validation
+
+La refonte couvre toute la matrice de parité et passe les tests de non-régression. Les benchmarks comparent réussite, qualité du retrieval, false accepts/rejects, tokens et latence ; toute régression est explicitée et résolue ou acceptée avant la bascule. Des traces de succès, d'erreur/retry, de replanning et de HITL permettent de reconstruire les décisions et de retrouver les sources et métriques locales. Le bilan mesure la réduction du code d'orchestration et des configurations, ainsi que les dépendances ajoutées. L'ancienne orchestration n'est retirée qu'après validation de cette parité.
+
+### Références
+
+- [LangGraph](https://docs.langchain.com/oss/python/langgraph/overview)
+- [Observabilité LangSmith pour LangGraph](https://docs.langchain.com/oss/python/langgraph/observability)
 
 ---
 
@@ -457,6 +481,7 @@ Le socle RAG est terminé à M5 et le tool use contrôlé via MCP est terminé �
 la gestion de mémoire et de contexte. Les limites réelles de routage et de génération finale sont documentées ;
 elles ne prouvent pas une corruption de mémoire ou de sources M7. M8 ajoute la planification conditionnelle
 et ses contrôles observables ; M9 reste futur et regroupera les améliorations mesurées du RAG et de sa fiabilité.
+M10 planifie une refonte simplifiée avec LangGraph ou une API équivalente, à fonctionnalités et traçabilité conservées.
 
 <!-- multilingual-documentation -->
 

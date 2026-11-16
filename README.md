@@ -489,7 +489,32 @@ Dependent tasks use a validated plan; simple tasks retain direct M6 execution. M
 <a id="future-improvements--research-ideas"></a>
 ### Future improvements / Research ideas
 
-AST remains prioritized for Python. Recursive chunking, TreeRAG, GraphRAG, OCR, and multimodal approaches require a concrete corpus and a comparative protocol before integration. No M10 is currently justified. Multi-agent, independent Critic Agent, sophisticated reflection, and anti-hallucination fine-tuning remain deferred. FAISS and the current MCP loop are preserved. LangChain is not necessary; LangGraph will only be re-evaluated if resumptions and branches make the current workflows insufficient. No distributed or cloud system is planned.
+AST remains prioritized for Python. Recursive chunking, TreeRAG, GraphRAG, OCR, and multimodal approaches require a concrete corpus and a comparative protocol before integration. Multi-agent, independent Critic Agent, sophisticated reflection, and anti-hallucination fine-tuning remain deferred. FAISS and MCP tools remain the reusable foundation for the M10 rewrite. No distributed system is planned.
+
+---
+
+## Milestone 10 — Simplified rewrite with LangGraph and traceability
+
+### Proposed objectives
+
+- [ ] Rebuild orchestration with LangGraph, or a similar API if it meets the same needs with less code and fewer dependencies; briefly document the choice using a representative workflow
+- [ ] Establish a parity matrix for features delivered in M1 through M9 at kickoff: CLI, local LLMs, AST parsing, persistent incremental FAISS indexing, retrieval, citations and grounding
+- [ ] Preserve MCP tools, argument and result validation, timeouts, bounded retries, duplicate detection and execution budgets
+- [ ] Preserve session- and project-isolated memory, compression, context budgets, conditional planning, replanning, validated progress, explicit stops and optional HITL
+- [ ] Reuse existing domain components and replace custom orchestration with the minimum required native primitives, without a generic multi-framework layer
+- [ ] Integrate LangSmith if LangGraph is selected, or equivalent tooling for the alternative API, and correlate traces with sessions, projects, runs and benchmark cases
+- [ ] Preserve comparable traceability: LLM and tool calls, arguments, observations, sources and citations, grounding decisions, plan transitions, errors, retries, human interventions, stop reasons, tokens and per-step timings; flag unavailable metrics
+- [ ] Retain local diagnostics and exports needed by benchmarks; make remote tracing configurable and document its setup and transmitted data
+- [ ] Compare the current implementation and rewrite using existing RAG, tools, memory and planning tests and benchmarks, with identical models, corpora and budgets
+
+### Acceptance criteria
+
+The rewrite covers the entire parity matrix and passes regression tests. Benchmarks compare success, retrieval quality, false accepts/rejects, tokens and latency; any regression is documented and resolved or accepted before switching. Success, error/retry, replanning and HITL traces allow decisions to be reconstructed and local sources and metrics to be located. The assessment measures reductions in orchestration code and configuration, alongside added dependencies. The old orchestration is removed only after this parity is validated.
+
+### References
+
+- [LangGraph](https://docs.langchain.com/oss/python/langgraph/overview)
+- [LangSmith observability for LangGraph](https://docs.langchain.com/oss/python/langgraph/observability)
 
 ---
 
@@ -498,7 +523,7 @@ AST remains prioritized for Python. Recursive chunking, TreeRAG, GraphRAG, OCR, 
 
 CodeAgent now has a complete pipeline enabling analysis of a Python project, indexing its code, retrieving relevant portions, generating context-aware responses using a local LLM, and maintaining the index up to date as the project evolves.
 
-The RAG foundation is complete at M5 and tool use controlled via MCP is complete at M6. **M7 is complete** for memory and context management. The actual limits of routing and final generation are documented; they do not prove memory or source corruption in M7. M8 adds conditional planning and its observable controls; M9 remains future and will consolidate measured improvements in RAG and reliability.
+The RAG foundation is complete at M5 and tool use controlled via MCP is complete at M6. **M7 is complete** for memory and context management. The actual limits of routing and final generation are documented; they do not prove memory or source corruption in M7. M8 adds conditional planning and its observable controls; M9 remains future and will consolidate measured improvements in RAG and reliability. M10 plans a simplified rewrite with LangGraph or an equivalent API, preserving functionality and traceability.
 
 <!-- multilingual-documentation -->
 
