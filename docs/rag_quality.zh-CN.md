@@ -3,7 +3,7 @@
 [项目 README](../README.zh-CN.md)
 
 <a id="m5--rag-quality--grounding"></a>
-# M5 — RAG质量与锚定
+# M5 - RAG质量与锚定
 
 <a id="objectif"></a>
 ## 目标
@@ -71,7 +71,7 @@ CodeAgent的主要功能范围在M4阶段已被视为已完成。M5阶段旨在�
 基于FAISS检索到的片段，词法重排序显著提升了片段的排序质量。
 
 <a id="analyse-des-erreurs--baseline-m4"></a>
-## 错误分析 — 基线M4
+## 错误分析 - 基线M4
 
 在25个问题中：
 
@@ -82,7 +82,7 @@ CodeAgent的主要功能范围在M4阶段已被视为已完成。M5阶段旨在�
 因此，识别出的主要改进方向是候选检索。
 
 <a id="hybrid-retrieval--baseline-m5"></a>
-## 混合检索 — 基线M5
+## 混合检索 - 基线M5
 
 增加了稠密检索与词法检索的混合检索，以在重排序前提升候选结果的覆盖范围。
 
@@ -154,6 +154,34 @@ M5 提升了前五名的覆盖度和响应/放弃行为，但降低了早期排�
 最终的保留集已固定，不得再用于回传 M5。
 
 M6 随后重新使用该验证结果来校验基于工具观察的响应。在包含 40 个平衡案例的专用保留集中，`Qwen2.5-Coder 14B` 达到了 `97.5 %` 的准确率，`100 %` 的未支持案例召回率，0 个假接受，1 个假拒绝；因此被选为 M6 的验证器。最终端到端基准测试中，M6 实现了 `80 %` 的成功率，0 个 `citation_error`，剩余失败均为 `unsupported` 的拒绝。
+
+<a id="m9--final-evaluation"></a>
+## M9 - 最终评估
+
+M9 为分块与索引增加版本化合约：稳定标识符、来源/内容版本、数量与唯一性检查、旧索引重建，
+以及排序前过滤。
+
+标准库 BM25 基准使用冻结 RAG fixture。在 25 个开发问题上，BM25 达到 `Recall@5 = 0.6600`、
+`MRR@25 = 0.4323` 和 `nDCG@5 = 0.4744`；现有词法基线对应可用指标为 `0.5600` 和 `0.3711`。
+在 12 个 retrieval 保留问题上，BM25 的 `Recall@5` 降至 `0.3333`，M5 为 `0.8333`，因此未集成。
+保留集延迟约为 P50 `0.0042 s`、P95 `0.0044 s`。
+
+本地 pointwise reranker 在开发集训练后冻结，在保留集达到 `Recall@5 = 0.5000`，M5 为 `0.8333`，
+因此被拒绝。BM25 重表述校准选择零次触发，因为没有阈值改善开发集；fallback 保持禁用。
+
+可靠性 fixture 检出 2 个过时来源和 1 个矛盾，无误报或漏报；P95 约为 `0.000006 s`。
+矛盾要求限定结论或放弃回答，且不会改写源文件。独立词法验证器准确率为 `72.5 %`，有 3 个误接受、
+8 个误拒绝，P50 为 `0.000017 s`，P95 为 `0.000025 s`。现有 grounder 保持 `97.5 %`、0 个误接受和
+1 个误拒绝，因此继续保留。本地 NLI 适配器可用于未来无下载比较。
+
+可复现结果：
+
+- `benchmarks/rag/results/m9_dev/m9_bm25.json`；
+- `benchmarks/rag/results/m9_holdout/m9_bm25.json`；
+- `benchmarks/rag/results/m9_holdout/m9_local_reranker.json`；
+- `benchmarks/rag/results/m9_holdout/m9_iterative.json`；
+- `benchmarks/rag/results/m9_reliability.json`；
+- `benchmarks/grounding/results/m9_independent_verifier.json`。
 
 <a id="future-improvements"></a>
 ## 未来改进

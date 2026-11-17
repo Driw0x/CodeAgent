@@ -1,6 +1,7 @@
 from .citations import extract_citations, is_abstention, validate_citations
 from .grounding import build_claim_prompt, extract_claims, verify_claim, verify_grounding
 from .pipeline import RAGPipeline
+from .reliability import prepare_reliable_sources
 from .prompt import (
     build_context,
     build_prompt,
@@ -20,6 +21,7 @@ __all__ = [
     "format_chunk",
     "format_sources",
     "is_abstention",
+    "prepare_reliable_sources",
     "relative_file_path",
     "select_context_chunks",
     "validate_citations",

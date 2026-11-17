@@ -1,7 +1,7 @@
 [English](rag_quality.md) | [Français](rag_quality.fr.md) | [简体中文](rag_quality.zh-CN.md)
 
 <a id="m5--rag-quality--grounding"></a>
-# M5 — RAG Quality & Grounding
+# M5 - RAG Quality & Grounding
 
 
 [Project README](../README.md)
@@ -73,7 +73,7 @@ Each question defines the expected chunks to be retrieved from:
 The lexical reranking significantly improves the ranking of chunks retrieved by FAISS.
 
 <a id="analyse-des-erreurs--baseline-m4"></a>
-## Error analysis — Baseline M4
+## Error analysis - Baseline M4
 
 On 25 questions :
 
@@ -84,7 +84,7 @@ On 25 questions :
 The main improvement axis identified is therefore candidate retrieval.
 
 <a id="hybrid-retrieval--baseline-m5"></a>
-## Hybrid retrieval — Baseline M5
+## Hybrid retrieval - Baseline M5
 
 A hybrid dense + lexical search has been added to improve candidate coverage before reranking.
 
@@ -156,6 +156,37 @@ On M5, 8 responses were verified by grounding: 6 were supported and 2 rejected. 
 The final holdout is fixed and should no longer be used to retrain M5.
 
 M6 then reuses this grounding to validate tool-based response answers. On a dedicated balanced holdout of 40 cases, `Qwen2.5-Coder 14B` achieves `97.5 %` accuracy, `100 %` recall on unsupported cases, 0 false accepts and 1 false reject; it is retained as grounder M6. The final end-to-end benchmark M6 achieves `80 %` success with 0 `citation_error`, the remaining failures being rejections `unsupported`.
+
+<a id="m9--final-evaluation"></a>
+## M9 - Final evaluation
+
+M9 adds a versioned chunk/index contract: stable identifiers, source/content versions, count and uniqueness checks,
+legacy-index reconstruction, and filters applied before ranking.
+
+The standard-library BM25 benchmark uses the frozen RAG fixture. On the 25 development questions, it reaches
+`Recall@5 = 0.6600`, `MRR@25 = 0.4323`, and `nDCG@5 = 0.4744`, versus `0.5600` and `0.3711` respectively for
+the existing lexical baseline where that metric is available. On the 12-question retrieval holdout, BM25 falls to
+`Recall@5 = 0.3333` versus `0.8333` for M5, so it is not integrated. Holdout latency is approximately P50
+`0.0042 s` and P95 `0.0044 s`.
+
+The local pointwise reranker is trained on development and frozen before evaluation. It reaches `Recall@5 = 0.5000`
+on holdout versus `0.8333` for M5, so it is rejected. BM25 reformulation calibration selects zero triggers because
+no threshold improves development; fallback therefore stays disabled.
+
+The reliability fixture detects 2 stale sources and 1 contradiction with no false positive or false negative;
+P95 is approximately `0.000006 s`. Contradictions require qualification or abstention and never rewrite source files.
+The independent lexical verifier reaches `72.5 %` accuracy, 3 false accepts, and 8 false rejects, with P50
+`0.000017 s` and P95 `0.000025 s`. The current grounder retains `97.5 %`, 0 false accepts, and 1 false reject, so it stays.
+A local-only NLI adapter remains available for future no-download comparisons.
+
+Reproducible results:
+
+- `benchmarks/rag/results/m9_dev/m9_bm25.json`;
+- `benchmarks/rag/results/m9_holdout/m9_bm25.json`;
+- `benchmarks/rag/results/m9_holdout/m9_local_reranker.json`;
+- `benchmarks/rag/results/m9_holdout/m9_iterative.json`;
+- `benchmarks/rag/results/m9_reliability.json`;
+- `benchmarks/grounding/results/m9_independent_verifier.json`.
 
 <a id="future-improvements"></a>
 ## Future improvements

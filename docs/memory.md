@@ -1,25 +1,25 @@
 [English](memory.md) | [Français](memory.fr.md) | [简体中文](memory.zh-CN.md)
 
 <a id="codeagent--project-memory"></a>
-# CodeAgent — Project Memory
+# CodeAgent - Project Memory
 
 
 [Project README](../README.md)
 
 
-> Project summary: features, decisions, results, and limitations from M1 to M8.
+> Project summary: features, decisions, results, and limitations from M1 to M9.
 
 <a id="état-actuel"></a>
 ## Current Status
 
-**M1–M7 completed. M8 PASS within its original controlled-planning scope; two real autonomous scenarios validated with `OLLAMA_MAX_LOADED_MODELS=1`. Current HITL qualification remains partial. M9 not started.** See the [final validation report](#m8-validation) for evidence and scope.
+**M1–M7 completed. M8 PASS in its original scope. M9 completed: index/chunk integrity and source reliability delivered; retrieval candidates and an independent verifier compared and retained or rejected by benchmark.** See the [final validation report](#m8-validation) for M8 evidence and scope.
 
 CodeAgent analyzes Python projects, indexes their code, generates source-based responses with citation verification and grounding, maintains the index, and uses read-only tools via MCP.
 
 M7 introduces persistent conversational memory and shared context budget. M8 adds conditional planning and controlled execution with replanning.
 
 <a id="m1--lecture-et-extraction"></a>
-## M1 — Code Reading and Extraction
+## M1 - Code Reading and Extraction
 
 The first milestone established the foundation of the project:
 
@@ -32,7 +32,7 @@ The first milestone established the foundation of the project:
 Key decision: maintain a simple, LLM-independent pipeline to ensure repository analysis remains deterministic.
 
 <a id="m2--recherche-sémantique"></a>
-## M2 — Semantic Search
+## M2 - Semantic Search
 
 The code was subsequently decomposed using Python AST into chunks primarily representing functions, classes, variables, and imports.
 
@@ -61,7 +61,7 @@ Projet Python
 ```
 
 <a id="m3--llm-local-et-rag"></a>
-## M3 — Local LLM and RAG
+## M3 - Local LLM and RAG
 
 M3 added response generation over code.
 
@@ -94,7 +94,7 @@ app/parser/file_loader.py:6-9
 ```
 
 <a id="m4--mémoire-projet"></a>
-## M4 — Project Memory
+## M4 - Project Memory
 
 M4 added persistent and incremental memory to the project to avoid fully reconstructing the index on each execution.
 
@@ -129,7 +129,7 @@ When no changes are detected, CodeAgent directly reuses the already saved index.
 The analyses are also recorded in a JSONL history containing the date, the question, and the generated response.
 
 <a id="m5--rag-quality--grounding"></a>
-## M5 — RAG Quality & Grounding
+## M5 - RAG Quality & Grounding
 
 M5 has strengthened and evaluated the RAG pipeline with:
 
@@ -143,7 +143,7 @@ M5 has strengthened and evaluated the RAG pipeline with:
 On the final holdout of 16 questions, M5 improves `Hit@5` and `Recall@5` from `0.6667` to `0.8333`, as well as the response/abstention behavior of `0.6250` to `0.7500`. The `MRR@5` decreases from `0.5069` to `0.3917` and the grounding verification adds on average `2.54 s` to the pipeline.
 
 <a id="m6--mcp--tool-use"></a>
-## M6 — MCP & Tool Use
+## M6 - MCP & Tool Use
 
 M6 adds controlled tool usage via MCP:
 
@@ -163,7 +163,7 @@ On the fixed grounding benchmark of 40 balanced cases, `Qwen2.5-Coder 14B` achie
 The final optimization of the context reduces the multi-tool smoke test token count from approximately `10.5k` to `6.6k` without loss of grounding. `search_code` has also been optimized by avoiding traversal of ignored folders prior to filtering: its observed time in smoke tests drops from approximately `17.1 s` to `0.01-0.12 s`.
 
 <a id="m7--memory--context-management"></a>
-## M7 — Memory & Context Management
+## M7 - Memory & Context Management
 
 M7 completed for memory and context; the reliability of autonomous finals remains distinct.
 
@@ -178,7 +178,7 @@ M7 completed for memory and context; the reliability of autonomous finals remain
 The [deterministic memory benchmark](../benchmarks/memory/results/m7.json) validates **9/9 recalls and 6/6 controls**: bounded context, recall, extractive fidelity, sources/grounding, retrieval, and absence of summarization model. Historical real tests preserve **7/7 retrieved `read_file` readings, but 0/7 fully autonomous finals**, particularly for omitted citations or retrieval; these figures are not a replay after M8 corrections. The retrieval of old exchanges remains lexical and linear; semantic search remains optional. A bounded summary may exclude excerpts, whose originals remain archived. A session assumes a single writer process, without automatic archive purging. Memory does not guarantee faithful model recall nor correctly sourced final outputs.
 
 <a id="m8--planning--controlled-autonomous-execution"></a>
-## M8 — Planning & Controlled Autonomous Execution
+## M8 - Planning & Controlled Autonomous Execution
 
 **PASS within the original milestone scope.** M8 adds conditional short plans, minimal execution state, real MCP steps, bounded recovery of remaining work, preserved progress, explicit stops and comparison against direct M6 execution. The original objectives are in `README.md` at Git `0bf0437`. Optional HITL has separate validation limits below; no general autonomous reliability is claimed.
 
@@ -273,7 +273,23 @@ Earlier proofs remain under `data/memory/m8-autonomy-20261017`, `m8-finalization
 <a id="m8-limitations"></a>
 ### Remaining limits
 
-The two successes validate those scenarios/configuration, not general autonomy or unseen-task generalization. Lexical routing, proof certificates and format checks are bounded; grounding may falsely accept/reject semantic claims. One initial plan still needs autonomous repair. Current recovery is verified deterministically; a complete current assisted Ollama cycle is not revalidated. Loading depends on hardware; a real grounding timeout without the one-model limit remains preserved. Human waiting may exhaust the wall-clock budget; synchronous input and execution restart remain limited as above. No second MCP loop, writing tool, framework or M9 implementation is added.
+The two successes validate those scenarios/configuration, not general autonomy or unseen-task generalization. Lexical routing, proof certificates and format checks are bounded; grounding may falsely accept/reject semantic claims. One initial plan still needs autonomous repair. Current recovery is verified deterministically; a complete current assisted Ollama cycle is not revalidated. Loading depends on hardware; a real grounding timeout without the one-model limit remains preserved. Human waiting may exhaust the wall-clock budget; synchronous input and execution restart remain limited as above. That M8 validation added no second MCP loop, writing tool, framework, or M9 implementation.
+
+## M9 - Advanced RAG & Reliability
+
+M9 is completed. Chunks now have stable identifiers and SHA-256 versions. The index persists its schema, checks
+vector/chunk alignment, and rebuilds legacy formats. Retrieval accepts optional metadata filters. Context selection
+drops explicitly stale sources and marks explicit contradictions.
+
+BM25 improves the development set (`Recall@5 = 0.6600`) but regresses on holdout (`0.3333` versus `0.8333` for M5),
+so it stays out of production. The reliability fixture detects 2 stale sources and 1 contradiction with no false positive
+or false negative and P95 near `0.000006 s`. Results live under `benchmarks/rag/results/m9_dev/`, `m9_holdout/`, and
+`m9_reliability.json`.
+
+The local reranker reaches `Recall@5 = 0.5000` and also regresses. Reformulation calibration finds no development
+threshold that improves results and disables retry. The independent verifier reaches `72.5 %`, 3 false accepts, and
+8 false rejects, versus `97.5 %`, 0, and 1 for the current grounder. Current lexical/RRF retrieval and grounder therefore
+stay. Local-only cross-encoder/NLI adapters remain available without downloads.
 
 <a id="décisions-techniques-principales"></a>
 ## Main technical decisions
@@ -303,4 +319,4 @@ The two successes validate those scenarios/configuration, not general autonomy o
 <a id="état-du-projet-et-suite"></a>
 ## Project status and next steps
 
-M1–M7 completed. M8 PASS in its original scope, with the validation limits above. M9 — Advanced RAG & Reliability remains future; further work requires measured benefit.
+M1–M7 completed. M8 PASS in its original scope. M9 completed, with retained changes and negative results documented above.

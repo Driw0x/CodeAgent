@@ -238,7 +238,7 @@ def _save_rag_state(index, chunks, manifest, directory):
         # The old snapshot survives build/serialization failures. Once publication starts,
         # remove its validity marker before replacing either member of the index pair.
         (directory / "manifest.json").unlink(missing_ok=True)
-        for name in ("index.faiss", "chunks.json", "manifest.json"):
+        for name in ("index.faiss", "chunks.json", "index_metadata.json", "manifest.json"):
             (staged / name).replace(directory / name)
 
 

@@ -1,0 +1,39 @@
+[
+  {
+    "id": "stale_version",
+    "current_versions": {"config.py": "v2"},
+    "chunks": [
+      {"case_source_id": "old", "file": "config.py", "source_version": "v1", "content": "MODE = 'old'"},
+      {"case_source_id": "new", "file": "config.py", "source_version": "v2", "content": "MODE = 'new'"}
+    ],
+    "expected_stale": ["old"],
+    "expected_contradictions": []
+  },
+  {
+    "id": "explicit_obsolete",
+    "chunks": [
+      {"case_source_id": "archive", "file": "archive.py", "obsolete": true, "content": "FLAG = false"},
+      {"case_source_id": "current", "file": "current.py", "content": "FLAG = true"}
+    ],
+    "expected_stale": ["archive"],
+    "expected_contradictions": []
+  },
+  {
+    "id": "current_contradiction",
+    "chunks": [
+      {"case_source_id": "a", "file": "a.py", "source_group": "timeout", "chunk_version": "one", "content": "TIMEOUT = 30"},
+      {"case_source_id": "b", "file": "b.py", "source_group": "timeout", "chunk_version": "two", "content": "TIMEOUT = 60"}
+    ],
+    "expected_stale": [],
+    "expected_contradictions": ["timeout"]
+  },
+  {
+    "id": "compatible_sources",
+    "chunks": [
+      {"case_source_id": "a", "file": "a.py", "source_group": "model", "chunk_version": "same", "content": "MODEL = 'qwen'"},
+      {"case_source_id": "b", "file": "b.py", "source_group": "model", "chunk_version": "same", "content": "MODEL = 'qwen'"}
+    ],
+    "expected_stale": [],
+    "expected_contradictions": []
+  }
+]

@@ -1,0 +1,104 @@
+{
+  "created_at": "2026-11-16T23:18:11.767639+00:00",
+  "cases": 4,
+  "summary": {
+    "stale": {
+      "true_positive": 2,
+      "false_positive": 0,
+      "false_negative": 0
+    },
+    "contradictions": {
+      "true_positive": 1,
+      "false_positive": 0,
+      "false_negative": 0
+    },
+    "p50_latency_seconds": 3.7499703466892242e-06,
+    "p95_latency_seconds": 5.745035014115273e-06
+  },
+  "results": [
+    {
+      "id": "stale_version",
+      "expected_stale": [
+        "old"
+      ],
+      "actual_stale": [
+        "old"
+      ],
+      "expected_contradictions": [],
+      "actual_contradictions": [],
+      "stale_scores": {
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "contradiction_scores": {
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "latency_seconds": 6.00004568696022e-06
+    },
+    {
+      "id": "explicit_obsolete",
+      "expected_stale": [
+        "archive"
+      ],
+      "actual_stale": [
+        "archive"
+      ],
+      "expected_contradictions": [],
+      "actual_contradictions": [],
+      "stale_scores": {
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "contradiction_scores": {
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "latency_seconds": 3.1999661587178707e-06
+    },
+    {
+      "id": "current_contradiction",
+      "expected_stale": [],
+      "actual_stale": [],
+      "expected_contradictions": [
+        "timeout"
+      ],
+      "actual_contradictions": [
+        "timeout"
+      ],
+      "stale_scores": {
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "contradiction_scores": {
+        "true_positive": 1,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "latency_seconds": 4.299974534660578e-06
+    },
+    {
+      "id": "compatible_sources",
+      "expected_stale": [],
+      "actual_stale": [],
+      "expected_contradictions": [],
+      "actual_contradictions": [],
+      "stale_scores": {
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "contradiction_scores": {
+        "true_positive": 0,
+        "false_positive": 0,
+        "false_negative": 0
+      },
+      "latency_seconds": 2.800021320581436e-06
+    }
+  ]
+}

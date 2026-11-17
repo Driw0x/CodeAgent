@@ -1,5 +1,7 @@
 import re
 import unicodedata
+from collections import Counter
+from math import log
 
 import numpy as np
 
@@ -22,20 +24,37 @@ TYPE_BONUS = {
 RRF_K = 60
 
 
-def tokenize(text: str) -> set[str]:
+def token_sequence(text: str) -> list[str]:
     text = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", text)
     normalized = unicodedata.normalize("NFKD", text.casefold())
     normalized = "".join(char for char in normalized if not unicodedata.combining(char))
     normalized = normalized.replace("_", " ")
     raw_tokens = re.findall(r"[a-z0-9]+", normalized)
-    tokens = set()
+    tokens = []
     for token in raw_tokens:
         if token in STOPWORDS:
             continue
         if len(token) > 4 and token.endswith("s") and not token.endswith("ss"):
             token = token[:-1]
-        tokens.add(token)
+        tokens.append(token)
     return tokens
+
+
+def tokenize(text: str) -> set[str]:
+    return set(token_sequence(text))
+
+
+def chunk_matches_filters(chunk: dict, filters: dict | None) -> bool:
+    if not filters:
+        return True
+    for field, expected in filters.items():
+        actual = chunk.get(field)
+        if isinstance(expected, (set, frozenset, list, tuple)):
+            if actual not in expected:
+                return False
+        elif actual != expected:
+            return False
+    return True
 
 
 def lexical_score(question: str, chunk: dict) -> float:
@@ -73,6 +92,7 @@ class FaissRetriever:
         self.model = model
         self.index = index
         self.chunks = chunks
+        self.last_fallback_used = False
 
     def _validate(self, question: str, k: int) -> None:
         if not question.strip():
@@ -80,28 +100,36 @@ class FaissRetriever:
         if k <= 0:
             raise ValueError("k must be greater than 0.")
 
-    def dense_retrieve(self, question: str, k: int = 25) -> list[dict]:
+    def dense_retrieve(self, question: str, k: int = 25, filters: dict | None = None) -> list[dict]:
         self._validate(question, k)
 
         if not self.chunks:
             return []
 
+        allowed = {
+            position for position, chunk in enumerate(self.chunks)
+            if chunk_matches_filters(chunk, filters)
+        }
+        if not allowed:
+            return []
         query_vector = self.model.encode([question], show_progress_bar=False)
         query_vector = np.asarray(query_vector, dtype="float32")
-        k = min(k, len(self.chunks))
-        distances, indices = self.index.search(query_vector, k)
+        search_k = len(self.chunks) if filters else min(k, len(self.chunks))
+        distances, indices = self.index.search(query_vector, search_k)
         results = []
 
         for distance, index in zip(distances[0], indices[0]):
-            if index < 0 or index >= len(self.chunks):
+            if index < 0 or index not in allowed:
                 continue
             chunk = dict(self.chunks[index])
             chunk["distance"] = float(distance)
             results.append(chunk)
+            if len(results) == k:
+                break
 
         return results
 
-    def lexical_retrieve(self, question: str, k: int = 25) -> list[dict]:
+    def lexical_retrieve(self, question: str, k: int = 25, filters: dict | None = None) -> list[dict]:
         self._validate(question, k)
 
         if not self.chunks:
@@ -110,6 +138,8 @@ class FaissRetriever:
         results = []
 
         for source_chunk in self.chunks:
+            if not chunk_matches_filters(source_chunk, filters):
+                continue
             score = lexical_score(question, source_chunk)
             if score <= 0:
                 continue
@@ -127,15 +157,48 @@ class FaissRetriever:
 
         return results[:k]
 
-    def hybrid_retrieve(self, question: str, k: int = 25) -> list[dict]:
+    def bm25_retrieve(self, question: str, k: int = 25, filters: dict | None = None) -> list[dict]:
+        self._validate(question, k)
+        corpus = [chunk for chunk in self.chunks if chunk_matches_filters(chunk, filters)]
+        if not corpus:
+            return []
+        documents = [
+            token_sequence(" ".join(str(chunk.get(field, "")) for field in ("name", "file", "content")))
+            for chunk in corpus
+        ]
+        query = token_sequence(question)
+        if not query:
+            return []
+        average_length = sum(map(len, documents)) / len(documents) or 1.0
+        document_frequency = Counter(token for tokens in documents for token in set(tokens))
+        results = []
+        for chunk, tokens in zip(corpus, documents):
+            frequencies = Counter(tokens)
+            score = 0.0
+            for token in query:
+                frequency = frequencies[token]
+                if not frequency:
+                    continue
+                inverse_frequency = log(1 + (len(documents) - document_frequency[token] + 0.5) / (document_frequency[token] + 0.5))
+                score += inverse_frequency * frequency * 2.5 / (
+                    frequency + 1.5 * (0.25 + 0.75 * len(tokens) / average_length)
+                )
+            if score > 0:
+                item = dict(chunk)
+                item["bm25_score"] = score
+                results.append(item)
+        results.sort(key=lambda chunk: (-chunk["bm25_score"], str(chunk.get("file", "")), str(chunk.get("name", ""))))
+        return results[:k]
+
+    def hybrid_retrieve(self, question: str, k: int = 25, filters: dict | None = None) -> list[dict]:
         self._validate(question, k)
 
         if not self.chunks:
             return []
 
         candidate_k = min(k, len(self.chunks))
-        dense = self.dense_retrieve(question, candidate_k)
-        lexical = self.lexical_retrieve(question, candidate_k)
+        dense = self.dense_retrieve(question, candidate_k, filters)
+        lexical = self.lexical_retrieve(question, candidate_k, filters)
         merged = {}
 
         for rank, chunk in enumerate(dense, start=1):
@@ -175,15 +238,27 @@ class FaissRetriever:
 
         return candidates[:k]
 
-    def retrieve(self, question: str, k: int = 5) -> list[dict]:
+    def retrieve(self, question: str, k: int = 5, filters: dict | None = None) -> list[dict]:
         self._validate(question, k)
 
         if not self.chunks:
             return []
 
         candidate_k = min(max(k * 5, 25), len(self.chunks))
-        candidates = self.hybrid_retrieve(question, candidate_k)
+        candidates = self.hybrid_retrieve(question, candidate_k, filters)
         return self.rerank_candidates(question, candidates, k)
+
+    def retrieve_with_fallback(self, question: str, k: int, reformulate, should_retry=None, filters=None) -> list[dict]:
+        results = self.retrieve(question, k, filters)
+        retry = should_retry(results) if should_retry is not None else not results
+        self.last_fallback_used = False
+        if not retry:
+            return results
+        reformulated = reformulate(question).strip()
+        if not reformulated or reformulated == question:
+            return results
+        self.last_fallback_used = True
+        return self.retrieve(reformulated, k, filters)
 
     def rerank_candidates(
         self,

@@ -274,3 +274,41 @@ def test_rerank_prefers_matching_symbol_name():
         "content": "manifest = build_manifest(files, PROJECT_PATH)",
     }
     assert rerank_score(question, build_manifest) > rerank_score(question, unrelated)
+
+
+def test_retrieve_filters_before_ranking():
+    model = MagicMock()
+    model.encode.return_value = np.zeros((1, 384), dtype="float32")
+    index = MagicMock()
+    index.search.return_value = np.array([[0.1, 0.2]], dtype="float32"), np.array([[0, 1]])
+    retriever = FaissRetriever(model, index, CHUNKS)
+
+    results = retriever.retrieve("read files", k=2, filters={"name": "read_dir"})
+
+    assert [chunk["name"] for chunk in results] == ["read_dir"]
+    assert index.search.call_args.args[1] == len(CHUNKS)
+
+
+def test_bm25_prefers_repeated_specific_terms():
+    chunks = [
+        {"file": "a.py", "type": "function", "name": "generic", "content": "manifest"},
+        {"file": "b.py", "type": "function", "name": "build_manifest", "content": "manifest manifest hash"},
+    ]
+    retriever = FaissRetriever(MagicMock(), MagicMock(), chunks)
+
+    results = retriever.bm25_retrieve("manifest hash", k=2)
+
+    assert results[0]["name"] == "build_manifest"
+    assert results[0]["bm25_score"] > results[1]["bm25_score"]
+
+
+def test_fallback_is_bounded_to_one_reformulation():
+    retriever = FaissRetriever(MagicMock(), MagicMock(), [])
+    calls = []
+    retriever.retrieve = lambda question, k, filters=None: calls.append(question) or ([] if len(calls) == 1 else [{"name": "found"}])
+
+    results = retriever.retrieve_with_fallback("unclear", 1, lambda _: "precise")
+
+    assert results == [{"name": "found"}]
+    assert calls == ["unclear", "precise"]
+    assert retriever.last_fallback_used is True

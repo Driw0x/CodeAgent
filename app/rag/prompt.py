@@ -2,6 +2,7 @@ from pathlib import Path
 import re
 
 from app.rag.citations import CODE_PATTERN
+from app.rag.reliability import prepare_reliable_sources
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -26,6 +27,7 @@ Règles :
 - Une demande de citations attend des références [Sx] attachées aux faits demandés, pas une liste de phrases copiées des sources. Ne fournis des extraits que si l'utilisateur les demande explicitement.
 - Ne crée pas de section "Citations" séparée.
 - Ne cite jamais un identifiant de source absent du contexte.
+- Si les sources sont marquées contradictoires, qualifie le désaccord ou abstiens-toi. Ne choisis pas arbitrairement une version.
 - N'invente jamais de fonction, fichier, comportement, dépendance, propriété, cause, justification ou relation entre composants.
 - Ne déduis pas un comportement, une propriété ou un effet qui n'est pas explicitement supporté par les sources disponibles.
 - Si la question demande une cause, un avantage, un effet, une propriété d'implémentation ou une justification qui n'est pas explicitement indiquée dans les sources, ne l'infère pas et indique que tu ne peux pas la déterminer.
@@ -92,12 +94,13 @@ def format_sources(chunks: list[dict]) -> str:
 
 
 def format_chunk(chunk: dict, source_id: int) -> str:
+    reliability = "\nReliability: contradictory current sources" if chunk.get("reliability") == "contradictory" else ""
     return (
         f"[S{source_id}]\n"
         f"File: {relative_file_path(chunk['file'])}\n"
         f"Lines: {chunk['start_line']}-{chunk['end_line']}\n"
         f"Type: {chunk['type']}\n"
-        f"Name: {chunk['name']}\n\n"
+        f"Name: {chunk['name']}{reliability}\n\n"
         f"{chunk['content']}"
     )
 
@@ -119,6 +122,7 @@ def unique_chunks(chunks: list[dict]) -> list[dict]:
 
 
 def select_context_chunks(chunks: list[dict], max_chars: int = MAX_CONTEXT_CHARS) -> list[dict]:
+    chunks, _ = prepare_reliable_sources(chunks)
     chunks = unique_chunks(chunks)
     selected = []
     current_size = 0

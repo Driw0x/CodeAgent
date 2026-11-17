@@ -31,6 +31,29 @@ def test_load_index_rejects_mismatched_chunks(tmp_path):
         load_index(tmp_path)
 
 
+def test_load_index_rejects_corrupt_metadata(tmp_path):
+    index = faiss.IndexFlatL2(2)
+    index.add(np.array([[1.0, 2.0]], dtype="float32"))
+    save_index(index, [{"file": "a.py"}], tmp_path)
+    (tmp_path / "index_metadata.json").write_text(
+        '{"schema_version": 1, "chunk_count": 2, "dimension": 2, "chunk_metadata": false}',
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="metadata mismatch"):
+        load_index(tmp_path)
+
+
+def test_save_index_rejects_duplicate_chunk_ids(tmp_path):
+    index = faiss.IndexFlatL2(2)
+    index.add(np.array([[1.0, 2.0], [3.0, 4.0]], dtype="float32"))
+    chunks = [
+        {"file": name, "chunk_id": "same", "source_version": "source", "chunk_version": name}
+        for name in ("a.py", "b.py")
+    ]
+    with pytest.raises(ValueError, match="identifiers must be unique"):
+        save_index(index, chunks, tmp_path)
+
+
 def test_project_memory_dir_separates_projects_with_same_name(tmp_path):
     first_project = tmp_path / "first" / "backend"
     second_project = tmp_path / "second" / "backend"

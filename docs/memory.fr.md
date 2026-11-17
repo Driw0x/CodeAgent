@@ -1,21 +1,21 @@
-# CodeAgent — Project Memory
+# CodeAgent - Project Memory
 
 [English](memory.md) | [Français](memory.fr.md) | [简体中文](memory.zh-CN.md)
 
 [README du projet](../README.fr.md)
 
 
-> Mémoire synthétique du projet : fonctionnalités, décisions, résultats et limites de M1 à M8.
+> Mémoire synthétique du projet : fonctionnalités, décisions, résultats et limites de M1 à M9.
 
 ## État actuel
 
-**M1–M7 terminés. M8 PASS dans son périmètre initial de planification contrôlée ; deux scénarios autonomes réels validés avec `OLLAMA_MAX_LOADED_MODELS=1`. Qualification HITL actuelle partielle. M9 non commencé.**
+**M1–M7 terminés. M8 PASS dans son périmètre initial. M9 terminé : intégrité index/chunks et fiabilité des sources livrées ; candidats retrieval et vérificateur indépendant comparés puis retenus ou rejetés par benchmark.**
 
 CodeAgent analyse les projets Python, indexe leur code, produit des réponses sourcées avec vérification des citations et du grounding, maintient l’index et utilise des tools read-only via MCP.
 
 M7 apporte la mémoire conversationnelle persistante et le budget de contexte partagé. M8 ajoute une planification conditionnelle et une exécution contrôlée avec replanning.
 
-## M1 — Lecture et extraction
+## M1 - Lecture et extraction
 
 Le premier milestone a posé la base du projet :
 
@@ -27,7 +27,7 @@ Le premier milestone a posé la base du projet :
 
 Décision importante : garder le pipeline simple et indépendant du LLM afin que l’analyse du dépôt reste déterministe.
 
-## M2 — Recherche sémantique
+## M2 - Recherche sémantique
 
 Le code a ensuite été découpé avec l’AST Python en chunks représentant principalement les fonctions, classes, variables et imports.
 
@@ -55,7 +55,7 @@ Projet Python
 → chunks pertinents
 ```
 
-## M3 — LLM local et RAG
+## M3 - LLM local et RAG
 
 M3 a ajouté la génération de réponses sur le code.
 
@@ -87,7 +87,7 @@ Exemple :
 app/parser/file_loader.py:6-9
 ```
 
-## M4 — Mémoire projet
+## M4 - Mémoire projet
 
 M4 a ajouté une mémoire persistante et incrémentale au projet afin d’éviter de reconstruire entièrement l’index à chaque exécution.
 
@@ -121,7 +121,7 @@ Lorsqu’aucune modification n’est détectée, CodeAgent réutilise directemen
 
 Les analyses sont également enregistrées dans un historique JSONL contenant la date, la question et la réponse générée.
 
-## M5 — RAG Quality & Grounding
+## M5 - RAG Quality & Grounding
 
 M5 a renforcé et évalué le pipeline RAG avec :
 
@@ -134,7 +134,7 @@ M5 a renforcé et évalué le pipeline RAG avec :
 
 Sur le holdout final de 16 questions, M5 améliore `Hit@5` et `Recall@5` de `0.6667` à `0.8333`, ainsi que le comportement réponse/abstention de `0.6250` à `0.7500`. Le `MRR@5` passe de `0.5069` à `0.3917` et la vérification du grounding ajoute en moyenne `2.54 s` au pipeline.
 
-## M6 — MCP & Tool Use
+## M6 - MCP & Tool Use
 
 M6 ajoute l'utilisation contrôlée de tools via MCP :
 
@@ -153,7 +153,7 @@ Sur le benchmark de grounding figé de 40 cas équilibrés, `Qwen2.5-Coder 14B` 
 
 L'optimisation finale du contexte réduit le smoke test multi-tool d'environ `10.5k` à `6.6k` tokens sans perte de grounding. `search_code` a également été optimisé en évitant la traversée des dossiers ignorés avant filtrage : son temps observé passe d'environ `17.1 s` à `0.01-0.12 s` dans les smoke tests.
 
-## M7 — Memory & Context Management
+## M7 - Memory & Context Management
 
 **M7 terminé** pour la mémoire et le contexte ; la fiabilité des finales autonomes reste distincte.
 
@@ -171,7 +171,7 @@ La récupération d’anciens échanges reste lexicale et linéaire ; la recherc
 Une session suppose un seul processus écrivain, sans purge automatique de l’archive. La mémoire ne garantit ni un rappel fidèle du modèle ni une finale correctement sourcée.
 
 <a id="m8--planning--controlled-autonomous-execution"></a>
-## M8 — Planning & Controlled Autonomous Execution
+## M8 - Planning & Controlled Autonomous Execution
 
 **PASS dans le périmètre initial du milestone.** M8 apporte plans courts conditionnels, état minimal, étapes MCP réelles, reprise bornée du travail restant, conservation des acquis, arrêts explicites et comparaison avec M6 direct. Les objectifs initiaux figurent dans `README.md` au Git `0bf0437`. HITL optionnel possède son périmètre distinct ci-dessous ; aucune fiabilité autonome générale n'est revendiquée.
 
@@ -266,7 +266,23 @@ Les preuves antérieures restent sous `data/memory/m8-autonomy-20261017`, `m8-fi
 <a id="m8-limitations"></a>
 ### Limites restantes
 
-Les deux succès valident ces scénarios/configuration, sans autonomie générale ni généralisation aux tâches inédites. Routage lexical, certificats de preuves et format sont bornés ; le grounding peut accepter/refuser à tort des affirmations sémantiques. Un premier plan exige encore la réparation autonome. La reprise actuelle est vérifiée déterministement ; un cycle Ollama assisté complet actuel n'est pas revalidé. Le chargement dépend du matériel ; un timeout réel sans limite de résidence reste conservé. L'attente peut épuiser le budget mural ; saisie synchrone et redémarrage restent limités ci-dessus. Aucune seconde boucle MCP, outil d'écriture, framework ou implémentation M9 ajouté.
+Les deux succès valident ces scénarios/configuration, sans autonomie générale ni généralisation aux tâches inédites. Routage lexical, certificats de preuves et format sont bornés ; le grounding peut accepter/refuser à tort des affirmations sémantiques. Un premier plan exige encore la réparation autonome. La reprise actuelle est vérifiée déterministement ; un cycle Ollama assisté complet actuel n'est pas revalidé. Le chargement dépend du matériel ; un timeout réel sans limite de résidence reste conservé. L'attente peut épuiser le budget mural ; saisie synchrone et redémarrage restent limités ci-dessus. La validation M8 n'avait ajouté aucune seconde boucle MCP, outil d'écriture, framework ou implémentation M9.
+
+## M9 - Advanced RAG & Reliability
+
+M9 est terminé. Les chunks possèdent des identifiants stables et des versions SHA-256. L'index persiste son schéma,
+contrôle l'alignement vecteurs/chunks et reconstruit les formats anciens. Le retrieval accepte des filtres optionnels.
+La sélection de contexte écarte les sources explicitement obsolètes et marque les contradictions explicites.
+
+BM25 améliore le jeu de développement (`Recall@5 = 0.6600`) mais régresse sur le holdout (`0.3333` contre
+`0.8333` pour M5) ; il reste hors production. La fixture fiabilité détecte 2 sources obsolètes et 1 contradiction,
+sans faux positif ni faux négatif, P95 environ `0.000006 s`. Les résultats sont sous
+`benchmarks/rag/results/m9_dev/`, `m9_holdout/` et `m9_reliability.json`.
+
+Le reranker local atteint `Recall@5 = 0.5000` et régresse aussi. La calibration de reformulation ne trouve aucun seuil
+améliorant le développement et désactive le retry. Le vérificateur indépendant atteint `72.5 %`, 3 false accepts et
+8 false rejects, contre `97.5 %`, 0 et 1 pour le grounder actuel. Lexical/RRF et grounder actuel sont donc conservés.
+Un adaptateur cross-encoder/NLI local reste disponible sans téléchargement.
 
 ## Décisions techniques principales
 
@@ -294,4 +310,4 @@ Les deux succès valident ces scénarios/configuration, sans autonomie général
 
 ## État du projet et suite
 
-M1–M7 terminés. M8 PASS dans son périmètre initial, avec les limites de validation ci-dessus. M9 — Advanced RAG & Reliability reste futur ; toute évolution exige un gain mesuré.
+M1–M7 terminés. M8 PASS dans son périmètre initial. M9 terminé, avec changements retenus et résultats négatifs documentés ci-dessus.

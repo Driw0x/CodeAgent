@@ -1,0 +1,50 @@
+[
+  {
+    "id": "dev_model_supported",
+    "answer": "Le modèle par défaut est qwen2.5-coder:14b [S1].",
+    "sources": [{"content": "DEFAULT_MODEL = \"qwen2.5-coder:14b\""}],
+    "expected": true
+  },
+  {
+    "id": "dev_model_unsupported",
+    "answer": "Le modèle par défaut est devstral:24b [S1].",
+    "sources": [{"content": "DEFAULT_MODEL = \"qwen2.5-coder:14b\""}],
+    "expected": false
+  },
+  {
+    "id": "dev_timeout_supported",
+    "answer": "Le timeout vaut 60 secondes [S1].",
+    "sources": [{"content": "DEFAULT_TOOL_TIMEOUT = 60.0"}],
+    "expected": true
+  },
+  {
+    "id": "dev_timeout_unsupported",
+    "answer": "Le timeout vaut 30 secondes [S1].",
+    "sources": [{"content": "DEFAULT_TOOL_TIMEOUT = 60.0"}],
+    "expected": false
+  },
+  {
+    "id": "dev_file_supported",
+    "answer": "Le fichier contient build_index [S1].",
+    "sources": [{"content": "def build_index(model, chunks):\n    return index"}],
+    "expected": true
+  },
+  {
+    "id": "dev_file_unsupported",
+    "answer": "Le fichier contient delete_index [S1].",
+    "sources": [{"content": "def build_index(model, chunks):\n    return index"}],
+    "expected": false
+  },
+  {
+    "id": "dev_status_supported",
+    "answer": "Le résultat indique success [S1].",
+    "sources": [{"content": "{\"status\": \"success\"}"}],
+    "expected": true
+  },
+  {
+    "id": "dev_status_unsupported",
+    "answer": "Le résultat indique failure [S1].",
+    "sources": [{"content": "{\"status\": \"success\"}"}],
+    "expected": false
+  }
+]

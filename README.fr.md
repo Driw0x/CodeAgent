@@ -22,13 +22,11 @@ Le projet fonctionne entièrement en local grâce à un LLM local et une base ve
 
 ### Statut du projet
 
-**M1–M7 terminés · M8 implémenté · M9 futur**
-
-**M8 — Contrôles déterministes et deux scénarios autonomes Ollama + MCP validés avec `OLLAMA_MAX_LOADED_MODELS=1`.**
+**M9 terminé - Intégrité de l'index et fiabilité des sources livrées ; BM25, reranker local, reformulation et vérificateur indépendant évalués, puis rejetés lorsqu'ils régressent.**
 
 Le socle principal de CodeAgent est terminé et fonctionnel : analyse de code, recherche hybride, pipeline RAG, réponses sourcées, persistance de l'index, mise à jour incrémentale, grounding et utilisation contrôlée de tools via MCP.
 
-La [synthèse M7](docs/memory.fr.md#m7--memory--context-management) décrit la mémoire et les budgets de contexte. La [synthèse M8](docs/memory.fr.md#m8--planning--controlled-autonomous-execution) documente la planification, le périmètre des validations et les limites restantes.
+La [synthèse M9](docs/memory.fr.md#m9--advanced-rag--reliability) documente l'intégrité de l'index, la fiabilité des sources, les évaluations du retrieval et les baselines conservées.
 
 ---
 
@@ -245,12 +243,12 @@ et fichiers `tmp_path` dans les temporaires système, avec nettoyage des fixture
 
 ## Documentation
 
-- [Mémoire projet, contexte et planning — M1–M8, résultats et validation](docs/memory.fr.md)
-- [M5 — RAG Quality & Grounding](docs/rag_quality.fr.md)
+- [Mémoire projet, contexte et planning - M1–M8, résultats et validation](docs/memory.fr.md)
+- [M5 - RAG Quality & Grounding](docs/rag_quality.fr.md)
 
 # Roadmap
 
-## Milestone 1 — Lecture et extraction du code
+## Milestone 1 - Lecture et extraction du code
 
 ### Objectifs
 
@@ -267,7 +265,7 @@ Le projet est capable de parcourir automatiquement un dépôt Python et d'en ext
 
 ---
 
-## Milestone 2 — Embeddings et recherche sémantique
+## Milestone 2 - Embeddings et recherche sémantique
 
 ### Objectifs
 
@@ -285,7 +283,7 @@ CodeAgent est capable de retrouver automatiquement les portions de code les plus
 
 ---
 
-## Milestone 3 — RAG sur le code
+## Milestone 3 - RAG sur le code
 
 ### Benchmark LLM
 
@@ -316,7 +314,7 @@ Sources:
 
 ---
 
-## Milestone 4 — Mémoire projet
+## Milestone 4 - Mémoire projet
 
 ### Objectifs
 
@@ -327,7 +325,7 @@ Sources:
 
 ---
 
-## Milestone 5 — RAG Quality & Grounding
+## Milestone 5 - RAG Quality & Grounding
 
 ### Objectifs
 
@@ -349,7 +347,7 @@ Sur le holdout final de 16 questions, M5 améliore `Hit@5` et `Recall@5` de `0.6
 
 ---
 
-## Milestone 6 — MCP & Tool Use
+## Milestone 6 - MCP & Tool Use
 
 ### Objectifs
 
@@ -390,7 +388,7 @@ Sur le benchmark de gating de 20 tâches, Devstral atteint `100 %` de précision
 
 ---
 
-## Milestone 7 — Memory & Context Management
+## Milestone 7 - Memory & Context Management
 
 ### Objectifs
 
@@ -410,7 +408,7 @@ CodeAgent dispose d’une mémoire conversationnelle persistante, isolée par se
 
 ---
 
-## Milestone 8 — Planning & Controlled Autonomous Execution
+## Milestone 8 - Planning & Controlled Autonomous Execution
 
 ### Objectifs
 
@@ -429,15 +427,28 @@ Les tâches dépendantes utilisent un plan validé ; les tâches simples conserv
 
 ---
 
-## Milestone 9 — Advanced RAG & Reliability
+## Milestone 9 - Advanced RAG & Reliability
 
 ### Objectifs proposés
 
-- [ ] Renforcer les métadonnées, identifiants stables, versions, filtres et cohérence index/chunks
-- [ ] Comparer BM25 et rerankers spécialisés au lexical/RRF existant, avec Hit@K, Recall@K, MRR et nDCG
-- [ ] Évaluer recherche itérative et reformulation uniquement lorsque le retrieval initial échoue
-- [ ] Détecter sources obsolètes ou contradictoires et évaluer une correction ciblée
-- [ ] Comparer un vérificateur indépendant/NLI au grounding existant : false accepts, false rejects, P50/P95 et latence
+- [x] Renforcer les métadonnées, identifiants stables, versions, filtres et cohérence index/chunks
+- [x] Comparer BM25 et rerankers spécialisés au lexical/RRF existant, avec Hit@K, Recall@K, MRR et nDCG
+- [x] Évaluer recherche itérative et reformulation uniquement lorsque le retrieval initial échoue
+- [x] Détecter sources obsolètes ou contradictoires et évaluer une correction ciblée
+- [x] Comparer un vérificateur indépendant/NLI au grounding existant : false accepts, false rejects, P50/P95 et latence
+
+### État M9
+
+Les chunks portent désormais `chunk_id`, `source_version` et `chunk_version`. L'index persiste un contrat versionné,
+valide sa cohérence et accepte des filtres optionnels avant classement. Une fixture dédiée valide deux sources obsolètes
+et une contradiction, sans faux positif ni faux négatif ; P95 vaut environ `0.000006 s`.
+
+BM25 améliore le jeu de développement, mais régresse sur le holdout : `Recall@5 = 0.3333` contre `0.8333` pour
+le pipeline M5. Le reranker local appris atteint `Recall@5 = 0.5000` ; il régresse aussi. La calibration de reformulation
+ne trouve aucun seuil améliorant le développement et désactive donc le retry avant holdout. Aucun de ces candidats
+n'est intégré. Le vérificateur indépendant atteint `72.5 %`, avec 3 false accepts et 8 false rejects, contre `97.5 %`,
+0 et 1 pour le grounder actuel ; celui-ci reste inchangé. Résultats : `benchmarks/rag/results/m9_dev/`, `m9_holdout/`,
+`m9_reliability.json` et `benchmarks/grounding/results/m9_independent_verifier.json`.
 
 ### Future improvements / Research ideas
 
@@ -448,7 +459,7 @@ FAISS et les tools MCP restent le socle réutilisable pour la refonte M10. Aucun
 
 ---
 
-## Milestone 10 — Refonte simplifiée avec LangGraph et traçabilité
+## Milestone 10 - Refonte simplifiée avec LangGraph et traçabilité
 
 ### Objectifs proposés
 
@@ -477,11 +488,8 @@ La refonte couvre toute la matrice de parité et passe les tests de non-régress
 
 CodeAgent dispose désormais d'un pipeline complet permettant d'analyser un projet Python, d'indexer son code, de retrouver les portions pertinentes, de générer des réponses contextualisées avec un LLM local et de maintenir l'index à jour lorsque le projet évolue.
 
-Le socle RAG est terminé à M5 et le tool use contrôlé via MCP est terminé à M6. **M7 est terminé** pour
-la gestion de mémoire et de contexte. Les limites réelles de routage et de génération finale sont documentées ;
-elles ne prouvent pas une corruption de mémoire ou de sources M7. M8 ajoute la planification conditionnelle
-et ses contrôles observables ; M9 reste futur et regroupera les améliorations mesurées du RAG et de sa fiabilité.
-M10 planifie une refonte simplifiée avec LangGraph ou une API équivalente, à fonctionnalités et traçabilité conservées.
+**M9 est terminé :** intégrité de l'index et fiabilité des sources livrées ; BM25, reranker local,
+reformulation et vérificateur indépendant évalués, puis rejetés lorsqu'ils régressent face aux baselines.
 
 <!-- multilingual-documentation -->
 

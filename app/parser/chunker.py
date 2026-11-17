@@ -1,4 +1,6 @@
 import ast
+import hashlib
+from pathlib import Path
 
 def extract_names(target):
     if isinstance(target, ast.Name):
@@ -73,5 +75,18 @@ def chunking(data):
                           "content": ast.unparse(node),
                           "start_line": node.lineno,
                           "end_line": node.end_lineno})
+
+    source_version = hashlib.sha256(data["content"].encode("utf-8")).hexdigest()
+    occurrences = {}
+    file_key = Path(data["path"]).as_posix()
+
+    for item in chunk:
+        identity = (item["type"], item.get("module"), item["name"])
+        occurrence = occurrences.get(identity, 0)
+        occurrences[identity] = occurrence + 1
+        stable_key = "\0".join((file_key, *(str(value or "") for value in identity), str(occurrence)))
+        item["chunk_id"] = hashlib.sha256(stable_key.encode("utf-8")).hexdigest()
+        item["source_version"] = source_version
+        item["chunk_version"] = hashlib.sha256(item["content"].encode("utf-8")).hexdigest()
 
     return chunk

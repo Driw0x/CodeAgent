@@ -74,6 +74,17 @@ def test_function():
     assert "def hello" in chunks[0]["content"]
 
 
+def test_chunk_metadata_is_stable_across_line_moves_and_versions_content():
+    first = chunking({"path": "test.py", "content": "def hello():\n    return 1"})[0]
+    moved = chunking({"path": "test.py", "content": "\n\ndef hello():\n    return 1"})[0]
+    changed = chunking({"path": "test.py", "content": "def hello():\n    return 2"})[0]
+
+    assert first["chunk_id"] == moved["chunk_id"] == changed["chunk_id"]
+    assert first["chunk_version"] == moved["chunk_version"]
+    assert first["chunk_version"] != changed["chunk_version"]
+    assert first["source_version"] != moved["source_version"]
+
+
 def test_async_function():
     data = {"path": "test.py",
             "content": code("""

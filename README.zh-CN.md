@@ -24,13 +24,13 @@ CodeAgent 是一个本地AI助手，专为分析Python项目代码并回答关�
 <a id="statut-du-projet"></a>
 ### 项目状态
 
-**M1–M7 已完成 · M8 已实现 · M9 未来计划**
+**M9 已完成**
 
-**M8 — 确定性检查与两个 Ollama + MCP 自主场景已在 `OLLAMA_MAX_LOADED_MODELS=1` 配置下验证。**
+**M9 - 已交付索引完整性与来源可靠性；BM25、本地 reranker、重表述和独立验证器均已测量，并在性能退化时被拒绝。**
 
 CodeAgent 的核心基础已完工并可运行：代码分析、混合搜索、RAG管道、源码响应、索引持久化、增量更新、事实验证以及通过MCP实现工具的受控使用。
 
-[M7 汇总](docs/memory.zh-CN.md#m7--memory--context-management)介绍记忆与上下文预算。[M8 汇总](docs/memory.zh-CN.md#m8--planning--controlled-autonomous-execution)记录规划机制、验证范围与剩余限制。
+[M9 汇总](docs/memory.zh-CN.md#m9--高级-rag-与可靠性)记录索引完整性、来源可靠性、检索评估及保留的基线。
 
 ---
 
@@ -261,14 +261,14 @@ python -m scripts.benchmark_rag --output-dir (Join-Path $m8CheckDirectory 'rag')
 <a id="documentation"></a>
 ## 文档
 
-- [项目内存、上下文和规划 — M1–M8，结果与验证](docs/memory.zh-CN.md)
-- [M5 — RAG质量与来源依据核验](docs/rag_quality.zh-CN.md)
+- [项目内存、上下文和规划 - M1–M8，结果与验证](docs/memory.zh-CN.md)
+- [M5 - RAG质量与来源依据核验](docs/rag_quality.zh-CN.md)
 
 <a id="roadmap"></a>
 # 路线图
 
 <a id="milestone-1--lecture-et-extraction-du-code"></a>
-## 里程碑1 — 代码的读取与提取
+## 里程碑1 - 代码的读取与提取
 
 <a id="objectifs"></a>
 ### 目标
@@ -288,7 +288,7 @@ python -m scripts.benchmark_rag --output-dir (Join-Path $m8CheckDirectory 'rag')
 ---
 
 <a id="milestone-2--embeddings-et-recherche-sémantique"></a>
-## 里程碑 2 — 嵌入与语义搜索
+## 里程碑 2 - 嵌入与语义搜索
 
 <a id="objectifs-1"></a>
 ### 目标
@@ -309,7 +309,7 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 ---
 
 <a id="milestone-3--rag-sur-le-code"></a>
-## 里程碑 3 — 代码上的 RAG
+## 里程碑 3 - 代码上的 RAG
 
 <a id="benchmark-llm"></a>
 ### LLM 性能基准测试
@@ -344,7 +344,7 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 ---
 
 <a id="milestone-4--mémoire-projet"></a>
-## 里程碑 4 — 项目记忆
+## 里程碑 4 - 项目记忆
 
 <a id="objectifs-2"></a>
 ### 目标
@@ -357,7 +357,7 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 ---
 
 <a id="milestone-5--rag-quality--grounding"></a>
-## 里程碑 5 — RAG 质量与事实验证
+## 里程碑 5 - RAG 质量与事实验证
 
 <a id="objectifs-3"></a>
 ### 目标
@@ -382,7 +382,7 @@ CodeAgent 能够根据自然语言问题自动检索最相关的代码片段。
 ---
 
 <a id="milestone-6--mcp--tool-use"></a>
-## 里程碑 6 — MCP 与工具使用
+## 里程碑 6 - MCP 与工具使用
 
 <a id="objectifs-4"></a>
 ### 目标
@@ -428,7 +428,7 @@ CodeAgent在判断是否需要工具时做出决策，通过MCP选择并执行�
 ---
 
 <a id="milestone-7--memory--context-management"></a>
-## 里程碑7 — 内存与上下文管理
+## 里程碑7 - 内存与上下文管理
 
 <a id="objectifs-5"></a>
 ### 目标
@@ -451,7 +451,7 @@ CodeAgent 拥有持久、按会话和项目隔离的对话记忆，具备自动�
 ---
 
 <a id="milestone-8--planning--controlled-autonomous-execution"></a>
-## 里程碑 8 —— 计划与受控自主执行
+## 里程碑 8 -- 计划与受控自主执行
 
 <a id="objectifs-6"></a>
 ### 目标
@@ -473,16 +473,27 @@ CodeAgent 拥有持久、按会话和项目隔离的对话记忆，具备自动�
 ---
 
 <a id="milestone-9--advanced-rag--reliability"></a>
-## 里程碑 9 — 高级 RAG 与可靠性
+## 里程碑 9 - 高级 RAG 与可靠性
 
 <a id="objectifs-proposés"></a>
 ### 目标提案
 
-- [ ] 加强元数据、稳定标识符、版本、过滤器以及索引/分块的一致性
-- [ ] 比较 BM25 与专用重排序器相对于现有词法/RRF 方法，使用 Hit@K、Recall@K、MRR 和 nDCG 评估
-- [ ] 仅当初始检索失败时，才进行迭代检索和重表述
-- [ ] 检测过时或矛盾的来源，并评估针对性修正
-- [ ] 比较独立验证器/NLI 与现有锚定机制：误接受、误拒绝、P50/P95 以及延迟
+- [x] 加强元数据、稳定标识符、版本、过滤器以及索引/分块的一致性
+- [x] 比较 BM25 与专用重排序器相对于现有词法/RRF 方法，使用 Hit@K、Recall@K、MRR 和 nDCG 评估
+- [x] 仅当初始检索失败时，才进行迭代检索和重表述
+- [x] 检测过时或矛盾的来源，并评估针对性修正
+- [x] 比较独立验证器/NLI 与现有锚定机制：误接受、误拒绝、P50/P95 以及延迟
+
+### M9 状态
+
+分块现包含 `chunk_id`、`source_version` 和 `chunk_version`。索引持久化版本化合约、验证一致性，
+并在排序前支持可选过滤器。专用 fixture 检出两个过时来源和一个矛盾，无误报或漏报；P95 约为 `0.000006 s`。
+
+BM25 在开发集上提升，但在保留集上退化：`Recall@5 = 0.3333`，M5 为 `0.8333`。本地学习 reranker
+达到 `Recall@5 = 0.5000`，同样退化。重表述校准未找到能改善开发集的阈值，因此在保留集前禁用 retry。
+这些候选均未集成。独立验证器准确率为 `72.5 %`，有 3 个误接受和 8 个误拒绝；现有 grounder 为
+`97.5 %`、0 和 1，因此保持不变。结果位于 `benchmarks/rag/results/m9_dev/`、`m9_holdout/`、
+`m9_reliability.json` 和 `benchmarks/grounding/results/m9_independent_verifier.json`。
 
 <a id="future-improvements--research-ideas"></a>
 ### 未来改进 / 研究想法
@@ -491,7 +502,7 @@ CodeAgent 拥有持久、按会话和项目隔离的对话记忆，具备自动�
 
 ---
 
-## 里程碑 10 — 使用 LangGraph 简化重构并保留可追溯性
+## 里程碑 10 - 使用 LangGraph 简化重构并保留可追溯性
 
 ### 目标提案
 
@@ -521,7 +532,7 @@ CodeAgent 拥有持久、按会话和项目隔离的对话记忆，具备自动�
 
 CodeAgent 现已具备完整流程，可分析 Python 项目、索引其代码、检索相关片段、利用本地 LLM 生成上下文化响应，并在项目演进时持续更新索引。
 
-基础 RAG 已在 M5 完成，通过 MCP 控制的工具调用功能在 M6 完成。**M7 已完成**，涵盖内存与上下文管理。对路由和最终生成的实际限制已记录；这些限制并未证明 M7 存在内存或来源损坏。M8 增加了条件规划及其可观测控制；M9 仍为未来阶段，将整合 RAG 及其可靠性方面的可测量改进。M10 计划使用 LangGraph 或等效 API 进行简化重构，同时保留功能与可追溯性。
+**M9 已完成：**索引完整性和来源可靠性已交付；BM25、本地 reranker、重表述和独立验证器经过测量，并在性能退化时被拒绝。
 
 <!-- multilingual-documentation -->
 
