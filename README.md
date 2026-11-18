@@ -32,7 +32,7 @@ The project operates entirely locally using a local LLM and a vector database.
 
 The core of CodeAgent is complete and functional: code analysis, hybrid search, RAG pipeline, source-based responses, index persistence, incremental updates, grounding, and controlled tool usage via MCP.
 
-The [M9 synthesis](docs/memory.md#m9--advanced-rag--reliability) documents index integrity, source reliability, retrieval evaluations and retained baselines.
+The [M9 synthesis](docs/memory.md#m9---advanced-rag--reliability) documents index integrity, source reliability, retrieval evaluations and retained baselines.
 
 ---
 
@@ -83,6 +83,8 @@ Each element is converted into a chunk containing:
 * Hybrid dense and lexical search.
 * Lexical reranking of candidate chunks.
 * Selection of the most relevant chunks for the RAG context.
+
+Python entry points and tests are included in the index. Dependency, cache and build directories remain excluded.
 
 Examples of queries:
 

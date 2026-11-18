@@ -7,6 +7,27 @@ from app.memory import build_index, index_exists, load_index, save_index, update
 from app.utils.paths import project_memory_dir
 
 
+def test_build_index_batches_embeddings_and_preserves_order():
+    class Encoder:
+        def __init__(self):
+            self.calls = []
+
+        def encode(self, texts, show_progress_bar=False):
+            self.calls.append(texts)
+            return np.array([[len(text), 1] for text in texts], dtype="float32")
+
+    model = Encoder()
+    chunks = [{"file": "a.py", "type": "function", "name": "a", "content": content}
+              for content in ("short", "longer content")]
+    index = build_index(model, chunks, dimension=2)
+    assert len(model.calls) == 1
+    assert len(model.calls[0]) == 2
+    np.testing.assert_array_equal(index.reconstruct_n(0, 2),
+                                  [[len(text), 1] for text in model.calls[0]])
+    assert build_index(model, [], dimension=2).ntotal == 0
+    assert len(model.calls) == 1
+
+
 def test_save_and_load_index(tmp_path):
     index = faiss.IndexFlatL2(2)
     index.add(np.array([[1.0, 2.0], [3.0, 4.0]], dtype="float32"))

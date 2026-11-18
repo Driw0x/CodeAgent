@@ -27,8 +27,7 @@ IGNORED_DIRS = {
     "venv",
     "node_modules",
     "dist",
-    "build",
-    "tests"
+    "build"
 }
 
-IGNORED_FILES = {".DS_Store", "main.py"}
+IGNORED_FILES = {".DS_Store"}

@@ -26,7 +26,7 @@ Le projet fonctionne entièrement en local grâce à un LLM local et une base ve
 
 Le socle principal de CodeAgent est terminé et fonctionnel : analyse de code, recherche hybride, pipeline RAG, réponses sourcées, persistance de l'index, mise à jour incrémentale, grounding et utilisation contrôlée de tools via MCP.
 
-La [synthèse M9](docs/memory.fr.md#m9--advanced-rag--reliability) documente l'intégrité de l'index, la fiabilité des sources, les évaluations du retrieval et les baselines conservées.
+La [synthèse M9](docs/memory.fr.md#m9---advanced-rag--reliability) documente l'intégrité de l'index, la fiabilité des sources, les évaluations du retrieval et les baselines conservées.
 
 ---
 
@@ -73,6 +73,8 @@ Chaque élément est converti en chunk contenant :
 * Recherche hybride dense + lexicale.
 * Reranking lexical des chunks candidats.
 * Sélection des chunks les plus pertinents pour le contexte RAG.
+
+Les points d'entrée et tests Python sont inclus dans l'index. Les dossiers de dépendances, caches et builds restent exclus.
 
 Exemples de requêtes :
 

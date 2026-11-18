@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 from app.retrieval import FaissRetriever
-from app.retrieval.faiss_retriever import rerank_score, tokenize
+from app.retrieval.faiss_retriever import is_entrypoint_query, is_test_query, rerank_score, tokenize
 
 CHUNKS = [
     {
@@ -287,6 +287,56 @@ def test_retrieve_filters_before_ranking():
 
     assert [chunk["name"] for chunk in results] == ["read_dir"]
     assert index.search.call_args.args[1] == len(CHUNKS)
+
+
+def test_retrieve_excludes_tests_from_general_queries():
+    chunks = [
+        {"file": "app/main.py", "type": "function", "name": "main", "content": "pipeline"},
+        {"file": "tests/test_main.py", "type": "function", "name": "test_main", "content": "pipeline"},
+    ]
+    model = MagicMock()
+    model.encode.return_value = np.zeros((1, 384), dtype="float32")
+    index = MagicMock()
+    index.search.return_value = np.array([[0.1, 0.2]], dtype="float32"), np.array([[1, 0]])
+    retriever = FaissRetriever(model, index, chunks)
+
+    results = retriever.retrieve("Where is the pipeline built?", k=2)
+
+    assert [chunk["file"] for chunk in results] == ["app/main.py"]
+
+
+def test_retrieve_includes_tests_for_test_queries():
+    chunks = [
+        {"file": "app/main.py", "type": "function", "name": "main", "content": "pipeline"},
+        {"file": "tests/test_main.py", "type": "function", "name": "test_main", "content": "test pipeline"},
+    ]
+    model = MagicMock()
+    model.encode.return_value = np.zeros((1, 384), dtype="float32")
+    index = MagicMock()
+    index.search.return_value = np.array([[0.1, 0.2]], dtype="float32"), np.array([[1, 0]])
+    retriever = FaissRetriever(model, index, chunks)
+
+    results = retriever.retrieve("Which test covers the pipeline?", k=2)
+
+    assert {chunk["file"] for chunk in results} == {"app/main.py", "tests/test_main.py"}
+    assert is_test_query("Quel test vérifie le parseur ?")
+
+
+def test_retrieve_includes_main_for_entrypoint_queries():
+    chunks = [
+        {"file": "app/main.py", "type": "function", "name": "main", "content": "pipeline"},
+        {"file": "app/rag/pipeline.py", "type": "class", "name": "RAGPipeline", "content": "pipeline"},
+    ]
+    model = MagicMock()
+    model.encode.return_value = np.zeros((1, 384), dtype="float32")
+    index = MagicMock()
+    index.search.return_value = np.array([[0.1, 0.2]], dtype="float32"), np.array([[0, 1]])
+    retriever = FaissRetriever(model, index, chunks)
+
+    results = retriever.retrieve("Where is the main pipeline?", k=2)
+
+    assert {chunk["file"] for chunk in results} == {"app/main.py", "app/rag/pipeline.py"}
+    assert is_entrypoint_query("Où est le point d'entrée ?")
 
 
 def test_bm25_prefers_repeated_specific_terms():

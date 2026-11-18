@@ -22,6 +22,8 @@ TYPE_BONUS = {
 }
 
 RRF_K = 60
+TEST_QUERY_TERMS = {"fixture", "pytest", "regression", "test", "testing", "tests"}
+ENTRYPOINT_QUERY_TERMS = {"entry", "main", "pipeline"}
 
 
 def token_sequence(text: str) -> list[str]:
@@ -48,6 +50,16 @@ def chunk_matches_filters(chunk: dict, filters: dict | None) -> bool:
     if not filters:
         return True
     for field, expected in filters.items():
+        if field == "_exclude_tests":
+            path = str(chunk.get("file", "")).replace("\\", "/").casefold()
+            if expected and (path.startswith("tests/") or "/tests/" in path):
+                return False
+            continue
+        if field == "_exclude_entrypoints":
+            path = str(chunk.get("file", "")).replace("\\", "/").casefold()
+            if expected and (path == "main.py" or path.endswith("/main.py")):
+                return False
+            continue
         actual = chunk.get(field)
         if isinstance(expected, (set, frozenset, list, tuple)):
             if actual not in expected:
@@ -55,6 +67,14 @@ def chunk_matches_filters(chunk: dict, filters: dict | None) -> bool:
         elif actual != expected:
             return False
     return True
+
+
+def is_test_query(question: str) -> bool:
+    return bool(tokenize(question) & TEST_QUERY_TERMS) or "测试" in question
+
+
+def is_entrypoint_query(question: str) -> bool:
+    return bool(tokenize(question) & ENTRYPOINT_QUERY_TERMS) or "entrée" in question.casefold()
 
 
 def lexical_score(question: str, chunk: dict) -> float:
@@ -244,8 +264,14 @@ class FaissRetriever:
         if not self.chunks:
             return []
 
+        effective_filters = filters
+        if filters is None:
+            effective_filters = {
+                "_exclude_tests": not is_test_query(question),
+                "_exclude_entrypoints": not is_entrypoint_query(question),
+            }
         candidate_k = min(max(k * 5, 25), len(self.chunks))
-        candidates = self.hybrid_retrieve(question, candidate_k, filters)
+        candidates = self.hybrid_retrieve(question, candidate_k, effective_filters)
         return self.rerank_candidates(question, candidates, k)
 
     def retrieve_with_fallback(self, question: str, k: int, reformulate, should_retry=None, filters=None) -> list[dict]:

@@ -234,6 +234,15 @@ def test_read_dir_ignore_les_fichiers_non_python(tmp_path):
     assert resultats[0]["content"] == "x = 1"
 
 
+def test_read_dir_ne_lit_pas_un_dossier_comme_un_fichier_python(tmp_path):
+    directory = tmp_path / "package.py"
+    directory.mkdir()
+    module = directory / "module.py"
+    module.write_text("x = 42", encoding="utf-8")
+
+    assert read_dir(tmp_path) == [{"path": module, "content": "x = 42"}]
+
+
 def test_read_dir_ignore_les_dossiers_ignores(tmp_path):
     dossier_cache = tmp_path / "__pycache__"
     dossier_cache.mkdir()
@@ -247,6 +256,15 @@ def test_read_dir_ignore_les_dossiers_ignores(tmp_path):
     assert resultats[0]["content"] == "y = 2"
 
 
+def test_read_dir_ignore_uniquement_les_dossiers_sous_la_racine(tmp_path):
+    project = tmp_path / "tests" / "project"
+    project.mkdir(parents=True)
+    module = project / "module.py"
+    module.write_text("x = 42", encoding="utf-8")
+
+    assert read_dir(project) == [{"path": module, "content": "x = 42"}]
+
+
 def test_read_dir_lit_les_fichiers_dans_sous_dossiers(tmp_path):
     sous_dossier = tmp_path / "src"
     sous_dossier.mkdir()
@@ -256,3 +274,16 @@ def test_read_dir_lit_les_fichiers_dans_sous_dossiers(tmp_path):
     assert len(resultats) == 1
     assert resultats[0]["path"].name == "module.py"
     assert "def hello" in resultats[0]["content"]
+
+
+def test_read_dir_indexe_point_entree_et_tests(tmp_path):
+    tests = tmp_path / "tests"
+    tests.mkdir()
+    main = tmp_path / "main.py"
+    test_module = tests / "test_feature.py"
+    main.write_text("def main():\n    pass", encoding="utf-8")
+    test_module.write_text("def test_feature():\n    pass", encoding="utf-8")
+
+    assert {item["path"].relative_to(tmp_path).as_posix() for item in read_dir(tmp_path)} == {
+        "main.py", "tests/test_feature.py",
+    }

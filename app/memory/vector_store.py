@@ -28,10 +28,9 @@ def _validate_chunks(chunks: list[dict]) -> bool:
 def build_index(model, chunks: list[dict], dimension: int = 384):
     index = faiss.IndexFlatL2(dimension)
 
-    for chunk in chunks:
-        text = chunk_embedding_text(chunk)
-        vector = embeddings(model, [text])
-        index.add(vector)
+    if chunks:
+        vectors = embeddings(model, [chunk_embedding_text(chunk) for chunk in chunks])
+        index.add(vectors)
 
     return index
 
